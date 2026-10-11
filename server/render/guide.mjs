@@ -227,7 +227,6 @@ export function renderGuidePage({
   versions = [],
   baseUrl = '',
   guidePath = '',
-  readCount = null
 }) {
   const g = spec.guide || {};
   const stats = specStats(spec);
@@ -270,7 +269,6 @@ export function renderGuidePage({
   ${g.summary ? `<p class="lede">${inlineProse(g.summary)}</p>` : ''}
   ${attested}
   <div class="copyrow">
-    <a class="btn btn-outline" href="${esc(guidePath)}/samples">Sample files</a>
     <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
     <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
@@ -307,7 +305,7 @@ ${sidebar(spec, areas)}
 
   ${(spec.scenarios || []).length ? `<section class="dsec" id="scenarios">
     <h2>Scenarios you must handle</h2>
-    <p class="section-sub">A build that passes the first and fails the rest will not survive certification. These are the cases ${esc(g.hub?.name)} has seen go wrong. <a href="${esc(guidePath)}/samples">Generated sample files</a> cover each one.</p>
+    <p class="section-sub">A build that passes the first and fails the rest will not survive certification. These are the cases ${esc(g.hub?.name)} has seen go wrong.</p>
     ${spec.scenarios.map((s) => `<div class="scenario">
 <h4>${esc(s.id)} &middot; ${esc(s.name)}</h4>
 ${s.description ? `<p class="rc-note">${inlineProse(s.description)}</p>` : ''}
@@ -385,7 +383,6 @@ ${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.require
           ${version?.source_name ? `<dt>Compiled from</dt><dd>${esc(version.source_name)}${version.source_pages ? `, ${esc(version.source_pages)} pages` : ''}</dd>` : ''}
           ${g.supersedes ? `<dt>Supersedes</dt><dd>${esc(g.supersedes)}</dd>` : ''}
           <dt>Citation coverage</dt><dd>${Math.round(stats.citedFraction * 100)}% of segments, elements and rules cite a source page</dd>
-          ${readCount != null ? `<dt>Read</dt><dd>${esc(readCount)} times across all surfaces</dd>` : ''}
         </dl>
         ${(spec.contacts || []).length ? `<h3 style="margin-top:18px">Contacts</h3>
         <dl class="kv">${spec.contacts.map((c) => `<dt>${esc(c.role || c.name)}</dt><dd>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ''}${c.note ? `<br>${esc(c.note)}` : ''}</dd>`).join('')}</dl>` : ''}

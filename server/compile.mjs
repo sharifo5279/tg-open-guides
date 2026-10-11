@@ -250,118 +250,6 @@ function assignRuleIds(rules) {
   return rules;
 }
 
-/* ------------------------------------------------------- structural fallback */
-
-const SEGMENT_LINE = /^\s*(?:(\d{3,4})\s+)?([A-Z][A-Z0-9]{1,2})\b[\s|:-]+([A-Z][A-Za-z0-9 ,/()'&.-]{3,60})/;
-const ELEMENT_LINE = /^\s*([A-Z][A-Z0-9]{1,2}\d{2})\b[\s|:-]+(.{0,70}?)(?:\s{2,}|\s*\|)/;
-const USAGE_TOKEN = /\b(M|O|C|X)\b(?!\w)/;
-const LEN_TOKEN = /\b(?:AN|ID|DT|TM|N0|N2|R)\s*(\d{1,3})\s*\/\s*(\d{1,3})\b/i;
-const RULE_SENTENCE = /(?:^|[.\n])\s*([^.\n]{25,320}?\b(?:must|must not|may not|cannot|shall|is required|are required|will be rejected|is rejected|will reject|not accepted|mandatory|required to)\b[^.\n]{0,320})\./gi;
-
-/**
- * No model key, or the model call failed. This produces a crude but real draft:
- * segments and elements recognised structurally, candidate rules pulled from
- * obligation sentences, everything cited and everything marked low confidence.
- * A paid reviewer with this is still faster than a paid reviewer with a PDF.
- */
-export function compileStructurally(pages, meta = {}) {
-  const spec = emptySpec();
-  const notFound = [];
-  let currentSeg = null;
-
-  for (const { page, text } of pages) {
-    for (const line of text.split('\n')) {
-      const elMatch = line.match(ELEMENT_LINE);
-      if (elMatch && currentSeg && elMatch[1].startsWith(currentSeg.id)) {
-        const len = line.match(LEN_TOKEN);
-        const usage = line.match(USAGE_TOKEN);
-        currentSeg.elements.push({
-          ref: elMatch[1].toUpperCase(),
-          id: null,
-          name: (elMatch[2] || '').trim(),
-          type: len ? line.match(/\b(AN|ID|DT|TM|N0|N2|R)\b/i)?.[1]?.toUpperCase() || null : null,
-          min: len ? Number(len[1]) : null,
-          max: len ? Number(len[2]) : null,
-          usage: usage ? normUsage(usage[1]) : 'optional',
-          values: [],
-          note: null,
-          confidence: 'low',
-          citation: { page }
-        });
-        continue;
-      }
-
-      const segMatch = line.match(SEGMENT_LINE);
-      if (segMatch) {
-        const id = segMatch[2].toUpperCase();
-        if (/^(THE|AND|FOR|ALL|NOT|USE|SEE|ANY|ARE|MAY|WILL|THIS|EDI|PDF)$/.test(id)) continue;
-        const usage = line.match(USAGE_TOKEN);
-        currentSeg = {
-          pos: segMatch[1] || null,
-          id,
-          name: (segMatch[3] || '').trim(),
-          level: 'detail',
-          loopId: null,
-          usage: usage ? normUsage(usage[1]) : 'optional',
-          maxUse: null,
-          note: null,
-          confidence: 'low',
-          citation: { page },
-          elements: []
-        };
-        const key = `${currentSeg.id}|${currentSeg.pos || ''}`;
-        if (!spec.segments.some((s) => `${s.id}|${s.pos || ''}` === key)) {
-          spec.segments.push(currentSeg);
-        } else {
-          currentSeg = spec.segments.find((s) => `${s.id}|${s.pos || ''}` === key);
-        }
-      }
-    }
-
-    for (const m of text.matchAll(RULE_SENTENCE)) {
-      const statement = m[1].replace(/\s+/g, ' ').trim();
-      if (statement.length < 25) continue;
-      const fingerprint = statement.slice(0, 60).toLowerCase();
-      if (spec.rules.some((r) => r.statement.slice(0, 60).toLowerCase() === fingerprint)) continue;
-      const severity = /reject|not accepted|refus/i.test(statement)
-        ? 'reject'
-        : /charge.?back|held|hold|quer/i.test(statement)
-          ? 'warn'
-          : 'info';
-      spec.rules.push({
-        id: null,
-        severity,
-        statement,
-        rationale: null,
-        appliesTo: null,
-        confidence: 'low',
-        citation: { page }
-      });
-      if (spec.rules.length >= 80) break;
-    }
-  }
-
-  const sv = detectStandardVersion(pages);
-  spec.guide = {
-    ...spec.guide,
-    hub: { name: meta.hubName || '', slug: meta.hubSlug || '' },
-    title: meta.title || '',
-    standard: meta.standard || sv.standard,
-    transactionSet: meta.transactionSet || '',
-    version: meta.version || sv.version,
-    direction: meta.direction || 'partner_sends'
-  };
-  assignRuleIds(spec.rules);
-  spec.compileReport = {
-    compiledBy: 'structural-fallback',
-    chunks: 0,
-    gaps: findGaps(spec, notFound),
-    note:
-      'Compiled without a model: segments and elements were recognised structurally and rules were pulled from obligation sentences. Everything is marked low confidence and needs review. A model key produces a materially better draft.'
-  };
-  return spec;
-}
-
 /* ---------------------------------------------------------- model compilation */
 
 export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
@@ -456,24 +344,10 @@ export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
 }
 
 export async function compileGuide(pages, meta = {}, opts = {}) {
-  if (!modelAvailable()) return compileStructurally(pages, meta);
-  try {
-    const spec = await compileWithModel(pages, meta, opts);
-    // A model run that produced almost nothing is worse than the crude path.
-    if ((spec.segments || []).length < 3) {
-      const fallback = compileStructurally(pages, meta);
-      fallback.compileReport.note =
-        `The model returned almost no structure (${spec.segments.length} segments), so this draft came from the structural compiler instead. ` +
-        (fallback.compileReport.note || '');
-      return fallback;
-    }
-    return spec;
-  } catch (err) {
-    console.error('[compile] model path failed entirely:', err.message);
-    const fallback = compileStructurally(pages, meta);
-    fallback.compileReport.note = `Model compilation failed (${err.message.slice(0, 120)}). ${fallback.compileReport.note || ''}`;
-    return fallback;
+  if (!modelAvailable()) {
+    throw new Error('No model key is configured, so a PDF cannot be compiled. Set ANTHROPIC_API_KEY or GEMINI_API_KEY.');
   }
+  return compileWithModel(pages, meta, opts);
 }
 
 /** Split a draft into the review queue: what to check, and what is merely confirmed. */

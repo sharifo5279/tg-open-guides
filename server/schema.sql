@@ -47,20 +47,6 @@ CREATE TABLE IF NOT EXISTS guide_versions (
   UNIQUE (guide_id, version)
 );
 
--- Who read which version, through which surface. This is the hub's evidence that
--- its requirements reached the partner, and the signal for which rules confuse people.
-CREATE TABLE IF NOT EXISTS guide_reads (
-  id          BIGSERIAL PRIMARY KEY,
-  guide_id    TEXT NOT NULL REFERENCES guides(id) ON DELETE CASCADE,
-  version     INTEGER,
-  surface     TEXT NOT NULL,          -- page | json | markdown | mcp | llms
-  tool        TEXT,                   -- mcp tool name, or null
-  client_kind TEXT NOT NULL,          -- agent | browser | unknown
-  client_name TEXT,                   -- parsed from user agent
-  read_at     TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS guide_reads_guide_idx ON guide_reads (guide_id, read_at DESC);
 CREATE INDEX IF NOT EXISTS guide_versions_guide_idx ON guide_versions (guide_id, version DESC);
 CREATE INDEX IF NOT EXISTS guides_visibility_idx ON guides (visibility);
 

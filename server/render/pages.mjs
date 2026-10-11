@@ -1,4 +1,4 @@
-import { esc, attr, inlineProse, layout, severityPill, citeTag } from './html.mjs';
+import { esc, inlineProse, layout, severityPill } from './html.mjs';
 import { DIRECTIONS, buildFlow, flowAbsences, FEED_SETS, ALWAYS_SETS } from '../spec.mjs';
 
 /**
@@ -409,7 +409,7 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
     <h3>1. Fetch the page</h3>
     <p>Every guide and every hub serves Markdown to a client that asks for it, so a plain fetch works with no setup:</p>
     <pre><code>curl -H "Accept: text/markdown" ${esc(baseUrl)}${esc(examplePath)}</code></pre>
-    <p>Or append the format: <code>${esc(examplePath)}.md</code> and <code>${esc(examplePath)}.json</code>. A whole hub is at <code>/h/&lt;hub&gt;.md</code>. The index is at <code>/llms.txt</code>.</p>
+    <p>Or append the format: <code>${esc(examplePath)}.md</code> and <code>${esc(examplePath)}.json</code>. A whole hub is at <code>/h/&lt;hub&gt;.md</code>.</p>
 
     <h3 style="margin-top:22px">2. Connect the MCP server</h3>
     <p>Configure once and reach every hub, with tools that return a segment or a rule set rather than an entire document:</p>
@@ -465,68 +465,6 @@ document.addEventListener('click', function (e) {
     canonical: `${baseUrl}/for-agents`,
     body
   });
-}
-
-export function renderSamples({ guide, version, samples, baseUrl = '' }) {
-  const spec = version.spec;
-  const g = spec.guide || {};
-  const guidePath = `/g/${guide.hub_slug}/${guide.slug}`;
-  const skeleton = samples[0]?.kind === 'skeleton';
-  const body = `
-<div class="phead"><div class="shell">
-  <p class="eyebrow">${esc(g.hub?.name)} &middot; ${esc(g.standard)} ${esc(g.transactionSet)}</p>
-  <h1>Sample files</h1>
-  <p class="lede">${skeleton
-    ? `A required segment skeleton generated from version ${esc(version.version)} of the published guide. It shows segment order and which elements must be present, not a worked business example.`
-    : `Generated from the segment and element rules in version ${esc(version.version)} of the published guide, one per scenario ${esc(g.hub?.name)} expects a partner to handle.`}</p>
-  <div class="copyrow"><a class="btn btn-outline" href="${esc(guidePath)}">Back to the guide</a></div>
-</div></div>
-
-<section class="section"><div class="shell">
-  <div class="notice">Samples are illustrations, not test files: ${esc(g.hub?.name)} decides what passes. Values the guide pins down are real; anything the generator invented reads <code>SAMPLE</code> or <code>ZZ</code> so you can see what you still have to supply. The ISA and GS envelope is not generated, because those values are specific to your trading relationship.</div>
-  ${samples.map((s) => `<div class="scenario">
-    <h4>${esc(s.id)} &middot; ${esc(s.name)}</h4>
-    ${s.requirement ? `<p class="sc-req">${esc(s.requirement)}</p>` : ''}
-    <p class="rc-note">${esc(s.segmentCount)} segments. <a href="${esc(guidePath)}/samples/${esc(s.id)}.edi">Download</a></p>
-    <pre><code>${esc(s.edi)}</code></pre>
-  </div>`).join('\n')}
-</div></section>`;
-  return layout({ title: `Sample files | ${g.hub?.name} ${g.transactionSet}`, body, canonical: `${baseUrl}${guidePath}/samples` });
-}
-
-export function renderReadership({ hubSlug, rows, baseUrl = '' }) {
-  const total = (rows || []).reduce((a, r) => a + r.reads, 0);
-  const agents = (rows || []).filter((r) => r.client_kind === 'agent').reduce((a, r) => a + r.reads, 0);
-  const body = `
-<div class="phead"><div class="shell">
-  <p class="eyebrow">${esc(hubSlug)}</p>
-  <h1>Who is reading your requirements</h1>
-  <p class="lede">A published guide is only useful if partners read it. This is the evidence that they did, by version and by surface.</p>
-</div></div>
-<section class="section"><div class="shell">
-  <ul class="stats">
-    <li><span class="s-num">${esc(total)}</span><span class="s-lab">reads recorded</span></li>
-    <li><span class="s-num">${esc(agents)}</span><span class="s-lab">by agents, not browsers</span></li>
-    <li><span class="s-num">${esc(new Set((rows || []).map((r) => r.slug)).size)}</span><span class="s-lab">guides read</span></li>
-  </ul>
-</div></section>
-<section class="section"><div class="shell">
-  <h2>Detail</h2>
-  ${!rows ? `<div class="notice">Readership needs the database, which is not connected.</div>`
-    : rows.length === 0 ? `<div class="notice">Nothing recorded yet. Share a guide link and readership appears here.</div>`
-    : `<div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>Guide</th><th>Version</th><th>Surface</th><th>Client</th><th>Reads</th><th>Last read</th></tr></thead>
-    <tbody>${rows.map((r) => `<tr>
-      <td class="mono">${esc(r.transaction_set)}</td>
-      <td class="mono">v${esc(r.version ?? '-')}</td>
-      <td>${esc(r.surface)}</td>
-      <td>${esc(r.client_name)} <span class="rc-note">(${esc(r.client_kind)})</span></td>
-      <td class="mono">${esc(r.reads)}</td>
-      <td class="rc-note">${esc(new Date(r.last_read).toISOString().replace('T', ' ').slice(0, 16))}</td>
-    </tr>`).join('')}</tbody></table></div>`}
-</div></section>`;
-
-  return layout({ title: `Readership | ${hubSlug}`, body, canonical: `${baseUrl}/hub/${hubSlug}/readership` });
 }
 
 export function renderNotFound() {

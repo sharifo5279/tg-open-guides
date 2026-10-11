@@ -9,15 +9,11 @@ import {
   getGuide,
   getVersion,
   listVersions,
-  logRead,
-  readCount,
-  readership,
   dbAvailable
 } from './store.mjs';
-import { specToMarkdown, DIRECTIONS } from './spec.mjs';
+import { specToMarkdown } from './spec.mjs';
 import { renderGuidePage } from './render/guide.mjs';
-import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderReadership, renderNotFound, renderSamples } from './render/pages.mjs';
-import { generateSamples, samplesReadme } from './samples.mjs';
+import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderNotFound } from './render/pages.mjs';
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
 
@@ -130,57 +126,6 @@ app.get('/for-agents', async (req, res, next) => {
   }
 });
 
-/**
- * The catalogue for an agent that has only crawled the domain. Kept deliberately
- * small: a list of guides and the three ways to read one.
- */
-app.get('/llms.txt', async (req, res, next) => {
-  try {
-    const base = baseUrlOf(req);
-    const guides = await listGuides({ includeUnlisted: false });
-    const lines = [
-      '# Trading Grid Open Guides',
-      '',
-      '> EDI implementation guides published and attested by the buyer hub that owns them.',
-      '> Each guide states what one hub requires of its trading partners for one transaction',
-      '> set, which is information the X12 and EDIFACT standards do not contain.',
-      '',
-      'This service publishes requirements. It does not validate, test or certify a file you',
-      'have built, and it cannot tell you whether a hub will accept your transaction.',
-      '',
-      '## How to read a guide',
-      '',
-      `- Markdown: append .md to any guide path, or send Accept: text/markdown`,
-      `- JSON: append .json to any guide path`,
-      `- MCP (streamable HTTP): ${base}/mcp`,
-      `  tools: search_guides, get_guide_summary, get_rules, get_segment, get_code_list, get_guide_markdown`,
-      '',
-      '## Hubs',
-      '',
-      'Each hub publishes the requirements it places on its own trading partners.',
-      'A hub page carries the rules that apply to every one of its documents.',
-      ''
-    ];
-    const hubs = await listHubs();
-    for (const h of hubs) {
-      const theirs = guides.filter((g) => g.hub_slug === h.slug);
-      lines.push(`- [${h.name}](${base}/h/${h.slug}.md): ${h.industry || ''}. X12 ${h.stdVersion}. ${theirs.length} documents: ${theirs.map((g) => g.transaction_set).join(', ')}`);
-    }
-    lines.push('');
-    lines.push('## Guides');
-    lines.push('');
-    for (const g of guides) {
-      lines.push(
-        `- [${g.hub_name}: ${g.standard} ${g.transaction_set} ${g.std_version}](${base}/g/${g.hub_slug}/${g.slug}.md): ${DIRECTIONS[g.direction] || g.direction}. Guide v${g.cur_version}${g.attested_by ? `, attested by ${g.attested_by}` : ', not attested'}.`
-      );
-    }
-    lines.push('');
-    res.type('text/plain; charset=utf-8').send(lines.join('\n'));
-  } catch (err) {
-    next(err);
-  }
-});
-
 /* -------------------------------------------------------------------- guides */
 
 function wantsMarkdown(req) {
@@ -223,7 +168,6 @@ async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber 
   const ua = req.get('user-agent') || '';
 
   if (format === 'json') {
-    await logRead({ guideId: guide.id, version: version.version, surface: 'json', userAgent: ua });
     res.set('Access-Control-Allow-Origin', '*');
     return res.json({
       ...version.spec,
@@ -245,7 +189,6 @@ async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber 
   }
 
   if (format === 'md') {
-    await logRead({ guideId: guide.id, version: version.version, surface: 'markdown', userAgent: ua });
     res.set('Access-Control-Allow-Origin', '*');
     return res
       .type('text/markdown; charset=utf-8')
@@ -259,7 +202,6 @@ async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber 
       );
   }
 
-  await logRead({ guideId: guide.id, version: version.version, surface: 'page', userAgent: ua });
   const versions = await listVersions(guide.id);
   res.type('html').send(
     renderGuidePage({
@@ -269,7 +211,6 @@ async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber 
       versions,
       baseUrl: base,
       guidePath,
-      readCount: await readCount(guide.id)
     })
   );
 }
@@ -306,49 +247,6 @@ app.get('/g/:hub/:guide/v/:version', async (req, res, next) => {
       format: wantsMarkdown(req) ? 'md' : wantsJson(req) ? 'json' : 'html',
       versionNumber: n
     });
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.get('/g/:hub/:guide/samples', async (req, res, next) => {
-  try {
-    const found = await loadGuide(req.params.hub, req.params.guide);
-    if (!found?.version) return res.status(404).type('html').send(renderNotFound());
-    const samples = generateSamples(found.version.spec);
-    await logRead({ guideId: found.guide.id, version: found.version.version, surface: 'samples', userAgent: req.get('user-agent') || '' });
-    res.type('html').send(renderSamples({ guide: found.guide, version: found.version, samples, baseUrl: baseUrlOf(req) }));
-  } catch (err) { next(err); }
-});
-
-app.get('/g/:hub/:guide/samples/:id.edi', async (req, res, next) => {
-  try {
-    const found = await loadGuide(req.params.hub, req.params.guide);
-    if (!found?.version) return res.status(404).type('text/plain').send('not found');
-    const id = req.params.id;
-    const hit = generateSamples(found.version.spec).find((s) => s.id === id);
-    if (!hit) return res.status(404).type('text/plain').send('no such scenario');
-    await logRead({ guideId: found.guide.id, version: found.version.version, surface: 'samples', tool: id, userAgent: req.get('user-agent') || '' });
-    res.set('content-disposition', `attachment; filename="${found.guide.hub_slug}-${found.guide.slug}-${id}.edi"`);
-    res.type('text/plain; charset=utf-8').send(hit.edi + '\n');
-  } catch (err) { next(err); }
-});
-
-app.get('/g/:hub/:guide/samples.md', async (req, res, next) => {
-  try {
-    const found = await loadGuide(req.params.hub, req.params.guide);
-    if (!found?.version) return res.status(404).type('text/plain').send('not found');
-    const samples = generateSamples(found.version.spec);
-    const md = [samplesReadme(found.version.spec, samples), '', ...samples.map((s) => `## ${s.id} ${s.name}\n\n\`\`\`\n${s.edi}\n\`\`\`\n`)].join('\n');
-    await logRead({ guideId: found.guide.id, version: found.version.version, surface: 'samples', userAgent: req.get('user-agent') || '' });
-    res.type('text/markdown; charset=utf-8').send(md);
-  } catch (err) { next(err); }
-});
-
-app.get('/hub/:hub/readership', async (req, res, next) => {
-  try {
-    const rows = await readership(req.params.hub);
-    res.type('html').send(renderReadership({ hubSlug: req.params.hub, rows, baseUrl: baseUrlOf(req) }));
   } catch (err) {
     next(err);
   }
