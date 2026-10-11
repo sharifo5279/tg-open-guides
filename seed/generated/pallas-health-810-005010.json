@@ -1350,6 +1350,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Invoice price must equal the contract price in force on the ship date, not the invoice date.",
       "rationale": "Contract prices change on effective dates, and billing at the invoice date price overcharges on every shipment in transit across a change.",
       "appliesTo": "IT104",
@@ -1360,6 +1361,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Every invoice references the ASN shipment identifier in REF*SI.",
       "rationale": "Pallas matches payable to receipt by shipment.",
       "appliesTo": "REF",
@@ -1370,6 +1372,7 @@
     {
       "id": "R-003",
       "severity": "warn",
+      "scope": "guide",
       "statement": "Freight charges are only payable where the contract specifies. Unsupported freight lines are deducted without query.",
       "rationale": "Most Pallas contracts are delivered pricing.",
       "appliesTo": "SAC",
@@ -1380,6 +1383,7 @@
     {
       "id": "R-004",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every item must be identified by GTIN. Pallas does not accept supplier catalogue numbers as the sole identifier on any transaction.",
       "rationale": "Pallas standardised on GS1 in 2024, and recall management depends on a single item identity across every document.",
       "appliesTo": "item identification",
@@ -1390,6 +1394,7 @@
     {
       "id": "R-005",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Lot number and expiry date are required for every item subject to recall or dating, on both the ASN and the invoice.",
       "rationale": "Recall response time is a patient safety measure and a regulatory obligation, and it depends on lot traceability at receipt.",
       "appliesTo": "lot traceability",
@@ -1400,6 +1405,7 @@
     {
       "id": "R-006",
       "severity": "info",
+      "scope": "hub",
       "statement": "Pallas returns a 997 within one hour, and an 824 for business validation on 850, 856 and 810.",
       "rationale": "Two stage validation means an accepted 997 does not confirm the document was usable.",
       "appliesTo": "transmission",

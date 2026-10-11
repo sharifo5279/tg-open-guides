@@ -1,0 +1,585 @@
+[
+  {
+    "slug": "crestfield",
+    "name": "Crestfield Consumer Brands",
+    "legalName": "Crestfield Consumer Brands, Inc.",
+    "industry": "Retail and consumer packaged goods",
+    "about": "A national grocery and drug retailer buying packaged goods from roughly 1,400 suppliers into eleven distribution centres.",
+    "partnerTerm": "supplier",
+    "stdVersion": "004010",
+    "effectiveFrom": "2026-04-01",
+    "sourceDoc": "Crestfield EDI Implementation Guide v4.2 (PDF, January 2024)",
+    "sourcePages": 34,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "01",
+      "receiverId": "078115096",
+      "appReceiverCode": "CRESTFIELD",
+      "senderNote": "Your 9-digit DUNS, left justified, space filled to 15.",
+      "ackRequested": "1",
+      "usageNote": "T during certification, P once Crestfield confirms production cutover in writing. Sending P before cutover routes your transaction into a queue nobody watches."
+    },
+    "ackWindow": "997 returned within 60 minutes",
+    "maintenanceWindow": "None. Interface available continuously.",
+    "attestor": {
+      "name": "Dana Whitfield",
+      "role": "Director, EDI Operations"
+    },
+    "contacts": [
+      {
+        "role": "EDI operations",
+        "name": "Crestfield EDI Support",
+        "email": "edi-support@crestfield.example",
+        "note": "Transmission failures and 997 queries. Monday to Friday, 7am to 7pm Eastern."
+      },
+      {
+        "role": "Supplier onboarding",
+        "name": "Crestfield Supplier Enablement",
+        "email": "supplier-onboarding@crestfield.example",
+        "note": "Certification scheduling and DC routing guides."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
+        "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
+        "appliesTo": "ISA15"
+      },
+      {
+        "id": "H-02",
+        "severity": "info",
+        "statement": "Crestfield returns a 997 within 60 minutes of receiving an interchange. No 997 after 60 minutes should be treated as a transmission failure on your side.",
+        "rationale": "A silent failure is the most common reason a supplier believes a document was sent when Crestfield never received it.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "810": "supplier",
+      "846": "supplier",
+      "850": "supplier",
+      "852": "supplier",
+      "855": "supplier",
+      "997": "supplier"
+    }
+  },
+  {
+    "slug": "halverson-motors",
+    "name": "Halverson Motors",
+    "legalName": "Halverson Motor Corporation",
+    "industry": "Automotive manufacturing",
+    "about": "A vehicle manufacturer running three assembly plants on sequenced just-in-time supply, buying from roughly 600 tier one suppliers.",
+    "partnerTerm": "supplier",
+    "stdVersion": "004010",
+    "effectiveFrom": "2026-01-05",
+    "sourceDoc": "Halverson Motors Supplier EDI Standard, Revision 11 (PDF, September 2025)",
+    "sourcePages": 86,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ":",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "01",
+      "receiverId": "042118770",
+      "appReceiverCode": "HALVERSON",
+      "senderNote": "Your DUNS. Halverson does not accept mutually defined (ZZ) qualifiers.",
+      "ackRequested": "1",
+      "usageNote": "T throughout the test phase. Halverson schedules production cutover per plant, so a supplier may be P for one plant and T for another during a phased launch."
+    },
+    "ackWindow": "997 returned within 30 minutes",
+    "maintenanceWindow": "23:00 to 04:00 plant local, nightly, for the MRP run",
+    "attestor": {
+      "name": "Priya Raghunathan",
+      "role": "Manager, Supplier Systems Integration"
+    },
+    "contacts": [
+      {
+        "role": "Supplier systems",
+        "name": "Halverson EDI Helpdesk",
+        "email": "edi-helpdesk@halverson.example",
+        "note": "24 hours during production, excluding plant shutdown weeks."
+      },
+      {
+        "role": "Materials planning",
+        "name": "Plant Materials Group",
+        "email": "materials@halverson.example",
+        "note": "Release quantity and schedule questions."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
+        "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
+        "appliesTo": "REF"
+      },
+      {
+        "id": "H-02",
+        "severity": "reject",
+        "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
+        "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
+        "appliesTo": "cumulative accounting"
+      },
+      {
+        "id": "H-03",
+        "severity": "info",
+        "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
+        "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "810": "supplier",
+      "820": "supplier",
+      "824": "supplier",
+      "830": "supplier",
+      "856": "supplier",
+      "862": "supplier",
+      "997": "supplier"
+    }
+  },
+  {
+    "slug": "northwind-grocery",
+    "name": "Northwind Grocery Group",
+    "legalName": "Northwind Grocery Group LLC",
+    "industry": "Grocery retail",
+    "about": "A regional grocery chain of 340 stores with four distribution centres and a large direct store delivery programme.",
+    "partnerTerm": "supplier",
+    "stdVersion": "005010",
+    "effectiveFrom": "2026-02-16",
+    "sourceDoc": "Northwind Trading Partner Guidelines v7.1 (PDF, March 2025)",
+    "sourcePages": 52,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "U"
+    },
+    "envelope": {
+      "qualifier": "01",
+      "receiverId": "601994388",
+      "appReceiverCode": "NWGROCERY",
+      "senderNote": "DUNS, or DUNS plus 4 for suppliers with multiple shipping points.",
+      "ackRequested": "1",
+      "usageNote": "T until Northwind confirms production in writing. Northwind runs a two week parallel period during which both T and P are accepted."
+    },
+    "ackWindow": "997 returned within 2 hours",
+    "maintenanceWindow": "None.",
+    "attestor": {
+      "name": "Marcus Oyelaran",
+      "role": "Senior Manager, Supply Chain Systems"
+    },
+    "contacts": [
+      {
+        "role": "EDI support",
+        "name": "Northwind EDI Team",
+        "email": "edi@northwindgrocery.example",
+        "note": "6am to 8pm Central, seven days."
+      },
+      {
+        "role": "DSD programme",
+        "name": "Direct Store Delivery Office",
+        "email": "dsd@northwindgrocery.example",
+        "note": "Store routing and delivery windows."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Northwind is on 005010. Transactions at 004010 are rejected at the group level.",
+        "rationale": "Northwind migrated in 2024 and does not maintain a 004010 translator.",
+        "appliesTo": "GS08"
+      },
+      {
+        "id": "H-02",
+        "severity": "warn",
+        "statement": "Catch weight items must carry actual weight, not nominal. Nominal weight on a variable weight item produces an invoice discrepancy at receipt.",
+        "rationale": "Random weight product is received by weight and invoiced by weight.",
+        "appliesTo": "catch weight"
+      }
+    ],
+    "setRoles": {
+      "810": "supplier",
+      "850": "supplier",
+      "852": "supplier",
+      "855": "supplier",
+      "856": "supplier",
+      "997": "supplier"
+    }
+  },
+  {
+    "slug": "vantage-logistics",
+    "name": "Vantage Logistics Group",
+    "legalName": "Vantage Logistics Group, Inc.",
+    "industry": "Third party logistics and transportation",
+    "about": "An asset-light 3PL tendering freight to roughly 900 carriers and operating eleven contract warehouses for shipper clients.",
+    "partnerTerm": "carrier",
+    "stdVersion": "004010",
+    "effectiveFrom": "2026-03-02",
+    "sourceDoc": "Vantage Carrier and Warehouse EDI Specification v9 (PDF, November 2025)",
+    "sourcePages": 61,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "ZZ",
+      "receiverId": "VANTAGELG",
+      "appReceiverCode": "VANTAGE",
+      "senderNote": "Carriers use their SCAC. Warehouse operators use the Vantage site code.",
+      "ackRequested": "1",
+      "usageNote": "T during onboarding. Vantage certifies per lane for carriers and per site for warehouses."
+    },
+    "ackWindow": "997 returned within 15 minutes",
+    "maintenanceWindow": "None. Freight moves overnight, so the interface does not close.",
+    "attestor": {
+      "name": "Ingrid Sollis",
+      "role": "VP, Network Systems"
+    },
+    "contacts": [
+      {
+        "role": "Carrier systems",
+        "name": "Vantage Carrier EDI",
+        "email": "carrier-edi@vantagelogistics.example",
+        "note": "24 hours."
+      },
+      {
+        "role": "Warehouse systems",
+        "name": "Vantage WMS Integration",
+        "email": "wms-edi@vantagelogistics.example",
+        "note": "7am to 9pm Central."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
+        "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
+        "appliesTo": "time zones"
+      },
+      {
+        "id": "H-02",
+        "severity": "info",
+        "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
+        "rationale": "Freight moves overnight, so the interface does not close.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "204": "carrier",
+      "214": "carrier",
+      "940": "warehouse",
+      "945": "warehouse",
+      "990": "carrier",
+      "997": "carrier"
+    }
+  },
+  {
+    "slug": "pallas-health",
+    "name": "Pallas Health System",
+    "legalName": "Pallas Health System",
+    "industry": "Healthcare provider supply chain",
+    "about": "An integrated delivery network of 22 hospitals and 140 clinics, buying medical and surgical supplies through a consolidated service centre.",
+    "partnerTerm": "supplier",
+    "stdVersion": "005010",
+    "effectiveFrom": "2026-05-01",
+    "sourceDoc": "Pallas Supplier Integration Guide, 2026 Edition (PDF, December 2025)",
+    "sourcePages": 71,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "01",
+      "receiverId": "113440287",
+      "appReceiverCode": "PALLASHS",
+      "senderNote": "DUNS. Pallas also accepts GLN (qualifier UL) for suppliers standardised on GS1.",
+      "ackRequested": "1",
+      "usageNote": "T until Pallas confirms production. Pallas certifies per transaction set, not per supplier, so you may be live on 850 while still testing 856."
+    },
+    "ackWindow": "997 within 1 hour, 824 for business validation",
+    "maintenanceWindow": "None.",
+    "attestor": {
+      "name": "Theo Alsager",
+      "role": "Director, Supply Chain Technology"
+    },
+    "contacts": [
+      {
+        "role": "Supplier integration",
+        "name": "Pallas Supply Chain Technology",
+        "email": "supplier-edi@pallashealth.example",
+        "note": "7am to 6pm Central, Monday to Friday."
+      },
+      {
+        "role": "Item master",
+        "name": "Pallas Item Data Team",
+        "email": "itemdata@pallashealth.example",
+        "note": "GTIN, UOM and contract price alignment."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Every item must be identified by GTIN. Pallas does not accept supplier catalogue numbers as the sole identifier on any transaction.",
+        "rationale": "Pallas standardised on GS1 in 2024, and recall management depends on a single item identity across every document.",
+        "appliesTo": "item identification"
+      },
+      {
+        "id": "H-02",
+        "severity": "reject",
+        "statement": "Lot number and expiry date are required for every item subject to recall or dating, on both the ASN and the invoice.",
+        "rationale": "Recall response time is a patient safety measure and a regulatory obligation, and it depends on lot traceability at receipt.",
+        "appliesTo": "lot traceability"
+      },
+      {
+        "id": "H-03",
+        "severity": "info",
+        "statement": "Pallas returns a 997 within one hour, and an 824 for business validation on 850, 856 and 810.",
+        "rationale": "Two stage validation means an accepted 997 does not confirm the document was usable.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "810": "supplier",
+      "846": "supplier",
+      "850": "supplier",
+      "855": "supplier",
+      "856": "supplier",
+      "997": "supplier"
+    }
+  },
+  {
+    "slug": "meridian-industrial",
+    "name": "Meridian Industrial Supply",
+    "legalName": "Meridian Industrial Supply Co.",
+    "industry": "Industrial distribution and MRO",
+    "about": "A distributor of maintenance, repair and operations supplies serving manufacturing plants, with 2,800 suppliers and a large drop-ship programme.",
+    "partnerTerm": "supplier",
+    "stdVersion": "004010",
+    "effectiveFrom": "2026-06-15",
+    "sourceDoc": "Meridian Supplier EDI Requirements v5.3 (PDF, April 2026)",
+    "sourcePages": 44,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "01",
+      "receiverId": "556201349",
+      "appReceiverCode": "MERIDIANIS",
+      "senderNote": "DUNS. Drop-ship suppliers use the same DUNS as their stocking relationship.",
+      "ackRequested": "1",
+      "usageNote": "T during certification. Meridian certifies stocking and drop-ship flows separately because the ship-to differs."
+    },
+    "ackWindow": "997 returned within 2 hours",
+    "maintenanceWindow": "02:00 to 03:00 Central, nightly",
+    "attestor": {
+      "name": "Russ Ekstrand",
+      "role": "Director, Supplier Operations"
+    },
+    "contacts": [
+      {
+        "role": "Supplier operations",
+        "name": "Meridian Supplier EDI",
+        "email": "supplier-edi@meridianindustrial.example",
+        "note": "7am to 7pm Central."
+      },
+      {
+        "role": "Drop-ship programme",
+        "name": "Meridian Direct Fulfilment",
+        "email": "dropship@meridianindustrial.example",
+        "note": "End customer address and delivery questions."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Drop-ship transactions must carry the end customer in N1*ST and Meridian in N1*BY. Reversing these ships product to the wrong address.",
+        "rationale": "Roughly 40 percent of Meridian volume ships directly to the end customer, and the ship-to is not Meridian.",
+        "appliesTo": "N1"
+      },
+      {
+        "id": "H-02",
+        "severity": "info",
+        "statement": "Meridian returns a 997 within two hours and operates a nightly maintenance window from 02:00 to 03:00 Central.",
+        "rationale": "Transmissions during the window queue and process at 03:00.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "810": "supplier",
+      "846": "supplier",
+      "850": "supplier",
+      "855": "supplier",
+      "856": "supplier",
+      "860": "supplier",
+      "997": "supplier"
+    }
+  },
+  {
+    "slug": "brightline-apparel",
+    "name": "Brightline Apparel",
+    "legalName": "Brightline Apparel Group",
+    "industry": "Apparel and footwear retail",
+    "about": "A specialty apparel retailer with 620 stores and an e-commerce operation, buying from roughly 300 vendors, most of them importing.",
+    "partnerTerm": "vendor",
+    "stdVersion": "004010",
+    "effectiveFrom": "2026-07-01",
+    "sourceDoc": "Brightline Vendor Routing and EDI Manual, 2026 (PDF, May 2026)",
+    "sourcePages": 58,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "12",
+      "receiverId": "2125550180",
+      "appReceiverCode": "BRIGHTLINE",
+      "senderNote": "Brightline uses phone-number qualifier 12 for historical reasons. Your assigned ID is on your vendor setup sheet, not your DUNS.",
+      "ackRequested": "1",
+      "usageNote": "T during testing. Brightline requires a successful parallel of all five transaction sets before any goes to production."
+    },
+    "ackWindow": "997 returned within 4 hours",
+    "maintenanceWindow": "Sunday 02:00 to 06:00 Eastern, weekly",
+    "attestor": {
+      "name": "Celia Marchetti",
+      "role": "Head of Vendor Compliance"
+    },
+    "contacts": [
+      {
+        "role": "Vendor compliance",
+        "name": "Brightline Vendor Compliance",
+        "email": "vendorcompliance@brightlineapparel.example",
+        "note": "Chargeback disputes and routing questions."
+      },
+      {
+        "role": "EDI support",
+        "name": "Brightline EDI",
+        "email": "edi@brightlineapparel.example",
+        "note": "9am to 6pm Eastern, Monday to Friday."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Every style must be identified by the Brightline style, colour and size combination. A style number alone is not sufficient on any transaction.",
+        "rationale": "Apparel is bought and sold at the size and colour level, and a style-level transaction cannot be allocated to a store.",
+        "appliesTo": "item identification"
+      },
+      {
+        "id": "H-02",
+        "severity": "warn",
+        "statement": "Vendor compliance chargebacks are applied monthly against the standards in the routing manual, not against this guide alone.",
+        "rationale": "The routing manual covers physical packing and labelling, which EDI cannot express.",
+        "appliesTo": "compliance"
+      },
+      {
+        "id": "H-03",
+        "severity": "info",
+        "statement": "Brightline returns a 997 within four hours. The EDI interface is unavailable Sunday 02:00 to 06:00 Eastern for maintenance.",
+        "rationale": "The weekly window is used for item master and allocation processing.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "810": "vendor",
+      "850": "vendor",
+      "852": "vendor",
+      "856": "vendor",
+      "860": "vendor",
+      "997": "vendor"
+    }
+  },
+  {
+    "slug": "cobalt-energy",
+    "name": "Cobalt Energy Services",
+    "legalName": "Cobalt Energy Services LP",
+    "industry": "Energy and field services",
+    "about": "An oilfield and midstream services operator buying equipment, consumables and contracted field labour across four basins.",
+    "partnerTerm": "supplier",
+    "stdVersion": "005010",
+    "effectiveFrom": "2026-08-01",
+    "sourceDoc": "Cobalt Energy Supplier EDI and Invoicing Standard v3 (PDF, June 2026)",
+    "sourcePages": 39,
+    "delimiters": {
+      "segment": "~",
+      "element": "*",
+      "component": ">",
+      "repetition": "^"
+    },
+    "envelope": {
+      "qualifier": "01",
+      "receiverId": "829330154",
+      "appReceiverCode": "COBALTES",
+      "senderNote": "DUNS at the legal entity that holds the master service agreement.",
+      "ackRequested": "1",
+      "usageNote": "T until Cobalt confirms production per transaction set."
+    },
+    "ackWindow": "997 within 4 hours, 824 on failed invoice validation",
+    "maintenanceWindow": "None.",
+    "attestor": {
+      "name": "Wes Darnell",
+      "role": "Manager, Supply Chain Systems"
+    },
+    "contacts": [
+      {
+        "role": "Supply chain systems",
+        "name": "Cobalt EDI Support",
+        "email": "edi@cobaltenergy.example",
+        "note": "7am to 6pm Central, Monday to Friday."
+      },
+      {
+        "role": "Accounts payable",
+        "name": "Cobalt AP Shared Services",
+        "email": "ap@cobaltenergy.example",
+        "note": "Invoice status and payment enquiries."
+      }
+    ],
+    "commonRules": [
+      {
+        "id": "H-01",
+        "severity": "reject",
+        "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
+        "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
+        "appliesTo": "cost allocation"
+      },
+      {
+        "id": "H-02",
+        "severity": "info",
+        "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
+        "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",
+        "appliesTo": "transmission"
+      }
+    ],
+    "setRoles": {
+      "810": "supplier",
+      "820": "supplier",
+      "824": "supplier",
+      "850": "supplier",
+      "856": "supplier",
+      "997": "supplier"
+    }
+  }
+]

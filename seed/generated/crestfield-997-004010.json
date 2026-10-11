@@ -636,6 +636,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "A 997 must be returned within 60 minutes of receiving any Crestfield interchange.",
       "rationale": "Crestfield escalates an unacknowledged interchange to its operations team after 60 minutes.",
       "appliesTo": "transmission",
@@ -646,6 +647,7 @@
     {
       "id": "R-002",
       "severity": "warn",
+      "scope": "guide",
       "statement": "Never return a 997 in response to a 997.",
       "rationale": "Acknowledging an acknowledgment creates a loop that fills both mailboxes.",
       "appliesTo": "AK101",
@@ -656,6 +658,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "hub",
       "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
       "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
       "appliesTo": "ISA15",
@@ -666,6 +669,7 @@
     {
       "id": "R-004",
       "severity": "info",
+      "scope": "hub",
       "statement": "Crestfield returns a 997 within 60 minutes of receiving an interchange. No 997 after 60 minutes should be treated as a transmission failure on your side.",
       "rationale": "A silent failure is the most common reason a supplier believes a document was sent when Crestfield never received it.",
       "appliesTo": "transmission",

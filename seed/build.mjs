@@ -46,6 +46,33 @@ for (const hub of HUBS) {
   }
 }
 
+// Hub facts are written once at hub level. Lifting them from whichever guide
+// happens to load first works until two guides disagree about a receiver ID.
+const manifest = HUBS.map((h) => ({
+  slug: h.slug,
+  name: h.name,
+  legalName: h.legalName,
+  industry: h.industry,
+  about: h.about,
+  partnerTerm: h.partnerTerm,
+  stdVersion: h.stdVersion,
+  effectiveFrom: h.effectiveFrom,
+  sourceDoc: h.sourceDoc,
+  sourcePages: h.pages,
+  delimiters: h.delimiters,
+  envelope: h.envelope,
+  ackWindow: h.ackWindow,
+  maintenanceWindow: h.maintenanceWindow,
+  attestor: h.attestor,
+  contacts: h.contacts,
+  commonRules: (h.commonRules || []).map((r, i) => ({ id: `H-${String(i + 1).padStart(2, '0')}`, ...r })),
+  setRoles: Object.fromEntries(
+    Object.entries(h.sets).map(([code, cfg]) => [code, cfg.partnerTerm || h.partnerTerm || 'partner'])
+  )
+}));
+await writeFile(path.join(outDir, '_hubs.json'), JSON.stringify(manifest, null, 2) + '\n');
+
 console.log(`wrote ${written} guides to seed/generated${problems ? `, ${problems} invalid and skipped` : ''}`);
+console.log(`wrote hub manifest: ${manifest.length} hubs`);
 console.log(`totals: ${totals.segments} segments, ${totals.elements} elements, ${totals.rules} rules, ${totals.scenarios} scenarios`);
 if (problems) process.exitCode = 1;

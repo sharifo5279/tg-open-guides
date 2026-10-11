@@ -993,6 +993,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Every PO1 line on the original order must appear with an ACK, including lines you are rejecting outright.",
       "rationale": "A missing line is ambiguous: Crestfield cannot tell acceptance from an omission, and the buyer has to telephone.",
       "appliesTo": "ACK",
@@ -1003,6 +1004,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "BAK03 must match the 850 purchase order number exactly, including leading zeros.",
       "rationale": "An acknowledgment that cannot be matched to an open order is discarded.",
       "appliesTo": "BAK03",
@@ -1013,6 +1015,7 @@
     {
       "id": "R-003",
       "severity": "warn",
+      "scope": "guide",
       "statement": "A rescheduled date (ACK01 = DR) more than 5 days beyond the requested date requires buyer approval before shipping.",
       "rationale": "Late arrival against an unapproved reschedule is charged back.",
       "appliesTo": "ACK05",
@@ -1023,6 +1026,7 @@
     {
       "id": "R-004",
       "severity": "reject",
+      "scope": "hub",
       "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
       "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
       "appliesTo": "ISA15",
@@ -1033,6 +1037,7 @@
     {
       "id": "R-005",
       "severity": "info",
+      "scope": "hub",
       "statement": "Crestfield returns a 997 within 60 minutes of receiving an interchange. No 997 after 60 minutes should be treated as a transmission failure on your side.",
       "rationale": "A silent failure is the most common reason a supplier believes a document was sent when Crestfield never received it.",
       "appliesTo": "transmission",

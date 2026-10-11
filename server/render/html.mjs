@@ -81,7 +81,7 @@ ${head}
       <span class="brand-name">Trading Grid Open Guides</span>
     </a>
     <nav class="topnav">
-      <a href="/">Catalogue</a>
+      <a href="/">Hubs</a>
       <a href="/for-agents">For agents</a>
       <a href="/builder">Guide Builder</a>
     </nav>

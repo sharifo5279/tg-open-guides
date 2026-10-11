@@ -419,6 +419,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Respond within 30 minutes of the tender.",
       "rationale": "After 30 minutes the load is re-tendered and your acceptance will be rejected as stale.",
       "appliesTo": "transmission",
@@ -429,6 +430,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "B102 must carry the shipment identifier from the 204 exactly.",
       "rationale": "A response that cannot be matched to a tender is discarded without notice.",
       "appliesTo": "B102",
@@ -439,6 +441,7 @@
     {
       "id": "R-003",
       "severity": "warn",
+      "scope": "guide",
       "statement": "Accepting a load you cannot cover is worse than declining. Vantage tracks acceptance-then-fallthrough separately from decline rate, and it affects lane awards.",
       "rationale": "A fallthrough leaves no time to re-tender.",
       "appliesTo": "B104",
@@ -449,6 +452,7 @@
     {
       "id": "R-004",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
       "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
       "appliesTo": "time zones",
@@ -459,6 +463,7 @@
     {
       "id": "R-005",
       "severity": "info",
+      "scope": "hub",
       "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
       "rationale": "Freight moves overnight, so the interface does not close.",
       "appliesTo": "transmission",

@@ -193,7 +193,10 @@ export const TRANSACTIONS = {
   '824': {
     name: 'Application Advice',
     title: 'Application Advice (824)',
-    direction: 'partner_sends',
+    // The hub validates what it received and reports back, so this arrives at
+    // the partner. Marking it partner_sends put it on the wrong side of every
+    // flow and told a supplier to build a document they only ever parse.
+    direction: 'partner_receives',
     functionalId: 'AG',
     purpose: 'reports whether a received transaction passed the hub’s business validation',
     segments: [

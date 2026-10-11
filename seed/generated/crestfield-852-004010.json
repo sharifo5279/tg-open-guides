@@ -629,6 +629,7 @@
     {
       "id": "R-001",
       "severity": "info",
+      "scope": "guide",
       "statement": "Product activity is sent weekly on Monday covering the prior Sunday to Saturday week.",
       "rationale": "Weekly cadence matches the replenishment planning cycle.",
       "appliesTo": "transmission",
@@ -639,6 +640,7 @@
     {
       "id": "R-002",
       "severity": "info",
+      "scope": "guide",
       "statement": "Quantities are reported at the DC, not by store. Store level detail is available under a separate agreement.",
       "rationale": "Store level files are an order of magnitude larger and are not sent by default.",
       "appliesTo": "ZA02",
@@ -649,6 +651,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "hub",
       "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
       "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
       "appliesTo": "ISA15",
@@ -659,6 +662,7 @@
     {
       "id": "R-004",
       "severity": "info",
+      "scope": "hub",
       "statement": "Crestfield returns a 997 within 60 minutes of receiving an interchange. No 997 after 60 minutes should be treated as a transmission failure on your side.",
       "rationale": "A silent failure is the most common reason a supplier believes a document was sent when Crestfield never received it.",
       "appliesTo": "transmission",

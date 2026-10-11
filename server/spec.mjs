@@ -406,3 +406,73 @@ export function specToMarkdown(spec, { baseUrl = '', guidePath = '', version = n
 
   return L.join('\n');
 }
+
+
+/**
+ * Where a transaction set sits in a trading relationship.
+ *
+ * This is OpenText's editorial grouping, not something a hub attests, and the
+ * hub page says so. It exists because a list of six guides tells a developer
+ * what files exist and nothing about what to build first, whereas the absence
+ * of a set is often the most useful fact on the page: a hub with no 850 does
+ * not issue purchase orders, it releases against a schedule.
+ */
+export const FLOW_STAGES = [
+  { key: 'plan', label: 'Plan', what: 'The hub publishes requirements over a horizon.', sets: ['830', '862'] },
+  { key: 'order', label: 'Order', what: 'The hub commits to buy, or tenders work.', sets: ['850', '860', '204', '940'] },
+  { key: 'commit', label: 'Commit', what: 'The partner says what they will actually do.', sets: ['855', '990'] },
+  { key: 'ship', label: 'Ship', what: 'Goods move, and the hub is told before they arrive.', sets: ['856', '945', '214'] },
+  { key: 'invoice', label: 'Invoice', what: 'The partner bills for what was delivered.', sets: ['810'] },
+  { key: 'settle', label: 'Settle', what: 'The hub pays, or reports why it will not.', sets: ['820', '824'] }
+];
+
+/** Standing cadences. Numbering an inventory file as a step misstates when it happens. */
+export const FEED_SETS = { '846': 'Inventory availability', '852': 'Product activity' };
+
+/** Sent per interchange rather than at a point in the relationship. */
+export const ALWAYS_SETS = { '997': 'Functional acknowledgment' };
+
+/**
+ * Arrange a hub's guides into the flow. Anything outside the map is surfaced
+ * rather than dropped, because a guide missing from the page is worse than a
+ * guide in an untidy bucket.
+ */
+export function buildFlow(guides) {
+  const byStage = FLOW_STAGES.map((st) => ({
+    ...st,
+    guides: guides.filter((g) => st.sets.includes(g.transaction_set))
+  })).filter((st) => st.guides.length);
+
+  const placed = new Set(byStage.flatMap((st) => st.guides.map((g) => g.transaction_set)));
+  const feeds = guides.filter((g) => FEED_SETS[g.transaction_set]);
+  const always = guides.filter((g) => ALWAYS_SETS[g.transaction_set]);
+  const other = guides.filter(
+    (g) => !placed.has(g.transaction_set) && !FEED_SETS[g.transaction_set] && !ALWAYS_SETS[g.transaction_set]
+  );
+  return { stages: byStage, feeds, always, other };
+}
+
+/**
+ * What is missing is worth saying out loud. A supplier who expects a purchase
+ * order and never receives one wastes a week before asking.
+ */
+export function flowAbsences(guides, hubName) {
+  const have = new Set(guides.map((g) => g.transaction_set));
+  const notes = [];
+  if (!have.has('850') && (have.has('830') || have.has('862'))) {
+    notes.push(`${hubName} does not issue purchase orders. Requirements are released against a schedule, so there is no 850 to wait for.`);
+  }
+  if (!have.has('855') && have.has('850')) {
+    notes.push(`${hubName} does not require a purchase order acknowledgment.`);
+  }
+  if (!have.has('856') && (have.has('850') || have.has('862'))) {
+    notes.push(`${hubName} does not require an advance ship notice.`);
+  }
+  if (!have.has('810') && !have.has('820')) {
+    notes.push(`No invoicing document is published here. Settlement is handled outside EDI.`);
+  }
+  if (have.has('824')) {
+    notes.push(`${hubName} returns an 824 as well as a 997, so an accepted acknowledgment does not mean a document was usable.`);
+  }
+  return notes;
+}

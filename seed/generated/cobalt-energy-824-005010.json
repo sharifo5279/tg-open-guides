@@ -7,11 +7,11 @@
       "legalName": "Cobalt Energy Services LP",
       "industry": "Energy and field services"
     },
-    "title": "Application Advice (824) supplier requirements",
+    "title": "Application Advice (824) specification",
     "standard": "X12",
     "transactionSet": "824",
     "version": "005010",
-    "direction": "partner_sends",
+    "direction": "partner_receives",
     "summary": "Cobalt reports invoice business validation failures here, which is how a supplier learns an invoice will not be paid before the payment run.",
     "effectiveFrom": "2026-08-01",
     "authoredBy": "OpenText Professional Services on behalf of the hub",
@@ -745,6 +745,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "An 824 with TR means the invoice was not entered. Correct and resubmit as a new invoice number.",
       "rationale": "Resubmitting the same invoice number against a rejected invoice creates a duplicate that is rejected again.",
       "appliesTo": "OTI01",
@@ -755,6 +756,7 @@
     {
       "id": "R-002",
       "severity": "warn",
+      "scope": "guide",
       "statement": "An 824 arrives within one business day of the invoice. No 824 means the invoice passed validation.",
       "rationale": "Silence is acceptance on this document, which is the opposite of the 997 convention.",
       "appliesTo": "timing",
@@ -765,6 +767,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
       "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
       "appliesTo": "cost allocation",
@@ -775,6 +778,7 @@
     {
       "id": "R-004",
       "severity": "info",
+      "scope": "hub",
       "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
       "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",
       "appliesTo": "transmission",

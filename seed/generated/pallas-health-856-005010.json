@@ -1809,6 +1809,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Lot number and expiry date are required at item level for every dated or recallable item.",
       "rationale": "Pallas must be able to identify every affected unit within four hours of a recall notice, which is impossible without lot data at receipt.",
       "appliesTo": "HL-I/REF",
@@ -1819,6 +1820,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Expiry date must be at least 12 months beyond the ship date unless the purchase order explicitly accepts short dating.",
       "rationale": "Short dated stock expires on the shelf and is written off at full cost.",
       "appliesTo": "REF",
@@ -1829,6 +1831,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "guide",
       "statement": "The ASN must be transmitted at despatch and before arrival at the service centre.",
       "rationale": "Receiving opens on the ASN, and a trailer arriving first is held.",
       "appliesTo": "transmission",
@@ -1839,6 +1842,7 @@
     {
       "id": "R-004",
       "severity": "warn",
+      "scope": "guide",
       "statement": "One shipment identifier per trailer. Splitting a trailer across several ASNs produces duplicate receipts.",
       "rationale": "The service centre receives by trailer.",
       "appliesTo": "BSN02",
@@ -1849,6 +1853,7 @@
     {
       "id": "R-005",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every item must be identified by GTIN. Pallas does not accept supplier catalogue numbers as the sole identifier on any transaction.",
       "rationale": "Pallas standardised on GS1 in 2024, and recall management depends on a single item identity across every document.",
       "appliesTo": "item identification",
@@ -1859,6 +1864,7 @@
     {
       "id": "R-006",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Lot number and expiry date are required for every item subject to recall or dating, on both the ASN and the invoice.",
       "rationale": "Recall response time is a patient safety measure and a regulatory obligation, and it depends on lot traceability at receipt.",
       "appliesTo": "lot traceability",
@@ -1869,6 +1875,7 @@
     {
       "id": "R-007",
       "severity": "info",
+      "scope": "hub",
       "statement": "Pallas returns a 997 within one hour, and an 824 for business validation on 850, 856 and 810.",
       "rationale": "Two stage validation means an accepted 997 does not confirm the document was usable.",
       "appliesTo": "transmission",

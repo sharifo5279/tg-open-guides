@@ -581,6 +581,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Return a 997 within four hours.",
       "rationale": "Cobalt escalates unacknowledged interchanges to the supplier contact.",
       "appliesTo": "transmission",
@@ -591,6 +592,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
       "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
       "appliesTo": "cost allocation",
@@ -601,6 +603,7 @@
     {
       "id": "R-003",
       "severity": "info",
+      "scope": "hub",
       "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
       "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",
       "appliesTo": "transmission",

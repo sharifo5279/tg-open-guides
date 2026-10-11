@@ -1839,6 +1839,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "DC shipments require hierarchy 0001 with one pack level per pallet. Store deliveries use 0004.",
       "rationale": "DC receiving scans pallet labels; store receiving counts cases by hand.",
       "appliesTo": "BSN05",
@@ -1849,6 +1850,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Catch weight items must report actual shipped weight in the item level, not the nominal case weight.",
       "rationale": "Northwind invoices random weight product on actual weight, and a nominal figure guarantees a discrepancy.",
       "appliesTo": "HL-I/SN102",
@@ -1859,6 +1861,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "guide",
       "statement": "The ASN must arrive at least two hours before the trailer, or at despatch for deliveries inside a two hour transit.",
       "rationale": "Two hours is the minimum to build a receiving plan and assign a door.",
       "appliesTo": "transmission",
@@ -1869,6 +1872,7 @@
     {
       "id": "R-004",
       "severity": "warn",
+      "scope": "guide",
       "statement": "A pallet containing more than one item requires an item level per item, with quantities summing to the pallet quantity.",
       "rationale": "Mixed pallets received against a single item line produce an inventory variance in every affected item.",
       "appliesTo": "HL-I",
@@ -1879,6 +1883,7 @@
     {
       "id": "R-005",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Northwind is on 005010. Transactions at 004010 are rejected at the group level.",
       "rationale": "Northwind migrated in 2024 and does not maintain a 004010 translator.",
       "appliesTo": "GS08",
@@ -1889,6 +1894,7 @@
     {
       "id": "R-006",
       "severity": "warn",
+      "scope": "hub",
       "statement": "Catch weight items must carry actual weight, not nominal. Nominal weight on a variable weight item produces an invoice discrepancy at receipt.",
       "rationale": "Random weight product is received by weight and invoiced by weight.",
       "appliesTo": "catch weight",

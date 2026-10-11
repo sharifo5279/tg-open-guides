@@ -1832,6 +1832,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Field deliveries must carry the well or pad identifier in REF*PK at shipment level.",
       "rationale": "There is no dock and no receiving clerk at a pad, so the identifier is the only thing tying the delivery to a location.",
       "appliesTo": "HL-S/REF",
@@ -1842,6 +1843,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Transmit the ASN before the vehicle leaves your yard.",
       "rationale": "Field locations have limited connectivity, and the ASN is used to confirm the delivery against the daily plan.",
       "appliesTo": "transmission",
@@ -1852,6 +1854,7 @@
     {
       "id": "R-003",
       "severity": "warn",
+      "scope": "guide",
       "statement": "Yard deliveries follow standard carton receiving with hierarchy 0001.",
       "rationale": "Yards have conventional receiving and scan carton labels.",
       "appliesTo": "BSN05",
@@ -1862,6 +1865,7 @@
     {
       "id": "R-004",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
       "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
       "appliesTo": "cost allocation",
@@ -1872,6 +1876,7 @@
     {
       "id": "R-005",
       "severity": "info",
+      "scope": "hub",
       "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
       "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",
       "appliesTo": "transmission",

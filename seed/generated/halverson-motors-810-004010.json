@@ -1316,6 +1316,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Invoice quantity must equal the quantity Halverson received against the referenced ASN.",
       "rationale": "Payment is triggered by receipt, so an invoice that disagrees with receipt cannot be matched and is returned.",
       "appliesTo": "IT102",
@@ -1326,6 +1327,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Each invoice references exactly one ASN shipment identifier in REF*SI.",
       "rationale": "Halverson reconciles payable per shipment; a multi-shipment invoice cannot be matched.",
       "appliesTo": "REF",
@@ -1336,6 +1338,7 @@
     {
       "id": "R-003",
       "severity": "info",
+      "scope": "guide",
       "statement": "Halverson operates evaluated receipt settlement for suppliers on the self-billing programme. Those suppliers do not send an 810 at all.",
       "rationale": "Sending an invoice while on self-billing produces a duplicate payable.",
       "appliesTo": "programme",
@@ -1346,6 +1349,7 @@
     {
       "id": "R-004",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
       "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
       "appliesTo": "REF",
@@ -1356,6 +1360,7 @@
     {
       "id": "R-005",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
       "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
       "appliesTo": "cumulative accounting",
@@ -1366,6 +1371,7 @@
     {
       "id": "R-006",
       "severity": "info",
+      "scope": "hub",
       "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
       "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
       "appliesTo": "transmission",

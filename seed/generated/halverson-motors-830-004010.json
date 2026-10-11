@@ -1050,6 +1050,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Quantities are cumulative from the start of the model year, not discrete per release.",
       "rationale": "Treating a cumulative schedule as discrete is the single most expensive integration error in automotive EDI, and it overships within one week.",
       "appliesTo": "FST01",
@@ -1060,6 +1061,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "The engineering change level in LIN04 and LIN05 must match the level on the parts you ship.",
       "rationale": "Halverson line-side verification rejects a part at the wrong change level, and the line stops.",
       "appliesTo": "LIN05",
@@ -1070,6 +1072,7 @@
     {
       "id": "R-003",
       "severity": "warn",
+      "scope": "guide",
       "statement": "Requirements inside the 10 day firm fence are a commitment. Changes inside the fence are negotiated by telephone, not by EDI.",
       "rationale": "Material and labour are already committed inside the fence.",
       "appliesTo": "FST02",
@@ -1080,6 +1083,7 @@
     {
       "id": "R-004",
       "severity": "info",
+      "scope": "guide",
       "statement": "A planning schedule replaces the previous one in full. There is no incremental update.",
       "rationale": "Merging a new schedule into an old one produces phantom requirements.",
       "appliesTo": "BFR01",
@@ -1090,6 +1094,7 @@
     {
       "id": "R-005",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
       "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
       "appliesTo": "REF",
@@ -1100,6 +1105,7 @@
     {
       "id": "R-006",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
       "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
       "appliesTo": "cumulative accounting",
@@ -1110,6 +1116,7 @@
     {
       "id": "R-007",
       "severity": "info",
+      "scope": "hub",
       "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
       "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
       "appliesTo": "transmission",

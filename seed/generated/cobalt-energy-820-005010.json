@@ -891,6 +891,7 @@
     {
       "id": "R-001",
       "severity": "info",
+      "scope": "guide",
       "statement": "Payment runs are weekly on Thursday. Remittance is transmitted the same day.",
       "rationale": "Weekly cadence aligns with the approval cycle.",
       "appliesTo": "transmission",
@@ -901,6 +902,7 @@
     {
       "id": "R-002",
       "severity": "info",
+      "scope": "guide",
       "statement": "Deductions carry an ADX with a reason code. The most common is a tax adjustment where the jurisdiction was coded incorrectly.",
       "rationale": "Tax coding errors are the most frequent cause of a short payment at Cobalt.",
       "appliesTo": "ADX",
@@ -911,6 +913,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
       "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
       "appliesTo": "cost allocation",
@@ -921,6 +924,7 @@
     {
       "id": "R-004",
       "severity": "info",
+      "scope": "hub",
       "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
       "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",
       "appliesTo": "transmission",

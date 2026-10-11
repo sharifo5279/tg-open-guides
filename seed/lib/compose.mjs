@@ -180,10 +180,17 @@ export function composeGuide(hub, tsCode) {
   }
 
   /* --------------------------------------------------------------- rules */
-  const allRules = [...(cfg.rules || []), ...(hub.commonRules || [])];
+  // Scope separates a rule the hub enforces on this document from one it
+  // enforces on everything. Without it the same three rules are restated in
+  // all seven of a hub's guides, and the hub page becomes an eighth place.
+  const allRules = [
+    ...(cfg.rules || []).map((r) => ({ ...r, scope: 'guide' })),
+    ...(hub.commonRules || []).map((r) => ({ ...r, scope: 'hub' }))
+  ];
   spec.rules = allRules.map((r, i) => ({
     id: `R-${String(i + 1).padStart(3, '0')}`,
     severity: r.severity,
+    scope: r.scope,
     statement: r.statement,
     rationale: r.rationale,
     appliesTo: r.appliesTo,

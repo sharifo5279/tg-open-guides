@@ -4,6 +4,8 @@ import express from 'express';
 import { migrate, dbReady } from './db.mjs';
 import {
   listGuides,
+  listHubs,
+  getHub,
   getGuide,
   getVersion,
   listVersions,
@@ -14,7 +16,7 @@ import {
 } from './store.mjs';
 import { specToMarkdown, DIRECTIONS } from './spec.mjs';
 import { renderGuidePage } from './render/guide.mjs';
-import { renderCatalogue, renderForAgents, renderReadership, renderNotFound, renderSamples } from './render/pages.mjs';
+import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderReadership, renderNotFound, renderSamples } from './render/pages.mjs';
 import { generateSamples, samplesReadme } from './samples.mjs';
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
@@ -50,8 +52,70 @@ app.get('/healthz', async (_req, res) => {
 
 app.get('/', async (req, res, next) => {
   try {
-    const guides = await listGuides({ includeUnlisted: false });
-    res.type('html').send(renderCatalogue({ guides, baseUrl: baseUrlOf(req), dbUp: await dbAvailable() }));
+    const [hubs, guides] = await Promise.all([listHubs(), listGuides({ includeUnlisted: false })]);
+    res.type('html').send(renderHome({ hubs, guides, baseUrl: baseUrlOf(req), dbUp: await dbAvailable() }));
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * The hub front door. One hub is one community, and this is where a partner
+ * arrives from an onboarding email.
+ */
+app.get('/h/:hub', async (req, res, next) => {
+  try {
+    const raw = req.params.hub;
+    let format = 'html';
+    let slug = raw;
+    if (raw.endsWith('.md')) {
+      format = 'md';
+      slug = raw.slice(0, -3);
+    } else if (raw.endsWith('.json')) {
+      format = 'json';
+      slug = raw.slice(0, -5);
+    } else if (wantsMarkdown(req)) {
+      format = 'md';
+    } else if (wantsJson(req)) {
+      format = 'json';
+    }
+
+    const hub = await getHub(slug);
+    if (!hub) {
+      if (format === 'html') return res.status(404).type('html').send(renderNotFound());
+      return res.status(404).json({ error: 'not_found' });
+    }
+    const all = await listGuides({ includeUnlisted: false });
+    const guides = all.filter((g) => g.hub_slug === slug);
+    const base = baseUrlOf(req);
+
+    if (format === 'md') {
+      res.set('Access-Control-Allow-Origin', '*');
+      return res.type('text/markdown; charset=utf-8').send(hubToMarkdown({ hub, guides, baseUrl: base }));
+    }
+    if (format === 'json') {
+      res.set('Access-Control-Allow-Origin', '*');
+      return res.json({
+        hub: {
+          slug: hub.slug, name: hub.name, legalName: hub.legalName, industry: hub.industry,
+          about: hub.about, standard: 'X12', version: hub.stdVersion,
+          effectiveFrom: hub.effectiveFrom, delimiters: hub.delimiters, envelope: hub.envelope,
+          acknowledgment: hub.ackWindow, interfaceWindow: hub.maintenanceWindow,
+          commonRules: hub.commonRules, contacts: hub.contacts
+        },
+        documents: guides.map((g) => ({
+          transactionSet: g.transaction_set,
+          title: g.title,
+          direction: g.direction,
+          version: g.cur_version,
+          attestedBy: g.attested_by || null,
+          guide: `${base}/g/${g.hub_slug}/${g.slug}.json`
+        })),
+        notice: 'Requirements as attested by the hub. This document does not validate or certify a transaction.'
+      });
+    }
+
+    res.type('html').send(renderHub({ hub, guides, baseUrl: base }));
   } catch (err) {
     next(err);
   }
@@ -91,12 +155,23 @@ app.get('/llms.txt', async (req, res, next) => {
       `- MCP (streamable HTTP): ${base}/mcp`,
       `  tools: search_guides, get_guide_summary, get_rules, get_segment, get_code_list, get_guide_markdown`,
       '',
-      '## Guides',
+      '## Hubs',
+      '',
+      'Each hub publishes the requirements it places on its own trading partners.',
+      'A hub page carries the rules that apply to every one of its documents.',
       ''
     ];
+    const hubs = await listHubs();
+    for (const h of hubs) {
+      const theirs = guides.filter((g) => g.hub_slug === h.slug);
+      lines.push(`- [${h.name}](${base}/h/${h.slug}.md): ${h.industry || ''}. X12 ${h.stdVersion}. ${theirs.length} documents: ${theirs.map((g) => g.transaction_set).join(', ')}`);
+    }
+    lines.push('');
+    lines.push('## Guides');
+    lines.push('');
     for (const g of guides) {
       lines.push(
-        `- [${g.hub_name}: ${g.standard} ${g.transaction_set} ${g.std_version}](${base}/g/${g.hub_slug}/${g.slug}.md): ${DIRECTIONS[g.direction] || g.direction}. Guide v${g.cur_version}${g.attested_by ? `, attested by ${g.attested_by}` : ', not attested'}. ${String(g.summary || '').slice(0, 160)}`
+        `- [${g.hub_name}: ${g.standard} ${g.transaction_set} ${g.std_version}](${base}/g/${g.hub_slug}/${g.slug}.md): ${DIRECTIONS[g.direction] || g.direction}. Guide v${g.cur_version}${g.attested_by ? `, attested by ${g.attested_by}` : ', not attested'}.`
       );
     }
     lines.push('');

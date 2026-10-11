@@ -22,6 +22,8 @@ export const HUBS = [
   /* ================================================================ 1 */
   {
     slug: 'crestfield',
+    ackWindow: '997 returned within 60 minutes',
+    maintenanceWindow: 'None. Interface available continuously.',
     partnerTerm: 'supplier',
     name: 'Crestfield Consumer Brands',
     legalName: 'Crestfield Consumer Brands, Inc.',
@@ -167,6 +169,8 @@ export const HUBS = [
   /* ================================================================ 2 */
   {
     slug: 'halverson-motors',
+    ackWindow: '997 returned within 30 minutes',
+    maintenanceWindow: '23:00 to 04:00 plant local, nightly, for the MRP run',
     partnerTerm: 'supplier',
     name: 'Halverson Motors',
     legalName: 'Halverson Motor Corporation',
@@ -345,6 +349,8 @@ export const HUBS = [
   /* ================================================================ 3 */
   {
     slug: 'northwind-grocery',
+    ackWindow: '997 returned within 2 hours',
+    maintenanceWindow: 'None.',
     partnerTerm: 'supplier',
     name: 'Northwind Grocery Group',
     legalName: 'Northwind Grocery Group LLC',
@@ -481,6 +487,8 @@ export const HUBS = [
   /* ================================================================ 4 */
   {
     slug: 'vantage-logistics',
+    ackWindow: '997 returned within 15 minutes',
+    maintenanceWindow: 'None. Freight moves overnight, so the interface does not close.',
     partnerTerm: 'carrier',
     name: 'Vantage Logistics Group',
     legalName: 'Vantage Logistics Group, Inc.',
@@ -634,6 +642,8 @@ export const HUBS = [
   /* ================================================================ 5 */
   {
     slug: 'pallas-health',
+    ackWindow: '997 within 1 hour, 824 for business validation',
+    maintenanceWindow: 'None.',
     partnerTerm: 'supplier',
     name: 'Pallas Health System',
     legalName: 'Pallas Health System',
@@ -783,6 +793,8 @@ export const HUBS = [
   /* ================================================================ 6 */
   {
     slug: 'meridian-industrial',
+    ackWindow: '997 returned within 2 hours',
+    maintenanceWindow: '02:00 to 03:00 Central, nightly',
     partnerTerm: 'supplier',
     name: 'Meridian Industrial Supply',
     legalName: 'Meridian Industrial Supply Co.',
@@ -938,6 +950,8 @@ export const HUBS = [
   /* ================================================================ 7 */
   {
     slug: 'brightline-apparel',
+    ackWindow: '997 returned within 4 hours',
+    maintenanceWindow: 'Sunday 02:00 to 06:00 Eastern, weekly',
     partnerTerm: 'vendor',
     name: 'Brightline Apparel',
     legalName: 'Brightline Apparel Group',
@@ -1075,6 +1089,8 @@ export const HUBS = [
   /* ================================================================ 8 */
   {
     slug: 'cobalt-energy',
+    ackWindow: '997 within 4 hours, 824 on failed invoice validation',
+    maintenanceWindow: 'None.',
     partnerTerm: 'supplier',
     name: 'Cobalt Energy Services',
     legalName: 'Cobalt Energy Services LP',

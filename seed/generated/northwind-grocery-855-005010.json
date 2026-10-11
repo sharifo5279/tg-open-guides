@@ -940,6 +940,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Acknowledge within four hours of receiving the 850.",
       "rationale": "Delivery windows are frequently inside 48 hours, so a late acknowledgment leaves no time to source elsewhere.",
       "appliesTo": "855 response",
@@ -950,6 +951,7 @@
     {
       "id": "R-002",
       "severity": "warn",
+      "scope": "guide",
       "statement": "A substitution (IS) requires a pre-approved substitute on the Northwind item file. Unapproved substitutes are refused at the door.",
       "rationale": "Store planograms and retail pricing are set per item.",
       "appliesTo": "ACK01",
@@ -960,6 +962,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Northwind is on 005010. Transactions at 004010 are rejected at the group level.",
       "rationale": "Northwind migrated in 2024 and does not maintain a 004010 translator.",
       "appliesTo": "GS08",
@@ -970,6 +973,7 @@
     {
       "id": "R-004",
       "severity": "warn",
+      "scope": "hub",
       "statement": "Catch weight items must carry actual weight, not nominal. Nominal weight on a variable weight item produces an invoice discrepancy at receipt.",
       "rationale": "Random weight product is received by weight and invoiced by weight.",
       "appliesTo": "catch weight",

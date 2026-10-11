@@ -607,6 +607,7 @@
     {
       "id": "R-001",
       "severity": "info",
+      "scope": "guide",
       "statement": "Movement is sent Tuesday morning covering the prior Monday to Sunday week.",
       "rationale": "The file is produced after weekend store polling completes.",
       "appliesTo": "transmission",
@@ -617,6 +618,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Northwind is on 005010. Transactions at 004010 are rejected at the group level.",
       "rationale": "Northwind migrated in 2024 and does not maintain a 004010 translator.",
       "appliesTo": "GS08",
@@ -627,6 +629,7 @@
     {
       "id": "R-003",
       "severity": "warn",
+      "scope": "hub",
       "statement": "Catch weight items must carry actual weight, not nominal. Nominal weight on a variable weight item produces an invoice discrepancy at receipt.",
       "rationale": "Random weight product is received by weight and invoiced by weight.",
       "appliesTo": "catch weight",

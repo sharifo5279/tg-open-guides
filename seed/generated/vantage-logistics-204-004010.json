@@ -1195,6 +1195,7 @@
     {
       "id": "R-001",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Respond with a 990 within 30 minutes of the tender. Vantage re-tenders to the next carrier automatically after 30 minutes.",
       "rationale": "Loads are tendered in rate order against a departure clock, so an unanswered tender moves on.",
       "appliesTo": "990 response",
@@ -1205,6 +1206,7 @@
     {
       "id": "R-002",
       "severity": "reject",
+      "scope": "guide",
       "statement": "Stop sequence numbers must be processed in the order given. Vantage sequences stops by route, not by geography.",
       "rationale": "Resequencing a multi-stop load breaks appointment times at every stop after the change.",
       "appliesTo": "S501",
@@ -1215,6 +1217,7 @@
     {
       "id": "R-003",
       "severity": "reject",
+      "scope": "guide",
       "statement": "A change tender (B2A01 = 04) replaces the original in full. Merge it and you will run the wrong route.",
       "rationale": "Changes frequently alter stop count, so a merge produces a load that exists nowhere in the plan.",
       "appliesTo": "B2A01",
@@ -1225,6 +1228,7 @@
     {
       "id": "R-004",
       "severity": "warn",
+      "scope": "guide",
       "statement": "Appointment windows at a stop are firm. Arriving outside the window may forfeit the stop and the associated pay.",
       "rationale": "Receiving sites schedule doors, and Vantage is charged for a missed appointment.",
       "appliesTo": "G62",
@@ -1235,6 +1239,7 @@
     {
       "id": "R-005",
       "severity": "reject",
+      "scope": "hub",
       "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
       "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
       "appliesTo": "time zones",
@@ -1245,6 +1250,7 @@
     {
       "id": "R-006",
       "severity": "info",
+      "scope": "hub",
       "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
       "rationale": "Freight moves overnight, so the interface does not close.",
       "appliesTo": "transmission",

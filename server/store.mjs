@@ -15,6 +15,7 @@ const seedDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 's
 
 let dbUp = null;
 let seedCache = null;
+let hubCache = null;
 
 export function newId(prefix) {
   return `${prefix}_${crypto.randomBytes(8).toString('hex')}`;
@@ -46,7 +47,8 @@ async function seedFiles() {
   for (const dir of [seedDir, path.join(seedDir, 'generated')]) {
     try {
       for (const f of await readdir(dir)) {
-        if (f.endsWith('.json')) out.push(path.join(dir, f));
+        // A leading underscore marks a manifest, not a guide.
+        if (f.endsWith('.json') && !f.startsWith('_')) out.push(path.join(dir, f));
       }
     } catch {
       // A missing generated folder just means nothing has been built yet.
@@ -62,7 +64,11 @@ async function loadSeeds() {
   for (const f of files) {
     try {
       const spec = JSON.parse(await readFile(f, 'utf8'));
-      const g = spec.guide || {};
+      if (!spec || typeof spec !== 'object' || !spec.guide?.transactionSet) {
+        console.warn(`[store] ${path.basename(f)} is not a guide spec, skipping`);
+        continue;
+      }
+      const g = spec.guide;
       const hubSlug = g.hub?.slug || 'hub';
       const slug = `${String(g.transactionSet || 'guide').toLowerCase()}-${String(g.version || '').toLowerCase()}`;
       const att = g.attestation || { name: 'Dana Whitfield', role: 'Director, EDI Operations', date: '2026-03-18' };
@@ -103,6 +109,46 @@ async function loadSeeds() {
   }
   seedCache = out;
   return out;
+}
+
+/**
+ * Hub-level facts, written once by the build rather than lifted from whichever
+ * guide happens to load first. Two guides from the same hub could disagree
+ * about a receiver ID, and the hub page would silently pick one.
+ */
+export async function listHubs() {
+  if (hubCache) return hubCache;
+  try {
+    const raw = await readFile(path.join(seedDir, 'generated', '_hubs.json'), 'utf8');
+    hubCache = JSON.parse(raw);
+  } catch {
+    // No manifest: fall back to the identity the guides carry, which is enough
+    // to render a hub list even if the facts block has nothing to show.
+    const seeds = await loadSeeds();
+    const byHub = new Map();
+    for (const s of seeds) {
+      if (byHub.has(s.guide.hub_slug)) continue;
+      const g = s.version.spec.guide || {};
+      byHub.set(s.guide.hub_slug, {
+        slug: s.guide.hub_slug,
+        name: s.guide.hub_name,
+        legalName: g.hub?.legalName || null,
+        industry: g.hub?.industry || null,
+        about: null,
+        stdVersion: g.version,
+        commonRules: [],
+        contacts: [],
+        setRoles: {}
+      });
+    }
+    hubCache = [...byHub.values()];
+  }
+  hubCache.sort((a, b) => a.name.localeCompare(b.name));
+  return hubCache;
+}
+
+export async function getHub(slug) {
+  return (await listHubs()).find((h) => h.slug === slug) || null;
 }
 
 export async function listGuides({ includeUnlisted = false } = {}) {

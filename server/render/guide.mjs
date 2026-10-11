@@ -254,7 +254,7 @@ export function renderGuidePage({
 
   const body = `
 <div class="crumbs"><div class="wide">
-  <a href="/">Catalogue</a> <span>/</span> <a href="/">${esc(g.hub?.name || '')}</a> <span>/</span>
+  <a href="/">Hubs</a> <span>/</span> <a href="/h/${esc(guide.hub_slug)}">${esc(g.hub?.name || '')}</a> <span>/</span>
   <b>${esc(g.standard)} ${esc(g.transactionSet)} ${esc(g.version)}</b>
 </div></div>
 
