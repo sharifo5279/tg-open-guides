@@ -299,14 +299,40 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
 .tbl-ix a { font-weight: 600; }
 
 /* Element tables */
-.tbl-el th { font-size: 11px; letter-spacing: .05em; }
+.tbl-el th { font-size: 11px; letter-spacing: .05em; white-space: normal; padding-right: 14px; }
 .tbl-el td { padding: 7px 12px; font-size: 13px; }
-.tbl-el .el-dict { font-size: 10px; color: var(--slate); }
+.tbl-el .el-dict { display: block; font-size: 10px; color: var(--slate); }
+.cw { display: contents; }
 .tbl-el tr.el-unused { opacity: .6; }
 .nowrap { white-space: nowrap; }
-.codelist { list-style: none; margin: 4px 0 0; padding: 0; font-size: 12px; }
-.codelist li { margin-bottom: 2px; }
-.codelist code { font-size: 11px; padding: 1px 4px; font-weight: 600; }
+
+/* Code values inside reference tables are data, not inline prose code, so they
+   stay plain monospace. A dense table full of coloured chips is unreadable, and
+   the pink is reserved for code mentioned inside a sentence. */
+.tbl code, .codelist code, .reqcard code, .side code {
+  background: none; padding: 0; color: var(--ink); font-weight: 600;
+}
+
+/* The notes column carries a hub note plus a code list, so the table is given
+   explicit widths rather than letting the browser award them by content. */
+.tbl-el { table-layout: fixed; }
+.tbl-el th:nth-child(1), .tbl-el td:nth-child(1) { width: 76px; }
+.tbl-el th:nth-child(2), .tbl-el td:nth-child(2) { width: 92px; }
+.tbl-el th:nth-child(3), .tbl-el td:nth-child(3) { width: 16%; }
+.tbl-el th:nth-child(4), .tbl-el td:nth-child(4) { width: 134px; }
+.tbl-el th:nth-child(5), .tbl-el td:nth-child(5) { width: 112px; }
+.tbl-el th:nth-child(6), .tbl-el td:nth-child(6),
+.tbl-el th:nth-child(7), .tbl-el td:nth-child(7) { width: 48px; }
+.tbl-el td { word-wrap: break-word; overflow-wrap: anywhere; }
+.tbl-el .el-note { line-height: 1.45; display: block; }
+
+.codelist { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; }
+.codelist li { display: flex; gap: 8px; align-items: baseline; margin-bottom: 3px; }
+.codelist code { flex: none; min-width: 24px; font-size: 11px; }
+.codelist .cv { flex: 1 1 auto; min-width: 0; }
+.codelist .cv .el-note { display: block; margin-top: 0; }
+.reqcard .rc-note code { font-size: 11px; margin-right: 6px; display: inline-block; }
+.tbl td.mono code { font-size: 12px; }
 
 /* Loop and segment blocks in the reference */
 .area-h { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--slate); padding-bottom: 6px; border-bottom: 2px solid var(--ink); margin: 26px 0 0; }
@@ -334,45 +360,187 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
 .agentbox pre { margin: 8px 0 10px; }
 .dsec .scenario { margin-bottom: 8px; }
 
+/* =====================================================================
+   Narrow screens.
+
+   Two things decide this layout. A phone reader must reach the document
+   without scrolling past a structure tree, so the tree becomes a disclosure
+   that starts closed. And an eight column element table cannot be read by
+   panning sideways, so below 760px each row becomes a labelled stack.
+   ===================================================================== */
+
+.side-sum { display: none; }
+
 @media (max-width: 1100px) {
   .wide-split { grid-template-columns: 1fr; gap: 0; }
-  .side { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .side { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); padding: 0; }
   .side-in { padding-right: 0; }
-  .side-nav { columns: 2; column-gap: 28px; }
-  .doc { padding-top: 20px; }
+  .side-sum {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; list-style: none;
+    font-size: 14px; font-weight: 700; color: var(--ink);
+    padding: 14px 2px; margin: 0;
+  }
+  .side-sum::-webkit-details-marker { display: none; }
+  .side-sum::after { content: "+"; font-family: var(--mono); font-size: 17px; color: var(--primary); font-weight: 400; }
+  details[open] > .side-sum::after { content: "\2013"; }
+  .side-in[open] { padding-bottom: 18px; }
+  .side-nav { max-height: 60vh; overflow-y: auto; }
+  .doc { padding-top: 22px; }
+  .side-list a { padding: 7px 8px; }
+  .t-loophead { padding: 5px 8px; }
 }
-@media (max-width: 640px) {
-  .wide { padding: 0 18px; }
-  .guidehead h1 { font-size: 26px; }
-  .side-nav { columns: 1; }
+
+@media (max-width: 860px) {
+  .twocol { grid-template-columns: 1fr; }
 }
 
-/* Code values inside reference tables are data, not inline prose code, so they
-   stay plain monospace rather than becoming pink chips. Chips everywhere make a
-   dense table unreadable. */
-.tbl code, .codelist code, .reqcard code, .side code {
-  background: none; padding: 0; color: var(--ink); font-weight: 600;
+/* Tables become labelled stacks. Each cell carries its column name, so a row
+   reads as a small record instead of a fragment of a grid. */
+@media (max-width: 760px) {
+  .tbl-wrap { border: 0; border-radius: 0; overflow: visible; }
+
+  .tbl-el, .tbl-stack { table-layout: auto; display: block; }
+  .tbl-el thead, .tbl-stack thead { display: none; }
+  .tbl-el tbody, .tbl-stack tbody,
+  .tbl-el tr, .tbl-stack tr { display: block; }
+
+  .tbl-el tr, .tbl-stack tr {
+    border: 1px solid var(--line); border-radius: var(--r-s);
+    padding: 10px 12px; margin-bottom: 8px; background: #fff;
+  }
+  .tbl-el td, .tbl-stack td {
+    display: grid; grid-template-columns: 94px minmax(0, 1fr);
+    gap: 10px; align-items: baseline;
+    border: 0; padding: 3px 0; width: auto !important;
+  }
+  .tbl-el td::before, .tbl-stack td::before {
+    content: attr(data-l);
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--slate);
+  }
+  .cw { display: block; }
+  .tbl-el td > .cw, .tbl-stack td > .cw { min-width: 0; }
+  /* A cell with nothing in it is noise once it has a label of its own. */
+  .tbl-el td:has(> .cw:empty), .tbl-stack td:has(> .cw:empty) { display: none; }
+  .tbl-el td .el-dict { display: inline; margin-left: 6px; }
+  .tbl-el td:last-child, .tbl-stack td:last-child { max-width: none; }
+  .tbl-el .codelist { margin-top: 2px; }
+
+  /* The structure index becomes one record per row: segment code, then the name
+     with its requirement and repeat beneath. Five columns at this width would
+     wrap every name to four lines and clip the last column. */
+  .tbl-wrap:has(.tbl-ix) { border: 1px solid var(--line); border-radius: var(--r-c); overflow: hidden; }
+  .tbl-ix, .tbl-ix tbody, .tbl-ix tr { display: block; }
+  .tbl-ix thead { display: none; }
+  .tbl-ix tr {
+    display: grid; grid-template-columns: 50px minmax(0, 1fr);
+    gap: 1px 10px; padding: 9px 13px; border-bottom: 1px solid var(--line);
+  }
+  table.tbl-ix td, table.tbl-ix th { display: block; border: 0; padding: 0; background: none; }
+  table.tbl-ix td[data-c="pos"] { display: none; }
+  .tbl-ix td[data-c="seg"] { grid-column: 1; grid-row: 1 / span 2; font-size: 14px; font-weight: 700; }
+  .tbl-ix td[data-c="name"] { grid-column: 2; grid-row: 1; font-size: 14px; color: var(--ink); }
+  .tbl-ix td[data-c="req"] { grid-column: 2; grid-row: 2; font-size: 11px; }
+  .tbl-ix td[data-c="max"] { grid-column: 2; grid-row: 2; justify-self: end; font-size: 11px; }
+  .tbl-ix tr.ix-area { display: block; padding: 8px 13px; }
+  table.tbl-ix tr.ix-area td { display: block; background: none; }
+  .tbl-ix tr.ix-area { background: var(--cloud); }
+  .tbl-ix tr.ix-loop { background: #FBFCFD; }
+  .tbl-ix tr.ix-loop { grid-template-columns: 1fr auto; padding-top: 11px; }
+  .tbl-ix tr.ix-loop td[data-c="name"] { grid-column: 1; grid-row: 1; }
+  .tbl-ix tr.ix-loop td[data-c="req"] { grid-column: 1; grid-row: 2; }
+  .tbl-ix tr.ix-loop td[data-c="max"] { grid-column: 2; grid-row: 2; }
+  .tbl-ix tr.ix-in { padding-left: 26px; }
 }
 
-/* The notes column carries a hub note plus a code list, so it needs a readable
-   measure of its own rather than whatever width the table leaves it. */
-.tbl-el { table-layout: fixed; }
-.tbl-el th:nth-child(1), .tbl-el td:nth-child(1) { width: 76px; }
-.tbl-el th:nth-child(2), .tbl-el td:nth-child(2) { width: 92px; }
-.tbl-el th:nth-child(3), .tbl-el td:nth-child(3) { width: 16%; }
-.tbl-el th:nth-child(4), .tbl-el td:nth-child(4) { width: 134px; }
-.tbl-el th:nth-child(5), .tbl-el td:nth-child(5) { width: 112px; }
-.tbl-el th:nth-child(6), .tbl-el td:nth-child(6),
-.tbl-el th:nth-child(7), .tbl-el td:nth-child(7) { width: 48px; }
-.tbl-el th { white-space: normal; padding-right: 14px; }
-.tbl-el td { word-wrap: break-word; overflow-wrap: anywhere; }
-.tbl-el .el-note { line-height: 1.45; display: block; }
+@media (max-width: 680px) {
+  .topbar-in { height: 54px; gap: 12px; }
+  .ot-logo { width: 116px; height: auto; }
+  .topnav { gap: 14px; font-size: 13px; flex: none; }
+  .topnav a { white-space: nowrap; }
+  .crumbs .wide { height: 34px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+  .crumbs .wide::-webkit-scrollbar { display: none; }
+  .wide, .shell { padding: 0 16px; }
+  .guidehead { padding: 20px 0 18px; }
+  .guidehead h1 { font-size: 25px; }
+  .guidehead .lede { font-size: 15px; }
+  .specline { gap: 2px 16px; font-size: 12px; }
+  .attested { padding: 13px 15px; border-radius: var(--r-s); }
+  .btn { padding: 9px 15px; font-size: 13px; }
+  .copyrow { gap: 7px; }
+  .dsec > h2 { font-size: 20px; }
+  .dsec { padding-bottom: 26px; margin-bottom: 22px; }
+  .reqgrid { grid-template-columns: 1fr 1fr; }
+  .loopblock { padding-left: 11px; }
+  .seg-head { gap: 6px; }
+  .seg-link { display: none; }
+  pre { font-size: 12px; padding: 11px 12px; }
+  .stats { gap: 0 22px; }
+  .stats .s-num { font-size: 23px; }
+  .cat { grid-template-columns: 1fr; }
+  .formrow { grid-template-columns: 1fr; }
+  .rv-row label { flex: 1 1 100%; }
+}
 
-.codelist { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; }
-.codelist li { display: flex; gap: 8px; align-items: baseline; margin-bottom: 3px; }
-.codelist code { flex: none; min-width: 24px; font-size: 11px; }
-.codelist .cv { flex: 1 1 auto; min-width: 0; }
-.codelist .cv .el-note { display: block; margin-top: 0; }
+@media (max-width: 420px) {
+  .reqgrid { grid-template-columns: 1fr; }
+  .topnav { gap: 11px; font-size: 12px; }
+  .ot-logo { width: 100px; }
+  .guidehead h1 { font-size: 22px; }
+  .tbl-el td, .tbl-stack td { grid-template-columns: 82px minmax(0, 1fr); gap: 8px; }
+}
 
-.reqcard .rc-note code { font-size: 11px; margin-right: 6px; display: inline-block; }
-.tbl td.mono code { font-size: 12px; }
+/* Touch targets: a 13px link in a dense tree is a miss on a phone. */
+@media (hover: none) and (pointer: coarse) {
+  .side-list a { min-height: 34px; display: flex; align-items: center; }
+  .topnav a { padding: 6px 0; }
+  .btn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+}
+
+/* Tablet portrait keeps the real table, which is readable at that width, so the
+   fixed columns tighten rather than the layout changing shape. */
+@media (max-width: 1000px) and (min-width: 761px) {
+  .tbl-el th:nth-child(1), .tbl-el td:nth-child(1) { width: 62px; }
+  .tbl-el th:nth-child(2), .tbl-el td:nth-child(2) { width: 78px; }
+  .tbl-el th:nth-child(3), .tbl-el td:nth-child(3) { width: 15%; }
+  .tbl-el th:nth-child(4), .tbl-el td:nth-child(4) { width: 112px; }
+  .tbl-el th:nth-child(5), .tbl-el td:nth-child(5) { width: 100px; }
+  .tbl-el th:nth-child(6), .tbl-el td:nth-child(6),
+  .tbl-el th:nth-child(7), .tbl-el td:nth-child(7) { width: 40px; }
+  .tbl-el td, .tbl-el th { padding-left: 9px; padding-right: 9px; }
+}
+
+@media (max-width: 760px) {
+  .tbl-ix td, .tbl-ix th { padding: 7px 8px; }
+  .tbl-ix .ix-max { font-size: 11px; }
+  .tbl-ix th:last-child, .tbl-ix td:last-child { padding-right: 10px; }
+}
+
+/* A grid item defaults to min-width:auto, so a wide child (a <pre> of JSON with
+   no break opportunities) pushes its column past the container instead of
+   scrolling inside itself. Opting the columns out of that is what keeps the
+   page from scrolling sideways on a phone. */
+.twocol > *, .wide-split > *, .cat > *, .reqgrid > * { min-width: 0; }
+pre { max-width: 100%; }
+
+/* A long URL inside inline code has no break opportunity, so it pushes the page
+   wider than the phone it is being read on. */
+code { overflow-wrap: anywhere; word-break: break-word; }
+.crumbs { overflow: hidden; }
+
+/* Very small phones (320px, an SE). The brand lock-up plus three nav items do
+   not fit, so the mark shrinks and the nav scrolls rather than pushing the
+   whole page sideways. */
+@media (max-width: 380px) {
+  .topbar-in { gap: 8px; }
+  .ot-logo { width: 88px; }
+  .topnav {
+    gap: 12px; font-size: 12px;
+    flex: 1 1 auto; justify-content: flex-end;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .wide, .shell { padding: 0 13px; }
+  .guidehead h1 { font-size: 21px; }
+}

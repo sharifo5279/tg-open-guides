@@ -31,6 +31,11 @@ function reqLabel(usage) {
   }[usage] || usageLabel(usage);
 }
 
+/** Wrap cell content so a stacked cell has a single grid child beside its label. */
+function cell(inner) {
+  return `<span class="cw">${inner}</span>`;
+}
+
 function reqCell(usage) {
   const cls = usage === 'required' ? 'rq rq-m' : usage === 'notUsed' ? 'rq rq-n' : usage === 'conditional' ? 'rq rq-c' : 'rq rq-o';
   return `<span class="${cls}">${esc(reqLabel(usage))}</span>`;
@@ -51,7 +56,8 @@ function sidebar(spec, areas) {
     ['about', 'Versions and provenance']
   ];
   return `<aside class="side">
-  <div class="side-in">
+  <details class="side-in" id="sidedisc" open>
+    <summary class="side-sum">Contents and structure</summary>
     <input class="side-filter" type="search" id="navfilter" placeholder="Filter segments" aria-label="Filter segments">
     <nav class="side-nav" aria-label="On this page">
       <p class="side-h">On this page</p>
@@ -75,7 +81,7 @@ function sidebar(spec, areas) {
         }).join('')}
       </ul>`).join('')}
     </nav>
-  </div>
+  </details>
 </aside>`;
 }
 
@@ -89,28 +95,28 @@ function structureIndex(spec, areas) {
       if (row.type === 'segment') {
         const s = row.segment;
         rows.push(`<tr>
-<td class="mono">${esc(s.pos || '')}</td>
-<td class="mono"><a href="#${esc(segAnchor(s))}">${esc(s.id)}</a></td>
-<td>${esc(s.name || '')}</td>
-<td>${reqCell(s.usage)}</td>
-<td class="mono ix-max">${esc(maxUseLabel(s.maxUse))}</td>
+<td class="mono" data-c="pos">${esc(s.pos || '')}</td>
+<td class="mono" data-c="seg"><a href="#${esc(segAnchor(s))}">${esc(s.id)}</a></td>
+<td data-c="name">${esc(s.name || '')}</td>
+<td data-c="req">${reqCell(s.usage)}</td>
+<td class="mono ix-max" data-c="max">${esc(maxUseLabel(s.maxUse))}</td>
 </tr>`);
         continue;
       }
       const lp = row.loop;
       rows.push(`<tr class="ix-loop">
-<td></td>
-<td class="mono" colspan="2"><b>${esc(lp.id)} Loop</b> <span class="el-note">${esc(lp.name)}</span></td>
-<td>${reqCell(lp.usage)}</td>
-<td class="mono ix-max">${esc(repeatLabel(lp.repeat))}</td>
+<td data-c="pos"></td>
+<td class="mono" colspan="2" data-c="name"><b>${esc(lp.id)} Loop</b> <span class="el-note">${esc(lp.name)}</span></td>
+<td data-c="req">${reqCell(lp.usage)}</td>
+<td class="mono ix-max" data-c="max">${esc(repeatLabel(lp.repeat))}</td>
 </tr>`);
       for (const s of lp.segments) {
         rows.push(`<tr class="ix-in">
-<td class="mono">${esc(s.pos || '')}</td>
-<td class="mono"><a href="#${esc(segAnchor(s))}">${esc(s.id)}</a></td>
-<td>${esc(s.name || '')}</td>
-<td>${reqCell(s.usage)}</td>
-<td class="mono ix-max">${esc(maxUseLabel(s.maxUse))}</td>
+<td class="mono" data-c="pos">${esc(s.pos || '')}</td>
+<td class="mono" data-c="seg"><a href="#${esc(segAnchor(s))}">${esc(s.id)}</a></td>
+<td data-c="name">${esc(s.name || '')}</td>
+<td data-c="req">${reqCell(s.usage)}</td>
+<td class="mono ix-max" data-c="max">${esc(maxUseLabel(s.maxUse))}</td>
 </tr>`);
       }
     }
@@ -136,14 +142,14 @@ ${seg.elements.map((el) => {
       : '';
     const note = el.note ? `<div class="el-note">${inlineProse(el.note)}</div>` : '';
     return `<tr${el.usage === 'notUsed' ? ' class="el-unused"' : ''}>
-<td class="mono">${esc(pos)}</td>
-<td class="mono"><b>${esc(el.ref)}</b>${el.id ? `<br><span class="el-dict">${esc(el.id)}</span>` : ''}</td>
-<td>${esc(el.name || '')}</td>
-<td class="mono nowrap">${esc(typeLabel(el.type))}</td>
-<td>${reqCell(el.usage)}</td>
-<td class="mono">${esc(el.min ?? '')}</td>
-<td class="mono">${esc(el.max ?? '')}</td>
-<td>${note}${codes}${citeTag(el.citation)}</td>
+<td class="mono" data-l="Position">${cell(esc(pos))}</td>
+<td class="mono" data-l="Element">${cell(`<b>${esc(el.ref)}</b>${el.id ? `<span class="el-dict">${esc(el.id)}</span>` : ''}`)}</td>
+<td data-l="Name">${cell(esc(el.name || ''))}</td>
+<td class="mono nowrap" data-l="Type">${cell(esc(typeLabel(el.type)))}</td>
+<td data-l="Requirement">${cell(reqCell(el.usage))}</td>
+<td class="mono" data-l="Min">${cell(esc(el.min ?? ''))}</td>
+<td class="mono" data-l="Max">${cell(esc(el.max ?? ''))}</td>
+<td data-l="Notes">${cell(`${note}${codes}${citeTag(el.citation)}`)}</td>
 </tr>`;
   }).join('\n')}
 </tbody></table></div>`;
@@ -171,15 +177,15 @@ function segmentBlock(seg, guidePath) {
 function envelopeTable(rows, label, id) {
   if (!rows?.length) return '';
   return `<h3 id="${esc(id)}">${esc(label)}</h3>
-<div class="tbl-wrap"><table class="tbl">
+<div class="tbl-wrap"><table class="tbl tbl-stack">
 <thead><tr><th>Element</th><th>Name</th><th>Requirement</th><th>Required value</th><th>Notes</th></tr></thead>
 <tbody>
 ${rows.map((r) => `<tr>
-<td class="mono"><b>${esc(r.ref)}</b></td>
-<td>${esc(r.name || '')}</td>
-<td>${reqCell(r.usage)}</td>
-<td class="mono">${r.value ? `<code>${esc(r.value)}</code>` : ''}</td>
-<td>${r.note ? `<span class="el-note">${inlineProse(r.note)}</span> ` : ''}${citeTag(r.citation)}</td>
+<td class="mono" data-l="Element">${cell(`<b>${esc(r.ref)}</b>`)}</td>
+<td data-l="Name">${cell(esc(r.name || ''))}</td>
+<td data-l="Requirement">${cell(reqCell(r.usage))}</td>
+<td class="mono" data-l="Required value">${cell(r.value ? `<code>${esc(r.value)}</code>` : '')}</td>
+<td data-l="Notes">${cell(`${r.note ? `<span class="el-note">${inlineProse(r.note)}</span> ` : ''}${citeTag(r.citation)}`)}</td>
 </tr>`).join('\n')}
 </tbody></table></div>`;
 }
@@ -423,6 +429,17 @@ document.addEventListener('click', function (e) {
       a.style.display = !q || id.indexOf(q) !== -1 || txt.indexOf(q) !== -1 ? '' : 'none';
     });
   });
+})();
+
+/* On a narrow screen the structure tree would push the document off the first
+   three screenfuls, so it starts collapsed there and open on a wide one. */
+(function () {
+  var d = document.getElementById('sidedisc');
+  if (!d) return;
+  var narrow = window.matchMedia('(max-width: 1100px)');
+  var sync = function () { d.open = !narrow.matches; };
+  sync();
+  if (narrow.addEventListener) narrow.addEventListener('change', sync);
 })();
 
 /* Mark the section the reader is in. */
