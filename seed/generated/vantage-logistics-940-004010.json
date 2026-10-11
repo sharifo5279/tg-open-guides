@@ -854,7 +854,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Acknowledge receipt with a 997 and report the outcome with a 945. A 940 with no 945 within 24 hours is escalated to the site manager.",
       "rationale": "The shipper client sees inventory move only when the 945 arrives.",
@@ -865,7 +864,6 @@
     },
     {
       "id": "R-002",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Partial shipment is permitted unless the order is marked final. A final order must ship complete or be reported short.",
       "rationale": "Clients plan replenishment against complete orders.",
@@ -876,7 +874,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
       "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
@@ -887,7 +884,6 @@
     },
     {
       "id": "R-004",
-      "severity": "info",
       "scope": "hub",
       "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
       "rationale": "Freight moves overnight, so the interface does not close.",

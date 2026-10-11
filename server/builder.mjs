@@ -13,7 +13,7 @@
  */
 import express from 'express';
 import multer from 'multer';
-import { esc, layout, severityPill, citeTag } from './render/html.mjs';
+import { esc, layout, citeTag } from './render/html.mjs';
 import { extractPages, detectTransactionSets, detectStandardVersion } from './extract.mjs';
 import { compileGuide, triage } from './compile.mjs';
 import { validateSpec, specStats, DIRECTIONS, USAGE } from './spec.mjs';
@@ -132,11 +132,6 @@ function reviewItemRow(entry, idx) {
   </div>
   <textarea data-field="statement" rows="2">${esc(it.statement)}</textarea>
   <div class="rv-row">
-    <label>Severity
-      <select data-field="severity">
-        ${['reject', 'warn', 'info'].map((s) => `<option value="${s}" ${it.severity === s ? 'selected' : ''}>${s}</option>`).join('')}
-      </select>
-    </label>
     <label>Applies to <input data-field="appliesTo" value="${esc(it.appliesTo || '')}"></label>
   </div>
   <textarea data-field="rationale" rows="1" placeholder="Why the hub enforces this, if the guide says">${esc(it.rationale || '')}</textarea>
@@ -330,7 +325,7 @@ document.getElementById('save').addEventListener('click', async function () {
 function attestScreen({ guide, version, baseUrl, done = false }) {
   const spec = version.spec;
   const stats = specStats(spec);
-  const rejects = (spec.rules || []).filter((r) => r.severity === 'reject');
+  const allRules = spec.rules || [];
   const body = `
 <div class="phead"><div class="shell">
   <p class="eyebrow">${esc(guide.hub_name)}</p>
@@ -345,12 +340,12 @@ function attestScreen({ guide, version, baseUrl, done = false }) {
   <ul class="stats">
     <li><span class="s-num">${stats.requiredSegments}</span><span class="s-lab">required segments</span></li>
     <li><span class="s-num">${stats.requiredElements}</span><span class="s-lab">required elements</span></li>
-    <li><span class="s-num">${stats.rejectRules}</span><span class="s-lab">rules that reject a transaction</span></li>
+    <li><span class="s-num">${stats.rules}</span><span class="s-lab">enforced rules</span></li>
     <li><span class="s-num">${Math.round(stats.citedFraction * 100)}%</span><span class="s-lab">items cite a source page</span></li>
   </ul>
   <h3 style="margin-top:22px">Rules you are attesting</h3>
-  <ul class="rules">${rejects.map((r) => `<li class="rule rule-reject">
-    <div class="rule-head">${severityPill(r.severity)}<span class="rule-id">${esc(r.id)}</span>${citeTag(r.citation)}</div>
+  <ul class="rules">${allRules.map((r) => `<li class="rule">
+    <div class="rule-head"><span class="rule-id">${esc(r.id)}</span>${citeTag(r.citation)}</div>
     <p class="rule-stmt">${esc(r.statement)}</p>
   </li>`).join('')}</ul>
   <p class="section-sub"><a href="/g/${esc(guide.hub_slug)}/${esc(guide.slug)}/v/${esc(version.version)}">View full version ${esc(version.version)}</a></p>
@@ -538,8 +533,6 @@ export function mountBuilder(app, { baseUrlOf }) {
             it[field] = Number.isFinite(n) ? n : null;
           } else if (field === 'usage') {
             it.usage = USAGE.includes(value) ? value : it.usage;
-          } else if (field === 'severity') {
-            it.severity = ['reject', 'warn', 'info'].includes(value) ? value : it.severity;
           } else {
             it[field] = value === '' ? null : value;
           }

@@ -1808,7 +1808,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Carton contents in the ASN must match the physical carton exactly. A content mismatch found at audit is charged back per carton.",
       "rationale": "Brightline cross-docks cartons to stores without opening them, so a wrong carton reaches a store and the error is discovered at retail.",
@@ -1819,7 +1818,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "One SSCC per carton, unique for 24 months, matching the GS1-128 label.",
       "rationale": "The label is scanned at the cross-dock and again at the store.",
@@ -1830,7 +1828,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Store-ready cartons must carry the destination store number in the pack level REF.",
       "rationale": "A carton with no store cannot be cross-docked and is diverted to manual sortation.",
@@ -1841,7 +1838,6 @@
     },
     {
       "id": "R-004",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Transmit the ASN at least 24 hours before arrival for import shipments, and at despatch for domestic.",
       "rationale": "Import containers are scheduled against a deconsolidation plan built from the ASN.",
@@ -1852,7 +1848,6 @@
     },
     {
       "id": "R-005",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every style must be identified by the Brightline style, colour and size combination. A style number alone is not sufficient on any transaction.",
       "rationale": "Apparel is bought and sold at the size and colour level, and a style-level transaction cannot be allocated to a store.",
@@ -1863,7 +1858,6 @@
     },
     {
       "id": "R-006",
-      "severity": "warn",
       "scope": "hub",
       "statement": "Vendor compliance chargebacks are applied monthly against the standards in the routing manual, not against this guide alone.",
       "rationale": "The routing manual covers physical packing and labelling, which EDI cannot express.",
@@ -1874,7 +1868,6 @@
     },
     {
       "id": "R-007",
-      "severity": "info",
       "scope": "hub",
       "statement": "Brightline returns a 997 within four hours. The EDI interface is unavailable Sunday 02:00 to 06:00 Eastern for maintenance.",
       "rationale": "The weekly window is used for item master and allocation processing.",

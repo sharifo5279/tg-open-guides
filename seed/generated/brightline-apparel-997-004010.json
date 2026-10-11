@@ -590,7 +590,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Return a 997 within four hours.",
       "rationale": "Brightline escalates unacknowledged interchanges to vendor compliance.",
@@ -601,7 +600,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every style must be identified by the Brightline style, colour and size combination. A style number alone is not sufficient on any transaction.",
       "rationale": "Apparel is bought and sold at the size and colour level, and a style-level transaction cannot be allocated to a store.",
@@ -612,7 +610,6 @@
     },
     {
       "id": "R-003",
-      "severity": "warn",
       "scope": "hub",
       "statement": "Vendor compliance chargebacks are applied monthly against the standards in the routing manual, not against this guide alone.",
       "rationale": "The routing manual covers physical packing and labelling, which EDI cannot express.",
@@ -623,7 +620,6 @@
     },
     {
       "id": "R-004",
-      "severity": "info",
       "scope": "hub",
       "statement": "Brightline returns a 997 within four hours. The EDI interface is unavailable Sunday 02:00 to 06:00 Eastern for maintenance.",
       "rationale": "The weekly window is used for item master and allocation processing.",

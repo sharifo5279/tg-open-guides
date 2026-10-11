@@ -1301,7 +1301,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "One invoice per purchase order per shipment. Consolidated invoices covering several POs are rejected.",
       "rationale": "Crestfield reconciles payable against receipt at the PO level, and a consolidated invoice cannot be matched.",
@@ -1312,7 +1311,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Invoice line quantity may not exceed the quantity Crestfield received against that PO line.",
       "rationale": "Over-invoicing against receipt is the most common cause of a disputed payable.",
@@ -1323,7 +1321,6 @@
     },
     {
       "id": "R-003",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Invoices received more than 90 days after the ship date are subject to rejection under the supplier agreement.",
       "rationale": "Late invoices fall outside the accrual period and require manual approval.",
@@ -1334,7 +1331,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "scope": "hub",
       "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
       "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
@@ -1345,7 +1341,6 @@
     },
     {
       "id": "R-005",
-      "severity": "info",
       "scope": "hub",
       "statement": "Crestfield returns a 997 within 60 minutes of receiving an interchange. No 997 after 60 minutes should be treated as a transmission failure on your side.",
       "rationale": "A silent failure is the most common reason a supplier believes a document was sent when Crestfield never received it.",

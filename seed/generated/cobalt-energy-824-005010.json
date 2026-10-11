@@ -744,7 +744,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "An 824 with TR means the invoice was not entered. Correct and resubmit as a new invoice number.",
       "rationale": "Resubmitting the same invoice number against a rejected invoice creates a duplicate that is rejected again.",
@@ -755,7 +754,6 @@
     },
     {
       "id": "R-002",
-      "severity": "warn",
       "scope": "guide",
       "statement": "An 824 arrives within one business day of the invoice. No 824 means the invoice passed validation.",
       "rationale": "Silence is acceptance on this document, which is the opposite of the 997 convention.",
@@ -766,7 +764,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
       "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
@@ -777,7 +774,6 @@
     },
     {
       "id": "R-004",
-      "severity": "info",
       "scope": "hub",
       "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
       "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",

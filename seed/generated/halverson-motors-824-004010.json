@@ -744,7 +744,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "An 824 reporting TR means the transaction was not processed. Resend a corrected document; do not assume it will be reprocessed.",
       "rationale": "Rejected transactions are not queued for retry, and suppliers frequently assume they are.",
@@ -755,7 +754,6 @@
     },
     {
       "id": "R-002",
-      "severity": "warn",
       "scope": "guide",
       "statement": "An 824 may arrive up to four hours after the 997 for the same transaction.",
       "rationale": "Syntax validation is immediate; business validation runs against plant data on a schedule.",
@@ -766,7 +764,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
       "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
@@ -777,7 +774,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
       "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
@@ -788,7 +784,6 @@
     },
     {
       "id": "R-005",
-      "severity": "info",
       "scope": "hub",
       "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
       "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",

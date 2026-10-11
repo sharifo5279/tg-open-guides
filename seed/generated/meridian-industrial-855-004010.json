@@ -969,7 +969,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Acknowledge within 24 hours, or within four hours for drop-ship orders.",
       "rationale": "Meridian confirms a delivery date to the end customer from this document, and the customer is waiting.",
@@ -980,7 +979,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Every acknowledgment must carry a ship date, including backordered lines.",
       "rationale": "Meridian cannot quote a date to its customer without one, and the order sits in an exception queue.",
@@ -991,7 +989,6 @@
     },
     {
       "id": "R-003",
-      "severity": "warn",
       "scope": "guide",
       "statement": "A substitution must be functionally equivalent and pre-approved on the Meridian cross-reference. Unapproved substitutes are returned at supplier cost.",
       "rationale": "MRO substitutes affect equipment compatibility.",
@@ -1002,7 +999,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Drop-ship transactions must carry the end customer in N1*ST and Meridian in N1*BY. Reversing these ships product to the wrong address.",
       "rationale": "Roughly 40 percent of Meridian volume ships directly to the end customer, and the ship-to is not Meridian.",
@@ -1013,7 +1009,6 @@
     },
     {
       "id": "R-005",
-      "severity": "info",
       "scope": "hub",
       "statement": "Meridian returns a 997 within two hours and operates a nightly maintenance window from 02:00 to 03:00 Central.",
       "rationale": "Transmissions during the window queue and process at 03:00.",

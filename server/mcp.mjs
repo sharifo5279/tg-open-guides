@@ -150,7 +150,7 @@ function buildServer({ baseUrl }) {
       const required = (spec.segments || [])
         .filter((s) => s.usage === 'required')
         .map((s) => `${s.id}${s.loopId ? ` (${s.loopId})` : ''}`);
-      const rejects = (spec.rules || []).filter((r) => r.severity === 'reject');
+      const rules = spec.rules || [];
       return textResult(
         [
           `# ${spec.guide.title}`,
@@ -162,13 +162,13 @@ function buildServer({ baseUrl }) {
           spec.guide.summary || '',
           '',
           `## Scale`,
-          `${stats.segments} segments (${stats.requiredSegments} required), ${stats.elements} elements (${stats.requiredElements} required), ${stats.rules} rules of which ${stats.rejectRules} cause a rejection, ${stats.scenarios} expected scenarios.`,
+          `${stats.segments} segments (${stats.requiredSegments} required), ${stats.elements} elements (${stats.requiredElements} required), ${stats.rules} rules, ${stats.scenarios} expected scenarios.`,
           '',
           `## Required segments`,
           required.join(', ') || 'none',
           '',
-          `## Rules that cause a rejection`,
-          rejects.map((r) => `- ${r.id}: ${r.statement}`).join('\n') || 'none',
+          `## Enforced rules`,
+          rules.map((r) => `- ${r.id}: ${r.statement}`).join('\n') || 'none',
           '',
           `## Scenarios the hub expects`,
           (spec.scenarios || []).map((s) => `- ${s.id} ${s.name}: ${s.requirement || s.description || ''}`).join('\n') || 'none stated',
@@ -187,13 +187,12 @@ function buildServer({ baseUrl }) {
     {
       title: 'Get a guide’s rules',
       description:
-        'The hub’s enforced rules, each with the reason behind it and the source page it was compiled from. Filter to severity "reject" for the ones that cause a transaction to be refused. This is where most first-submission failures come from, so read it before writing structure. ' +
+        'The hub’s enforced rules, in the hub’s own words, each with its reason and the source page it was compiled from. ' +
         BOUNDARY,
       inputSchema: {
         guide: z.string().optional().describe('Exact reference such as "crestfield/856-004010"'),
         hub: z.string().optional(),
-        transactionSet: z.string().optional(),
-        severity: z.enum(['reject', 'warn', 'info']).optional().describe('Return only rules of this severity')
+        transactionSet: z.string().optional()
       }
     },
     async (args) => {
@@ -201,14 +200,14 @@ function buildServer({ baseUrl }) {
       if (!g) return notFound(args);
       const v = await getVersion(g.id);
       if (!v) return textResult(`${g.hub_name} has no published version of this guide.`);
-      const rules = (v.spec.rules || []).filter((r) => !args.severity || r.severity === args.severity);
-      if (!rules.length) return textResult('No rules match that filter.');
+      const rules = v.spec.rules || [];
+      if (!rules.length) return textResult('This guide publishes no separate rules.');
       return textResult(
         `${rules.length} rule(s) for ${v.spec.guide.hub.name} ${v.spec.guide.transactionSet}, guide version ${v.version}.\n\n` +
           rules
             .map((r) =>
               [
-                `## ${r.id} [${r.severity}]${r.appliesTo ? ` applies to ${r.appliesTo}` : ''}${r.citation?.page ? ` (source page ${r.citation.page})` : ''}`,
+                `## ${r.id}${r.appliesTo ? ` applies to ${r.appliesTo}` : ''}${r.citation?.page ? ` (source page ${r.citation.page})` : ''}`,
                 r.statement,
                 r.rationale ? `Reason: ${r.rationale}` : ''
               ]

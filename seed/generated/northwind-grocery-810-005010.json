@@ -1315,7 +1315,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Catch weight lines must invoice on actual received weight.",
       "rationale": "Invoicing nominal weight on random weight product creates a deduction on every single line.",
@@ -1326,7 +1325,6 @@
     },
     {
       "id": "R-002",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Promotional allowances must appear as SAC at line level, not as a reduced unit price.",
       "rationale": "Northwind reconciles promotional spend separately from cost of goods, and a netted price makes that impossible.",
@@ -1337,7 +1335,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Northwind is on 005010. Transactions at 004010 are rejected at the group level.",
       "rationale": "Northwind migrated in 2024 and does not maintain a 004010 translator.",
@@ -1348,7 +1345,6 @@
     },
     {
       "id": "R-004",
-      "severity": "warn",
       "scope": "hub",
       "statement": "Catch weight items must carry actual weight, not nominal. Nominal weight on a variable weight item produces an invoice discrepancy at receipt.",
       "rationale": "Random weight product is received by weight and invoiced by weight.",

@@ -590,7 +590,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Return a 997 within two hours.",
       "rationale": "Meridian escalates unacknowledged interchanges after two hours.",
@@ -601,7 +600,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Drop-ship transactions must carry the end customer in N1*ST and Meridian in N1*BY. Reversing these ships product to the wrong address.",
       "rationale": "Roughly 40 percent of Meridian volume ships directly to the end customer, and the ship-to is not Meridian.",
@@ -612,7 +610,6 @@
     },
     {
       "id": "R-003",
-      "severity": "info",
       "scope": "hub",
       "statement": "Meridian returns a 997 within two hours and operates a nightly maintenance window from 02:00 to 03:00 Central.",
       "rationale": "Transmissions during the window queue and process at 03:00.",

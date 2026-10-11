@@ -19,7 +19,6 @@
 export const SPEC_VERSION = 'og/1';
 
 export const USAGE = ['required', 'conditional', 'optional', 'notUsed'];
-export const SEVERITY = ['reject', 'warn', 'info'];
 export const DIRECTIONS = {
   partner_sends: 'Partner sends to hub',
   partner_receives: 'Partner receives from hub'
@@ -121,9 +120,6 @@ export function validateSpec(spec) {
       seenRule.add(rule.id);
     }
     if (!rule?.statement) errors.push(`${where}: statement is missing`);
-    if (rule?.severity && !SEVERITY.includes(rule.severity)) {
-      errors.push(`${where}: severity "${rule.severity}" is not one of ${SEVERITY.join(', ')}`);
-    }
     if (!rule?.citation?.page) warnings.push(`${where}: no source page cited`);
   }
 
@@ -147,7 +143,6 @@ export function specStats(spec) {
     requiredElements: elements.filter((e) => e.usage === 'required').length,
     codeLists: Object.keys(spec.codeLists || {}).length,
     rules: (spec.rules || []).length,
-    rejectRules: (spec.rules || []).filter((r) => r.severity === 'reject').length,
     scenarios: (spec.scenarios || []).length,
     citedFraction: citable === 0 ? 0 : cited / citable
   };
@@ -360,10 +355,8 @@ export function specToMarkdown(spec, { baseUrl = '', guidePath = '', version = n
   if ((spec.rules || []).length) {
     L.push('## Rules');
     L.push('');
-    L.push('A rule marked **reject** means the hub rejects the transaction when it is broken.');
-    L.push('');
-    for (const r of spec.rules) {
-      L.push(`### ${r.id} (${r.severity || 'info'})${cite(r.citation)}`);
+  for (const r of spec.rules) {
+      L.push(`### ${r.id}${cite(r.citation)}`);
       L.push('');
       L.push(r.statement);
       if (r.rationale) {

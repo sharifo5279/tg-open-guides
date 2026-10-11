@@ -13,7 +13,7 @@ import {
 } from './store.mjs';
 import { specToMarkdown } from './spec.mjs';
 import { renderGuidePage } from './render/guide.mjs';
-import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderNotFound } from './render/pages.mjs';
+import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderBacklog, renderNotFound } from './render/pages.mjs';
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
 
@@ -115,6 +115,10 @@ app.get('/h/:hub', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+app.get('/backlog', (req, res) => {
+  res.type('html').send(renderBacklog({ baseUrl: baseUrlOf(req) }));
 });
 
 app.get('/for-agents', async (req, res, next) => {

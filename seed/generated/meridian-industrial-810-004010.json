@@ -1325,7 +1325,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Drop-ship invoices must reference the ASN tracking number, since Meridian has no receipt of its own.",
       "rationale": "With no receipt, the tracking number is the only proof of delivery available for matching.",
@@ -1336,7 +1335,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "One invoice per shipment. Meridian does not accept monthly summary invoices.",
       "rationale": "Meridian pays per shipment, matched to a receipt or a delivery.",
@@ -1347,7 +1345,6 @@
     },
     {
       "id": "R-003",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Freight is payable only where the order states prepay and add. Unsupported freight is deducted.",
       "rationale": "Most Meridian terms are delivered.",
@@ -1358,7 +1355,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Drop-ship transactions must carry the end customer in N1*ST and Meridian in N1*BY. Reversing these ships product to the wrong address.",
       "rationale": "Roughly 40 percent of Meridian volume ships directly to the end customer, and the ship-to is not Meridian.",
@@ -1369,7 +1365,6 @@
     },
     {
       "id": "R-005",
-      "severity": "info",
       "scope": "hub",
       "statement": "Meridian returns a 997 within two hours and operates a nightly maintenance window from 02:00 to 03:00 Central.",
       "rationale": "Transmissions during the window queue and process at 03:00.",

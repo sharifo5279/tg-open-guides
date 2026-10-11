@@ -99,21 +99,13 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
 
 /* Rules */
 .rules { margin: 0; padding: 0; list-style: none; }
-.rule { border: 1px solid var(--line); border-radius: var(--r-c); padding: 14px 18px; margin-bottom: 10px; background: var(--white); }
-.rule.rule-reject { border-left: 4px solid var(--danger); }
-.rule.rule-warn { border-left: 4px solid var(--warning-ink); }
+.rule { border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: var(--r-c); padding: 14px 18px; margin-bottom: 10px; background: var(--white); }
 .rule-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
 .rule-id { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--slate); }
 .rule-stmt { color: var(--ink); font-size: 15px; margin: 0 0 4px; font-weight: 400; }
 .rule-why { font-size: 14px; color: var(--slate); margin: 0; }
 .rule-applies { font-family: var(--mono); font-size: 12px; color: var(--slate); }
 
-.ot-pill { display: inline-flex; align-items: center; gap: 5px; height: 21px; padding: 0 9px; border-radius: 999px; font: 700 11px/1 var(--sans); letter-spacing: .04em; text-transform: uppercase; flex: none; }
-.ot-pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-.ot-pill.blocked { color: var(--danger); background: var(--danger-tint); }
-.ot-pill.at-risk { color: var(--warning-ink); background: var(--warning-tint); }
-.ot-pill.info { color: var(--primary-dark); background: #E3EDFF; }
-.ot-pill.on-track { color: var(--success); background: var(--success-tint); }
 
 /* Usage tags stay plain text, not chips */
 .usage { font-size: 12px; font-weight: 600; letter-spacing: .01em; }
@@ -409,6 +401,7 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
   }
   .cw { display: block; }
   .tbl-el td > .cw, .tbl-stack td > .cw { min-width: 0; }
+  .tbl-stack td > * { grid-column: 2; }
   /* A cell with nothing in it is noise once it has a label of its own. */
   .tbl-el td:has(> .cw:empty), .tbl-stack td:has(> .cw:empty) { display: none; }
   .tbl-el td .el-dict { display: inline; margin-left: 6px; }
@@ -633,4 +626,16 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 @media (hover: none) and (pointer: coarse) {
   .hubrow > a { min-height: 44px; }
   .dr-set, .dr-title { padding: 2px 0; }
+}
+
+/* Backlog */
+.foot-links { font-size: 13px; margin: 0 0 8px; }
+.bl-state { font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--slate); }
+.bl-state.s-done { color: var(--success); }
+.bl-state.s-blocked { color: var(--danger); }
+.bl-state.s-partial, .bl-state.s-built-untested { color: var(--warning-ink); }
+@media (min-width: 761px) {
+  .tbl-stack th:nth-child(1), .tbl-stack td:nth-child(1) { width: 62px; }
+  .tbl-stack th:nth-child(2), .tbl-stack td:nth-child(2) { width: 20%; }
+  .tbl-stack th:nth-child(5), .tbl-stack td:nth-child(5) { width: 52px; }
 }

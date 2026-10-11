@@ -1,5 +1,6 @@
-import { esc, inlineProse, layout, severityPill } from './html.mjs';
+import { esc, inlineProse, layout } from './html.mjs';
 import { DIRECTIONS } from '../spec.mjs';
+import { EPICS, PERSONAS, OUT_OF_SCOPE } from '../backlog.mjs';
 
 /**
  * Home and the hub front door.
@@ -125,10 +126,7 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
       })).filter((r) => r.guides.length)
     : [{ role: null, guides }];
 
-  const rules = [...(hub.commonRules || [])].sort((a, b) => {
-    const order = { reject: 0, warn: 1, info: 2 };
-    return (order[a.severity] ?? 3) - (order[b.severity] ?? 3);
-  });
+  const rules = hub.commonRules || [];
 
   const d = hub.delimiters || {};
   const env = hub.envelope || {};
@@ -181,8 +179,8 @@ ${rules.length ? `<section class="section"><div class="shell">
   <h2>Hub-wide rules</h2>
   <p class="section-sub">Enforced by ${esc(hub.name)} across every transaction set.</p>
   <ul class="rules">
-    ${rules.map((r) => `<li class="rule ${r.severity === 'reject' ? 'rule-reject' : r.severity === 'warn' ? 'rule-warn' : ''}">
-      <div class="rule-head">${severityPill(r.severity)}<span class="rule-id">${esc(r.id)}</span>${r.appliesTo ? `<span class="rule-applies">${esc(r.appliesTo)}</span>` : ''}</div>
+    ${rules.map((r) => `<li class="rule">
+      <div class="rule-head"><span class="rule-id">${esc(r.id)}</span>${r.appliesTo ? `<span class="rule-applies">${esc(r.appliesTo)}</span>` : ''}</div>
       <p class="rule-stmt">${inlineProse(r.statement)}</p>
       ${r.rationale ? `<p class="rule-why">${inlineProse(r.rationale)}</p>` : ''}
     </li>`).join('')}
@@ -304,7 +302,7 @@ export function hubToMarkdown({ hub, guides, baseUrl = '' }) {
     L.push('## Rules that apply to every document');
     L.push('');
     for (const r of hub.commonRules) {
-      L.push(`### ${r.id} [${r.severity}]${r.appliesTo ? ` applies to ${r.appliesTo}` : ''}`);
+      L.push(`### ${r.id}${r.appliesTo ? ` applies to ${r.appliesTo}` : ''}`);
       L.push(r.statement);
       if (r.rationale) L.push(`Reason: ${r.rationale}`);
       L.push('');
@@ -406,6 +404,61 @@ document.addEventListener('click', function (e) {
     canonical: `${baseUrl}/for-agents`,
     body
   });
+}
+
+export function renderBacklog({ baseUrl = '' } = {}) {
+  const items = EPICS.flatMap((e) => e.items);
+  const state = (v) => `<span class="bl-state s-${esc(String(v).toLowerCase().replace(/[^a-z]+/g, '-'))}">${esc(v)}</span>`;
+  const names = Object.fromEntries(PERSONAS.map((p) => [p.id, p.name]));
+
+  const body = `
+<div class="phead"><div class="shell">
+  <p class="eyebrow">Internal</p>
+  <h1>Product manager's backlog</h1>
+  <p class="lede">Work required to run Trading Grid Open Guides as a standalone product with its own accounts.</p>
+  <ul class="specline">
+    <li><b>${EPICS.length}</b> epics</li>
+    <li><b>${items.length}</b> items</li>
+    <li><b>${PERSONAS.length}</b> personas</li>
+  </ul>
+</div></div>
+
+<section class="section"><div class="shell">
+  <h2>Personas</h2>
+  <p class="section-sub">Capability differs by permission. Every account is fully entitled.</p>
+  <div class="tbl-wrap"><table class="tbl tbl-stack">
+    <thead><tr><th>Persona</th><th>Who</th><th>Needs</th></tr></thead>
+    <tbody>${PERSONAS.map((p) => `<tr>
+      <td data-l="Persona"><b>${esc(p.name)}</b></td>
+      <td data-l="Who">${esc(p.who)}</td>
+      <td data-l="Needs">${esc(p.needs)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>
+</div></section>
+
+${EPICS.map((e) => `<section class="section"><div class="shell">
+  <div class="dgroup-h"><h3>${esc(e.id)}. ${esc(e.name)}</h3><span class="dg-n">${e.items.length}</span></div>
+  <p class="section-sub">${esc(e.why)}</p>
+  <div class="tbl-wrap"><table class="tbl tbl-stack">
+    <thead><tr><th>ID</th><th>Item</th><th>Detail</th><th>Personas</th><th>Size</th><th>State</th></tr></thead>
+    <tbody>${e.items.map((i) => `<tr>
+      <td class="mono" data-l="ID">${esc(i.id)}</td>
+      <td data-l="Item"><b>${esc(i.title)}</b></td>
+      <td data-l="Detail">${esc(i.detail)}</td>
+      <td data-l="Personas"><span class="el-note">${esc(i.personas.map((x) => names[x]).join(', '))}</span></td>
+      <td class="mono" data-l="Size">${esc(i.size)}</td>
+      <td data-l="State">${state(i.state)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>
+</div></section>`).join('')}
+
+<section class="section"><div class="shell">
+  <h2>Out of scope</h2>
+  <p class="section-sub">Deliberately excluded. Revisit only with a stated reason.</p>
+  <ul class="inline-list">${OUT_OF_SCOPE.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+</div></section>`;
+
+  return layout({ title: "Product manager's backlog | Trading Grid Open Guides", body, canonical: `${baseUrl}/backlog` });
 }
 
 export function renderNotFound() {

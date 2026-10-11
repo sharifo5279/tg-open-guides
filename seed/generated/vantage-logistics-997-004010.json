@@ -590,7 +590,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Return a 997 within 15 minutes.",
       "rationale": "Vantage treats an unacknowledged tender as undelivered and re-tenders it.",
@@ -601,7 +600,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
       "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
@@ -612,7 +610,6 @@
     },
     {
       "id": "R-003",
-      "severity": "info",
       "scope": "hub",
       "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
       "rationale": "Freight moves overnight, so the interface does not close.",

@@ -1,4 +1,4 @@
-import { esc, inlineProse, layout, severityPill, citeTag } from './html.mjs';
+import { esc, inlineProse, layout, citeTag } from './html.mjs';
 import {
   DIRECTIONS,
   outline,
@@ -46,7 +46,7 @@ function reqCell(usage) {
 function sidebar(spec, areas) {
   const sections = [
     ['requirements', 'What you must send'],
-    ['rejects', 'What gets you rejected'],
+    ['rules', 'Enforced rules'],
     ['agents', 'For your agent'],
     ['scenarios', 'Scenarios'],
     ['envelope', 'Envelope'],
@@ -210,9 +210,8 @@ function requiredSummary(spec) {
 }
 
 function ruleItem(rule) {
-  const cls = rule.severity === 'reject' ? 'rule rule-reject' : rule.severity === 'warn' ? 'rule rule-warn' : 'rule';
-  return `<li class="${cls}" id="rule-${esc(rule.id)}">
-<div class="rule-head">${severityPill(rule.severity)}<span class="rule-id">${esc(rule.id)}</span>${rule.appliesTo ? `<span class="rule-applies">${esc(rule.appliesTo)}</span>` : ''}${citeTag(rule.citation)}</div>
+  return `<li class="rule" id="rule-${esc(rule.id)}">
+<div class="rule-head"><span class="rule-id">${esc(rule.id)}</span>${rule.appliesTo ? `<span class="rule-applies">${esc(rule.appliesTo)}</span>` : ''}${citeTag(rule.citation)}</div>
 <p class="rule-stmt">${inlineProse(rule.statement)}</p>
 ${rule.rationale ? `<p class="rule-why">${inlineProse(rule.rationale)}</p>` : ''}
 </li>`;
@@ -231,8 +230,7 @@ export function renderGuidePage({
   const g = spec.guide || {};
   const stats = specStats(spec);
   const areas = outline(spec);
-  const rejects = (spec.rules || []).filter((r) => r.severity === 'reject');
-  const others = (spec.rules || []).filter((r) => r.severity !== 'reject');
+  const rules = spec.rules || [];
   const mdUrl = `${guidePath}.md`;
   const jsonUrl = `${guidePath}.json`;
   const mcpConfig = JSON.stringify(
@@ -281,15 +279,14 @@ ${sidebar(spec, areas)}
 
   <section class="dsec" id="requirements">
     <h2>Required segments</h2>
-    <p class="section-sub">${stats.requiredSegments} mandatory segments, ${stats.requiredElements} mandatory elements, ${stats.rejectRules} rejection rules.</p>
+    <p class="section-sub">${stats.requiredSegments} mandatory segments, ${stats.requiredElements} mandatory elements, ${stats.rules} enforced rules.</p>
     <ul class="reqgrid">${requiredSummary(spec)}</ul>
   </section>
 
-  <section class="dsec" id="rejects">
-    <h2>Rejection rules</h2>
-    <p class="section-sub">Enforced by ${esc(g.hub?.name)}. A transaction breaking any of these is refused.</p>
-    <ul class="rules">${rejects.map(ruleItem).join('\n')}</ul>
-    ${others.length ? `<h3>Other rules</h3><ul class="rules">${others.map(ruleItem).join('\n')}</ul>` : ''}
+  <section class="dsec" id="rules">
+    <h2>Enforced rules</h2>
+    <p class="section-sub">Stated by ${esc(g.hub?.name)} in its own words, each cited to a source page.</p>
+    <ul class="rules">${rules.map(ruleItem).join('\n')}</ul>
   </section>
 
   <section class="dsec" id="agents">

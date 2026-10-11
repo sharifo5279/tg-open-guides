@@ -90,17 +90,12 @@ ${head}
 <main>${body}</main>
 <footer class="foot">
   <div class="shell">
+    <p class="foot-links"><a href="/backlog">Product manager's backlog</a></p>
     <p class="foot-note">Incubation prototype. Hubs attest their own requirements; OpenText publishes and does not verify them. All hubs and guide content here are fictional.</p>
   </div>
 </footer>
 </body>
 </html>`;
-}
-
-export function severityPill(severity) {
-  const label = { reject: 'Reject', warn: 'Warn', info: 'Info' }[severity] || esc(severity);
-  const cls = { reject: 'blocked', warn: 'at-risk', info: 'info' }[severity] || 'info';
-  return `<span class="ot-pill ${cls}">${label}</span>`;
 }
 
 export function usageTag(usage) {

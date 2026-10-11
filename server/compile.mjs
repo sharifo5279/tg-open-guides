@@ -27,7 +27,7 @@ Rules you must follow:
 1. Cite everything. Every segment, element and rule carries "citation": {"page": N} using the page numbers given in the input. Never invent a page number. If you cannot attribute an item to a page, omit the item.
 2. Never invent requirements. If the pages do not say it, it does not exist. Do not fill gaps from your knowledge of the standard or of how other hubs work.
 3. Mark your confidence honestly. "confidence": "high" when the page states it plainly, "low" when you are inferring from a table that was hard to read, from ambiguous wording, or from a partial page.
-4. Rules are the hub's enforced constraints that are not expressible as a usage or a code list: uniqueness, cross-segment equality, timing, counts, matching against external data. Assign severity "reject" when the guide says the transaction is rejected or refused, "warn" when it says held, charged back or queried, "info" otherwise.
+4. Rules are the hub's enforced constraints that are not expressible as a usage or a code list: uniqueness, cross-segment equality, timing, counts, matching against external data. Record the hub's own wording, including any consequence it states. Do not classify or rank them.
 5. Quote the hub's own wording where you can. Do not editorialise and do not soften a requirement.
 
 Return JSON only, no prose.`;
@@ -75,8 +75,7 @@ Return this shape:
   "rules": [
     {
       "id": null,
-      "severity": "reject|warn|info",
-      "statement": "what the partner must do, in the hub's terms",
+      "statement": "what the partner must do, in the hub's terms, including any consequence the guide states",
       "rationale": "why, if the guide says",
       "appliesTo": "BSN05 or HL-P/MAN or transmission",
       "confidence": "high|low",
@@ -203,11 +202,9 @@ function mergeRules(target, incoming, allowedPages) {
     // Chunk overlap produces near-duplicates; first 60 characters is a good enough key.
     const fingerprint = statement.slice(0, 60).toLowerCase();
     if (target.some((r) => r.statement.slice(0, 60).toLowerCase() === fingerprint)) continue;
-    const severity = ['reject', 'warn', 'info'].includes(raw.severity) ? raw.severity : 'info';
     const citation = cleanCitation(raw.citation, allowedPages);
     target.push({
       id: null,
-      severity,
       statement,
       rationale: raw.rationale || null,
       appliesTo: raw.appliesTo || null,
@@ -228,8 +225,8 @@ function findGaps(spec, notFound) {
   if (!spec.envelope?.isa?.length) gaps.push('No ISA interchange requirements found. Partners will not know which sender and receiver qualifiers to use.');
   if (!spec.envelope?.gs?.length) gaps.push('No GS functional group requirements found.');
   if (!ids.has('ST') || !ids.has('SE')) gaps.push('ST or SE is missing from the extracted structure, which means the transaction envelope is incomplete.');
-  if (!(spec.rules || []).some((r) => r.severity === 'reject')) {
-    gaps.push('No rejecting rules were found. Either the guide does not say what causes a rejection, or the compiler missed it. This is the single most useful thing to add for partners.');
+  if (!(spec.rules || []).length) {
+    gaps.push('No enforced rules were found. Either the guide states none, or the compiler missed them.');
   }
   if (!(spec.scenarios || []).length) gaps.push('No test scenarios found. Partners will guess which cases to prove before certification.');
   if (!(spec.contacts || []).length) gaps.push('No support contact found.');

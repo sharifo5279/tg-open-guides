@@ -1489,7 +1489,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Delivery outside the window bounded by DTM*038 and DTM*063 is refused at the DC door.",
       "rationale": "Northwind schedules dock labour against the window and has no capacity for early or late arrivals.",
@@ -1500,7 +1499,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Case code (UK) is required for every line destined to a DC. Direct store delivery lines may use UP.",
       "rationale": "DC receiving scans the case, not the consumer unit.",
@@ -1511,7 +1509,6 @@
     },
     {
       "id": "R-003",
-      "severity": "warn",
       "scope": "guide",
       "statement": "An order may contain both DC and store destination lines. Do not assume one destination per order.",
       "rationale": "Suppliers who assume a single ship-to misroute the store lines.",
@@ -1522,7 +1519,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Northwind is on 005010. Transactions at 004010 are rejected at the group level.",
       "rationale": "Northwind migrated in 2024 and does not maintain a 004010 translator.",
@@ -1533,7 +1529,6 @@
     },
     {
       "id": "R-005",
-      "severity": "warn",
       "scope": "hub",
       "statement": "Catch weight items must carry actual weight, not nominal. Nominal weight on a variable weight item produces an invoice discrepancy at receipt.",
       "rationale": "Random weight product is received by weight and invoiced by weight.",

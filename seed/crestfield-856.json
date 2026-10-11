@@ -1540,7 +1540,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "statement": "BSN05 must be 0001. The transaction must carry all four levels: shipment, order, pack, item.",
       "rationale": "Crestfield receives by scanning carton labels. Without a pack level there is nothing for the scan to match, and the trailer is received manually.",
       "appliesTo": "BSN05",
@@ -1550,7 +1549,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "statement": "Every Pack-level HL must carry exactly one MAN segment with MAN01 = GM and an 18-digit MAN02 whose mod-10 check digit is valid.",
       "rationale": "The SSCC is the join between the physical carton and this transaction. A missing or malformed SSCC makes the carton unreceivable.",
       "appliesTo": "HL-P/MAN",
@@ -1560,7 +1558,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "statement": "MAN02 values must be unique within the transaction and must not repeat any SSCC sent to Crestfield in the previous 12 months.",
       "rationale": "A duplicate SSCC silently overwrites an earlier receipt and produces an inventory discrepancy nobody can trace.",
       "appliesTo": "HL-P/MAN02",
@@ -1570,7 +1567,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "statement": "BSN02 must be unique across all shipments sent to Crestfield for 24 months.",
       "rationale": "Shipment identifier is the key for every downstream enquiry and chargeback dispute.",
       "appliesTo": "BSN02",
@@ -1580,7 +1576,6 @@
     },
     {
       "id": "R-005",
-      "severity": "reject",
       "statement": "PRF01 must match an open Crestfield purchase order, with leading zeros preserved.",
       "rationale": "An ASN against an unknown PO cannot be received and is returned to the supplier for correction.",
       "appliesTo": "HL-O/PRF01",
@@ -1590,7 +1585,6 @@
     },
     {
       "id": "R-006",
-      "severity": "reject",
       "statement": "CTT01 must equal the total number of HL segments in the transaction, counting all four levels.",
       "rationale": "A mismatch indicates a truncated transmission, so Crestfield rejects rather than receive a partial trailer.",
       "appliesTo": "CTT01",
@@ -1600,7 +1594,6 @@
     },
     {
       "id": "R-007",
-      "severity": "reject",
       "statement": "TD102 must equal the number of Pack-level HL segments in the transaction.",
       "rationale": "Carton count on the bill of lading and carton count in the ASN have to agree before the trailer is unloaded.",
       "appliesTo": "TD102",
@@ -1610,7 +1603,6 @@
     },
     {
       "id": "R-008",
-      "severity": "reject",
       "statement": "N1*ST must carry N103 = 92 and a Crestfield DC code listed on your routing guide.",
       "rationale": "The envelope does not identify the DC, so this is the only routing information in the transaction.",
       "appliesTo": "HL-S/N1",
@@ -1620,7 +1612,6 @@
     },
     {
       "id": "R-009",
-      "severity": "warn",
       "statement": "SN102 summed across all item levels for a given PO line must not exceed the quantity ordered on that line.",
       "rationale": "Crestfield receives to the ordered quantity. Overage is held at the dock pending buyer approval rather than rejected outright.",
       "appliesTo": "HL-I/SN102",
@@ -1630,7 +1621,6 @@
     },
     {
       "id": "R-010",
-      "severity": "reject",
       "statement": "The ASN must be received by Crestfield before the trailer arrives at the DC, and in no case later than 60 minutes after departure from your facility.",
       "rationale": "A trailer that arrives before its ASN is turned away or held, and the delay is charged back.",
       "appliesTo": "transmission",
@@ -1640,7 +1630,6 @@
     },
     {
       "id": "R-011",
-      "severity": "warn",
       "statement": "Cancellations must be sent as BSN01 = 01 carrying the original BSN02, and must reach Crestfield before the trailer arrives.",
       "rationale": "A cancellation after arrival cannot be applied, and the receipt proceeds against the original ASN.",
       "appliesTo": "BSN01",
@@ -1650,7 +1639,6 @@
     },
     {
       "id": "R-012",
-      "severity": "info",
       "statement": "Crestfield returns a 997 functional acknowledgment within 60 minutes of receiving an interchange. Absence of a 997 after 60 minutes should be treated as a transmission failure on your side.",
       "rationale": "A silent failure is the most common reason a supplier believes an ASN was sent when Crestfield never received it.",
       "appliesTo": "transmission",
@@ -1660,7 +1648,6 @@
     },
     {
       "id": "R-013",
-      "severity": "reject",
       "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
       "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
       "appliesTo": "ISA15",

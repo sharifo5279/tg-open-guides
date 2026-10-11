@@ -1389,7 +1389,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Service invoices must reference a signed field ticket number in REF*FT.",
       "rationale": "With no receipt against a service, the field ticket is the only proof of performance and Cobalt cannot approve payment without it.",
@@ -1400,7 +1399,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Tax must be stated separately in TXI by jurisdiction. Tax folded into the unit price is rejected.",
       "rationale": "Cobalt recovers tax by jurisdiction and cannot do so from a tax-inclusive price.",
@@ -1411,7 +1409,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "guide",
       "statement": "The AFE on the invoice must match the AFE on the purchase order.",
       "rationale": "Invoices are coded to the AFE at approval, and a mismatch routes the invoice to a manual exception queue.",
@@ -1422,7 +1419,6 @@
     },
     {
       "id": "R-004",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Invoices submitted more than 60 days after the service date fall outside the accrual window and require management approval.",
       "rationale": "Late invoices distort well cost reporting after the books close.",
@@ -1433,7 +1429,6 @@
     },
     {
       "id": "R-005",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
       "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
@@ -1444,7 +1439,6 @@
     },
     {
       "id": "R-006",
-      "severity": "info",
       "scope": "hub",
       "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
       "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",

@@ -1509,7 +1509,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Each size and colour combination is a separate PO1 line with its own GTIN. A single line for a whole style is rejected.",
       "rationale": "Brightline allocates to stores by size curve, which is impossible from a style-level order.",
@@ -1520,7 +1519,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Shipping before the ship-not-before date (DTM*037) is a compliance violation and the goods may be refused.",
       "rationale": "Early receipt occupies DC space allocated to another vendor and disrupts the floor-set calendar.",
@@ -1531,7 +1529,6 @@
     },
     {
       "id": "R-003",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Prepack and assortment orders carry the pack configuration in PO4. Breaking a prepack is a chargeback.",
       "rationale": "Prepacks are built to a store size curve and are shipped to the floor unopened.",
@@ -1542,7 +1539,6 @@
     },
     {
       "id": "R-004",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every style must be identified by the Brightline style, colour and size combination. A style number alone is not sufficient on any transaction.",
       "rationale": "Apparel is bought and sold at the size and colour level, and a style-level transaction cannot be allocated to a store.",
@@ -1553,7 +1549,6 @@
     },
     {
       "id": "R-005",
-      "severity": "warn",
       "scope": "hub",
       "statement": "Vendor compliance chargebacks are applied monthly against the standards in the routing manual, not against this guide alone.",
       "rationale": "The routing manual covers physical packing and labelling, which EDI cannot express.",
@@ -1564,7 +1559,6 @@
     },
     {
       "id": "R-006",
-      "severity": "info",
       "scope": "hub",
       "statement": "Brightline returns a 997 within four hours. The EDI interface is unavailable Sunday 02:00 to 06:00 Eastern for maintenance.",
       "rationale": "The weekly window is used for item master and allocation processing.",

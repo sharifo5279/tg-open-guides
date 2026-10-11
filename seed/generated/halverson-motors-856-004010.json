@@ -1831,7 +1831,6 @@
   "rules": [
     {
       "id": "R-001",
-      "severity": "reject",
       "scope": "guide",
       "statement": "The ASN must be transmitted within 30 minutes of despatch and before the trailer arrives at the plant.",
       "rationale": "Receiving opens on the ASN. A trailer that arrives first waits at the gate and the delay is recorded against your supplier scorecard.",
@@ -1842,7 +1841,6 @@
     },
     {
       "id": "R-002",
-      "severity": "reject",
       "scope": "guide",
       "statement": "Each pack level must carry the container serial printed on the AIAG label, matching digit for digit.",
       "rationale": "Dock scanning matches the label to the pack level; a mismatch means the container is received by hand.",
@@ -1853,7 +1851,6 @@
     },
     {
       "id": "R-003",
-      "severity": "reject",
       "scope": "guide",
       "statement": "The engineering change level on the ASN must match the level on the physical parts.",
       "rationale": "A change level mismatch is a containment event at Halverson, not a correction.",
@@ -1864,7 +1861,6 @@
     },
     {
       "id": "R-004",
-      "severity": "warn",
       "scope": "guide",
       "statement": "Quantity shipped may not exceed the firm requirement by more than one standard pack.",
       "rationale": "Overshipment against a cumulative schedule inflates the cumulative and disrupts the next release.",
@@ -1875,7 +1871,6 @@
     },
     {
       "id": "R-005",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
       "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
@@ -1886,7 +1881,6 @@
     },
     {
       "id": "R-006",
-      "severity": "reject",
       "scope": "hub",
       "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
       "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
@@ -1897,7 +1891,6 @@
     },
     {
       "id": "R-007",
-      "severity": "info",
       "scope": "hub",
       "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
       "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
