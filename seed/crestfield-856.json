@@ -23,27 +23,203 @@
     "component": ">",
     "repetition": "^"
   },
+  "loops": {
+    "HL-S": {
+      "name": "Shipment level",
+      "usage": "required",
+      "repeat": 1,
+      "parent": null,
+      "note": "One shipment level per transaction. One ASN describes one trailer arriving at one DC.",
+      "citation": {
+        "page": 12
+      }
+    },
+    "HL-S/N1": {
+      "name": "Shipment names",
+      "usage": "required",
+      "repeat": 2,
+      "parent": "HL-S",
+      "note": "Ship To and Ship From, one iteration each.",
+      "citation": {
+        "page": 17
+      }
+    },
+    "HL-O": {
+      "name": "Order level",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": "HL-S",
+      "note": "One per Crestfield purchase order on the trailer.",
+      "citation": {
+        "page": 18
+      }
+    },
+    "HL-P": {
+      "name": "Pack level",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": "HL-O",
+      "note": "One per physical carton. This is the level the dock scans.",
+      "citation": {
+        "page": 20
+      }
+    },
+    "HL-I": {
+      "name": "Item level",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": "HL-P",
+      "note": "One per distinct product within a carton.",
+      "citation": {
+        "page": 23
+      }
+    }
+  },
   "envelope": {
     "isa": [
-      { "ref": "ISA05", "name": "Interchange ID Qualifier (sender)", "usage": "required", "value": "01", "note": "DUNS. Crestfield does not accept ZZ in production.", "citation": { "page": 6 } },
-      { "ref": "ISA06", "name": "Interchange Sender ID", "usage": "required", "note": "Your 9-digit DUNS, left justified, space filled to 15.", "citation": { "page": 6 } },
-      { "ref": "ISA07", "name": "Interchange ID Qualifier (receiver)", "usage": "required", "value": "01", "citation": { "page": 6 } },
-      { "ref": "ISA08", "name": "Interchange Receiver ID", "usage": "required", "value": "078115096", "note": "Crestfield DUNS. Same value for all DCs; the DC is identified in N1*ST, not in the envelope.", "citation": { "page": 6 } },
-      { "ref": "ISA11", "name": "Interchange Control Standards Identifier", "usage": "required", "value": "U", "citation": { "page": 6 } },
-      { "ref": "ISA12", "name": "Interchange Control Version Number", "usage": "required", "value": "00401", "citation": { "page": 6 } },
-      { "ref": "ISA14", "name": "Acknowledgment Requested", "usage": "required", "value": "1", "note": "Crestfield returns a 997 for every interchange. Set 1 so your side expects it.", "citation": { "page": 7 } },
-      { "ref": "ISA15", "name": "Usage Indicator", "usage": "required", "note": "T during certification, P once Crestfield confirms production cutover in writing. Sending P before cutover routes your shipment into a queue nobody watches.", "citation": { "page": 7 } }
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "DUNS. Crestfield does not accept ZZ in production.",
+        "citation": {
+          "page": 6
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "note": "Your 9-digit DUNS, left justified, space filled to 15.",
+        "citation": {
+          "page": 6
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "citation": {
+          "page": 6
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "078115096",
+        "note": "Crestfield DUNS. Same value for all DCs; the DC is identified in N1*ST, not in the envelope.",
+        "citation": {
+          "page": 6
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "citation": {
+          "page": 6
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "citation": {
+          "page": 6
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Crestfield returns a 997 for every interchange. Set 1 so your side expects it.",
+        "citation": {
+          "page": 7
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "note": "T during certification, P once Crestfield confirms production cutover in writing. Sending P before cutover routes your shipment into a queue nobody watches.",
+        "citation": {
+          "page": 7
+        }
+      }
     ],
     "gs": [
-      { "ref": "GS01", "name": "Functional Identifier Code", "usage": "required", "value": "SH", "citation": { "page": 7 } },
-      { "ref": "GS02", "name": "Application Sender's Code", "usage": "required", "note": "Same DUNS as ISA06.", "citation": { "page": 7 } },
-      { "ref": "GS03", "name": "Application Receiver's Code", "usage": "required", "value": "CRESTFIELD", "citation": { "page": 7 } },
-      { "ref": "GS07", "name": "Responsible Agency Code", "usage": "required", "value": "X", "citation": { "page": 7 } },
-      { "ref": "GS08", "name": "Version / Release / Industry Identifier Code", "usage": "required", "value": "004010", "note": "004010 only. Crestfield will not translate 003060 or 005010 on this transaction.", "citation": { "page": 7 } }
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "SH",
+        "citation": {
+          "page": 7
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "note": "Same DUNS as ISA06.",
+        "citation": {
+          "page": 7
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "CRESTFIELD",
+        "citation": {
+          "page": 7
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "citation": {
+          "page": 7
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Crestfield will not translate 003060 or 005010 on this transaction.",
+        "citation": {
+          "page": 7
+        }
+      }
     ],
     "st": [
-      { "ref": "ST01", "name": "Transaction Set Identifier Code", "usage": "required", "value": "856", "citation": { "page": 8 } },
-      { "ref": "ST02", "name": "Transaction Set Control Number", "usage": "required", "note": "Unique within the functional group, and must equal SE02.", "citation": { "page": 8 } }
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "856",
+        "citation": {
+          "page": 8
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 8
+        }
+      }
     ]
   },
   "segments": [
@@ -55,10 +231,41 @@
       "loopId": null,
       "usage": "required",
       "maxUse": 1,
-      "citation": { "page": 8 },
+      "citation": {
+        "page": 8
+      },
       "elements": [
-        { "ref": "ST01", "id": "143", "name": "Transaction Set Identifier Code", "type": "ID", "min": 3, "max": 3, "usage": "required", "values": [{ "code": "856", "description": "Ship Notice/Manifest" }], "citation": { "page": 8 } },
-        { "ref": "ST02", "id": "329", "name": "Transaction Set Control Number", "type": "AN", "min": 4, "max": 9, "usage": "required", "note": "Must match SE02.", "citation": { "page": 8 } }
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "856",
+              "description": "Ship Notice/Manifest"
+            }
+          ],
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "note": "Must match SE02.",
+          "citation": {
+            "page": 8
+          }
+        }
       ]
     },
     {
@@ -70,13 +277,96 @@
       "usage": "required",
       "maxUse": 1,
       "note": "BSN02 is the shipment identifier Crestfield uses in every downstream conversation about this delivery. Choose something your warehouse system can reproduce on request.",
-      "citation": { "page": 9 },
+      "citation": {
+        "page": 9
+      },
       "elements": [
-        { "ref": "BSN01", "id": "353", "name": "Transaction Set Purpose Code", "type": "ID", "min": 2, "max": 2, "usage": "required", "values": [{ "code": "00", "description": "Original" }, { "code": "01", "description": "Cancellation", "note": "Carries the BSN02 of the shipment being cancelled." }, { "code": "07", "description": "Duplicate", "note": "Only on Crestfield's written request after a confirmed loss." }], "citation": { "page": 9 } },
-        { "ref": "BSN02", "id": "396", "name": "Shipment Identification", "type": "AN", "min": 2, "max": 30, "usage": "required", "note": "Unique across all your shipments to Crestfield for 24 months. Reuse is rejected as a duplicate even years apart.", "citation": { "page": 9 } },
-        { "ref": "BSN03", "id": "373", "name": "Date", "type": "DT", "min": 8, "max": 8, "usage": "required", "note": "CCYYMMDD, the date this ASN was created, not the ship date.", "citation": { "page": 9 } },
-        { "ref": "BSN04", "id": "337", "name": "Time", "type": "TM", "min": 4, "max": 8, "usage": "required", "note": "HHMM in the DC's local time zone.", "citation": { "page": 9 } },
-        { "ref": "BSN05", "id": "1005", "name": "Hierarchical Structure Code", "type": "ID", "min": 4, "max": 4, "usage": "required", "values": [{ "code": "0001", "description": "Shipment, Order, Packaging, Item" }], "note": "Crestfield requires 0001. 0004 (no pack level) is rejected because the dock scans carton labels.", "citation": { "page": 10 } }
+        {
+          "ref": "BSN01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original"
+            },
+            {
+              "code": "01",
+              "description": "Cancellation",
+              "note": "Carries the BSN02 of the shipment being cancelled."
+            },
+            {
+              "code": "07",
+              "description": "Duplicate",
+              "note": "Only on Crestfield's written request after a confirmed loss."
+            }
+          ],
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "BSN02",
+          "id": "396",
+          "name": "Shipment Identification",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "note": "Unique across all your shipments to Crestfield for 24 months. Reuse is rejected as a duplicate even years apart.",
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "BSN03",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "note": "CCYYMMDD, the date this ASN was created, not the ship date.",
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "BSN04",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "required",
+          "note": "HHMM in the DC's local time zone.",
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "BSN05",
+          "id": "1005",
+          "name": "Hierarchical Structure Code",
+          "type": "ID",
+          "min": 4,
+          "max": 4,
+          "usage": "required",
+          "values": [
+            {
+              "code": "0001",
+              "description": "Shipment, Order, Packaging, Item"
+            }
+          ],
+          "note": "Crestfield requires 0001. 0004 (no pack level) is rejected because the dock scans carton labels.",
+          "citation": {
+            "page": 10
+          }
+        }
       ]
     },
     {
@@ -87,11 +377,59 @@
       "loopId": null,
       "usage": "required",
       "maxUse": 2,
-      "citation": { "page": 11 },
+      "citation": {
+        "page": 11
+      },
       "elements": [
-        { "ref": "DTM01", "id": "374", "name": "Date/Time Qualifier", "type": "ID", "min": 3, "max": 3, "usage": "required", "values": [{ "code": "011", "description": "Shipped", "note": "Required." }, { "code": "017", "description": "Estimated delivery", "note": "Required when the carrier has given you an appointment." }], "citation": { "page": 11 } },
-        { "ref": "DTM02", "id": "373", "name": "Date", "type": "DT", "min": 8, "max": 8, "usage": "required", "citation": { "page": 11 } },
-        { "ref": "DTM03", "id": "337", "name": "Time", "type": "TM", "min": 4, "max": 4, "usage": "conditional", "note": "Required with qualifier 011.", "citation": { "page": 11 } }
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "011",
+              "description": "Shipped",
+              "note": "Required."
+            },
+            {
+              "code": "017",
+              "description": "Estimated delivery",
+              "note": "Required when the carrier has given you an appointment."
+            }
+          ],
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 4,
+          "usage": "conditional",
+          "note": "Required with qualifier 011.",
+          "citation": {
+            "page": 11
+          }
+        }
       ]
     },
     {
@@ -103,12 +441,77 @@
       "usage": "required",
       "maxUse": 1,
       "note": "Exactly one shipment level per transaction. One ASN describes one trailer arriving at one DC.",
-      "citation": { "page": 12 },
+      "citation": {
+        "page": 12
+      },
       "elements": [
-        { "ref": "HL01", "id": "628", "name": "Hierarchical ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "values": [{ "code": "1", "description": "Shipment level is always 1" }], "citation": { "page": 12 } },
-        { "ref": "HL02", "id": "734", "name": "Hierarchical Parent ID Number", "type": "AN", "min": 1, "max": 12, "usage": "notUsed", "note": "Omit at shipment level.", "citation": { "page": 12 } },
-        { "ref": "HL03", "id": "735", "name": "Hierarchical Level Code", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "S", "description": "Shipment" }], "citation": { "page": 12 } },
-        { "ref": "HL04", "id": "736", "name": "Hierarchical Child Code", "type": "ID", "min": 1, "max": 1, "usage": "required", "values": [{ "code": "1", "description": "Additional subordinate levels follow" }], "citation": { "page": 12 } }
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "values": [
+            {
+              "code": "1",
+              "description": "Shipment level is always 1"
+            }
+          ],
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "notUsed",
+          "note": "Omit at shipment level.",
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "S",
+              "description": "Shipment"
+            }
+          ],
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "1",
+              "description": "Additional subordinate levels follow"
+            }
+          ],
+          "citation": {
+            "page": 12
+          }
+        }
       ]
     },
     {
@@ -119,13 +522,93 @@
       "loopId": "HL-S",
       "usage": "required",
       "maxUse": 1,
-      "citation": { "page": 13 },
+      "citation": {
+        "page": 13
+      },
       "elements": [
-        { "ref": "TD101", "id": "103", "name": "Packaging Code", "type": "AN", "min": 3, "max": 5, "usage": "required", "values": [{ "code": "CTN25", "description": "Carton, corrugated" }, { "code": "PLT94", "description": "Pallet, wood" }], "citation": { "page": 13 } },
-        { "ref": "TD102", "id": "80", "name": "Lading Quantity", "type": "N0", "min": 1, "max": 7, "usage": "required", "note": "Total cartons on the trailer. Must equal the number of Pack-level HL segments.", "citation": { "page": 13 } },
-        { "ref": "TD106", "id": "187", "name": "Weight Qualifier", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "G", "description": "Gross weight" }], "citation": { "page": 13 } },
-        { "ref": "TD107", "id": "81", "name": "Weight", "type": "R", "min": 1, "max": 10, "usage": "required", "citation": { "page": 13 } },
-        { "ref": "TD108", "id": "355", "name": "Unit or Basis for Measurement Code", "type": "ID", "min": 2, "max": 2, "usage": "required", "values": [{ "code": "LB", "description": "Pounds" }], "citation": { "page": 13 } }
+        {
+          "ref": "TD101",
+          "id": "103",
+          "name": "Packaging Code",
+          "type": "AN",
+          "min": 3,
+          "max": 5,
+          "usage": "required",
+          "values": [
+            {
+              "code": "CTN25",
+              "description": "Carton, corrugated"
+            },
+            {
+              "code": "PLT94",
+              "description": "Pallet, wood"
+            }
+          ],
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD102",
+          "id": "80",
+          "name": "Lading Quantity",
+          "type": "N0",
+          "min": 1,
+          "max": 7,
+          "usage": "required",
+          "note": "Total cartons on the trailer. Must equal the number of Pack-level HL segments.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD106",
+          "id": "187",
+          "name": "Weight Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "G",
+              "description": "Gross weight"
+            }
+          ],
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD107",
+          "id": "81",
+          "name": "Weight",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD108",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "LB",
+              "description": "Pounds"
+            }
+          ],
+          "citation": {
+            "page": 13
+          }
+        }
       ]
     },
     {
@@ -137,12 +620,85 @@
       "usage": "required",
       "maxUse": 1,
       "note": "Crestfield matches the SCAC here against the carrier that shows up at the gate. A mismatch delays unloading.",
-      "citation": { "page": 14 },
+      "citation": {
+        "page": 14
+      },
       "elements": [
-        { "ref": "TD501", "id": "133", "name": "Routing Sequence Code", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "B", "description": "Origin/delivery carrier" }], "citation": { "page": 14 } },
-        { "ref": "TD502", "id": "66", "name": "Identification Code Qualifier", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "2", "description": "Standard Carrier Alpha Code (SCAC)" }], "citation": { "page": 14 } },
-        { "ref": "TD503", "id": "67", "name": "Identification Code", "type": "AN", "min": 2, "max": 80, "usage": "required", "note": "Four-character SCAC.", "citation": { "page": 14 } },
-        { "ref": "TD504", "id": "91", "name": "Transportation Method/Type Code", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "M", "description": "Motor (common carrier)" }, { "code": "LT", "description": "Less than trailer load" }, { "code": "SR", "description": "Supplier truck" }], "citation": { "page": 14 } }
+        {
+          "ref": "TD501",
+          "id": "133",
+          "name": "Routing Sequence Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "B",
+              "description": "Origin/delivery carrier"
+            }
+          ],
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "TD502",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "2",
+              "description": "Standard Carrier Alpha Code (SCAC)"
+            }
+          ],
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "TD503",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "note": "Four-character SCAC.",
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "TD504",
+          "id": "91",
+          "name": "Transportation Method/Type Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "M",
+              "description": "Motor (common carrier)"
+            },
+            {
+              "code": "LT",
+              "description": "Less than trailer load"
+            },
+            {
+              "code": "SR",
+              "description": "Supplier truck"
+            }
+          ],
+          "citation": {
+            "page": 14
+          }
+        }
       ]
     },
     {
@@ -154,11 +710,57 @@
       "usage": "conditional",
       "maxUse": 1,
       "note": "Required when transportation method is M or SR. Omit for LT.",
-      "citation": { "page": 15 },
+      "citation": {
+        "page": 15
+      },
       "elements": [
-        { "ref": "TD301", "id": "40", "name": "Equipment Description Code", "type": "ID", "min": 2, "max": 2, "usage": "required", "values": [{ "code": "TL", "description": "Trailer" }, { "code": "CN", "description": "Container" }], "citation": { "page": 15 } },
-        { "ref": "TD302", "id": "206", "name": "Equipment Initial", "type": "AN", "min": 1, "max": 4, "usage": "optional", "citation": { "page": 15 } },
-        { "ref": "TD303", "id": "207", "name": "Equipment Number", "type": "AN", "min": 1, "max": 10, "usage": "required", "note": "Trailer number as it appears on the equipment.", "citation": { "page": 15 } }
+        {
+          "ref": "TD301",
+          "id": "40",
+          "name": "Equipment Description Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "TL",
+              "description": "Trailer"
+            },
+            {
+              "code": "CN",
+              "description": "Container"
+            }
+          ],
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "TD302",
+          "id": "206",
+          "name": "Equipment Initial",
+          "type": "AN",
+          "min": 1,
+          "max": 4,
+          "usage": "optional",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "TD303",
+          "id": "207",
+          "name": "Equipment Number",
+          "type": "AN",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "note": "Trailer number as it appears on the equipment.",
+          "citation": {
+            "page": 15
+          }
+        }
       ]
     },
     {
@@ -169,10 +771,51 @@
       "loopId": "HL-S",
       "usage": "required",
       "maxUse": 5,
-      "citation": { "page": 16 },
+      "citation": {
+        "page": 16
+      },
       "elements": [
-        { "ref": "REF01", "id": "128", "name": "Reference Identification Qualifier", "type": "ID", "min": 2, "max": 3, "usage": "required", "values": [{ "code": "BM", "description": "Bill of lading number", "note": "Required." }, { "code": "CN", "description": "Carrier's reference number (PRO)", "note": "Required for LT shipments." }, { "code": "SI", "description": "Shipper's identifying number (SID)", "note": "Optional." }], "citation": { "page": 16 } },
-        { "ref": "REF02", "id": "127", "name": "Reference Identification", "type": "AN", "min": 1, "max": 30, "usage": "required", "citation": { "page": 16 } }
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "BM",
+              "description": "Bill of lading number",
+              "note": "Required."
+            },
+            {
+              "code": "CN",
+              "description": "Carrier's reference number (PRO)",
+              "note": "Required for LT shipments."
+            },
+            {
+              "code": "SI",
+              "description": "Shipper's identifying number (SID)",
+              "note": "Optional."
+            }
+          ],
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "citation": {
+            "page": 16
+          }
+        }
       ]
     },
     {
@@ -184,12 +827,81 @@
       "usage": "required",
       "maxUse": 2,
       "note": "Two iterations: ST identifies the receiving DC, SF identifies your origin.",
-      "citation": { "page": 17 },
+      "citation": {
+        "page": 17
+      },
       "elements": [
-        { "ref": "N101", "id": "98", "name": "Entity Identifier Code", "type": "ID", "min": 2, "max": 3, "usage": "required", "values": [{ "code": "ST", "description": "Ship to" }, { "code": "SF", "description": "Ship from" }], "citation": { "page": 17 } },
-        { "ref": "N102", "id": "93", "name": "Name", "type": "AN", "min": 1, "max": 60, "usage": "optional", "citation": { "page": 17 } },
-        { "ref": "N103", "id": "66", "name": "Identification Code Qualifier", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "92", "description": "Assigned by buyer", "note": "Use with ST. The DC code is on your Crestfield routing guide." }, { "code": "01", "description": "DUNS", "note": "Use with SF." }], "citation": { "page": 17 } },
-        { "ref": "N104", "id": "67", "name": "Identification Code", "type": "AN", "min": 2, "max": 80, "usage": "required", "note": "Crestfield DC codes are four characters, for example DC12. A DC code not on your routing guide is rejected.", "citation": { "page": 17 } }
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "ST",
+              "description": "Ship to"
+            },
+            {
+              "code": "SF",
+              "description": "Ship from"
+            }
+          ],
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "92",
+              "description": "Assigned by buyer",
+              "note": "Use with ST. The DC code is on your Crestfield routing guide."
+            },
+            {
+              "code": "01",
+              "description": "DUNS",
+              "note": "Use with SF."
+            }
+          ],
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "note": "Crestfield DC codes are four characters, for example DC12. A DC code not on your routing guide is rejected.",
+          "citation": {
+            "page": 17
+          }
+        }
       ]
     },
     {
@@ -201,12 +913,71 @@
       "usage": "required",
       "maxUse": 200000,
       "note": "One order level per Crestfield purchase order on the trailer. A consolidated trailer carrying four POs has four order levels.",
-      "citation": { "page": 18 },
+      "citation": {
+        "page": 18
+      },
       "elements": [
-        { "ref": "HL01", "id": "628", "name": "Hierarchical ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "citation": { "page": 18 } },
-        { "ref": "HL02", "id": "734", "name": "Hierarchical Parent ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "note": "The shipment level HL01, so 1.", "citation": { "page": 18 } },
-        { "ref": "HL03", "id": "735", "name": "Hierarchical Level Code", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "O", "description": "Order" }], "citation": { "page": 18 } },
-        { "ref": "HL04", "id": "736", "name": "Hierarchical Child Code", "type": "ID", "min": 1, "max": 1, "usage": "required", "values": [{ "code": "1", "description": "Additional subordinate levels follow" }], "citation": { "page": 18 } }
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "note": "The shipment level HL01, so 1.",
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "O",
+              "description": "Order"
+            }
+          ],
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "1",
+              "description": "Additional subordinate levels follow"
+            }
+          ],
+          "citation": {
+            "page": 18
+          }
+        }
       ]
     },
     {
@@ -217,10 +988,36 @@
       "loopId": "HL-O",
       "usage": "required",
       "maxUse": 1,
-      "citation": { "page": 19 },
+      "citation": {
+        "page": 19
+      },
       "elements": [
-        { "ref": "PRF01", "id": "324", "name": "Purchase Order Number", "type": "AN", "min": 1, "max": 22, "usage": "required", "note": "Exactly as issued on the 850, including leading zeros. Crestfield PO numbers are 10 digits.", "citation": { "page": 19 } },
-        { "ref": "PRF04", "id": "373", "name": "Date", "type": "DT", "min": 8, "max": 8, "usage": "optional", "note": "PO issue date.", "citation": { "page": 19 } }
+        {
+          "ref": "PRF01",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "note": "Exactly as issued on the 850, including leading zeros. Crestfield PO numbers are 10 digits.",
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "PRF04",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "optional",
+          "note": "PO issue date.",
+          "citation": {
+            "page": 19
+          }
+        }
       ]
     },
     {
@@ -232,12 +1029,71 @@
       "usage": "required",
       "maxUse": 200000,
       "note": "One pack level per physical carton. This is the level the dock scans, and the reason Crestfield requires structure 0001.",
-      "citation": { "page": 20 },
+      "citation": {
+        "page": 20
+      },
       "elements": [
-        { "ref": "HL01", "id": "628", "name": "Hierarchical ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "citation": { "page": 20 } },
-        { "ref": "HL02", "id": "734", "name": "Hierarchical Parent ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "note": "The HL01 of the order this carton belongs to.", "citation": { "page": 20 } },
-        { "ref": "HL03", "id": "735", "name": "Hierarchical Level Code", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "P", "description": "Pack" }], "citation": { "page": 20 } },
-        { "ref": "HL04", "id": "736", "name": "Hierarchical Child Code", "type": "ID", "min": 1, "max": 1, "usage": "required", "values": [{ "code": "1", "description": "Item levels follow" }], "citation": { "page": 20 } }
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "note": "The HL01 of the order this carton belongs to.",
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "P",
+              "description": "Pack"
+            }
+          ],
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "1",
+              "description": "Item levels follow"
+            }
+          ],
+          "citation": {
+            "page": 20
+          }
+        }
       ]
     },
     {
@@ -249,10 +1105,42 @@
       "usage": "required",
       "maxUse": 1,
       "note": "The SSCC-18 printed in the GS1-128 barcode on the carton label. This is the single most common cause of ASN failure at Crestfield: the number in the ASN must be the number on the label, digit for digit.",
-      "citation": { "page": 21 },
+      "citation": {
+        "page": 21
+      },
       "elements": [
-        { "ref": "MAN01", "id": "88", "name": "Marks and Numbers Qualifier", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "GM", "description": "SSCC-18 with application identifier" }], "note": "GM only. CA and ZZ are rejected.", "citation": { "page": 21 } },
-        { "ref": "MAN02", "id": "87", "name": "Marks and Numbers", "type": "AN", "min": 1, "max": 48, "usage": "required", "note": "18 digits, no application identifier prefix, no spaces, no check digit separator. Mod-10 check digit must be valid.", "citation": { "page": 21 } }
+        {
+          "ref": "MAN01",
+          "id": "88",
+          "name": "Marks and Numbers Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "GM",
+              "description": "SSCC-18 with application identifier"
+            }
+          ],
+          "note": "GM only. CA and ZZ are rejected.",
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "MAN02",
+          "id": "87",
+          "name": "Marks and Numbers",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "note": "18 digits, no application identifier prefix, no spaces, no check digit separator. Mod-10 check digit must be valid.",
+          "citation": {
+            "page": 21
+          }
+        }
       ]
     },
     {
@@ -263,10 +1151,34 @@
       "loopId": "HL-P",
       "usage": "optional",
       "maxUse": 1,
-      "citation": { "page": 22 },
+      "citation": {
+        "page": 22
+      },
       "elements": [
-        { "ref": "PO401", "id": "356", "name": "Pack", "type": "N0", "min": 1, "max": 6, "usage": "optional", "citation": { "page": 22 } },
-        { "ref": "PO404", "id": "103", "name": "Packaging Code", "type": "AN", "min": 3, "max": 5, "usage": "optional", "citation": { "page": 22 } }
+        {
+          "ref": "PO401",
+          "id": "356",
+          "name": "Pack",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "optional",
+          "citation": {
+            "page": 22
+          }
+        },
+        {
+          "ref": "PO404",
+          "id": "103",
+          "name": "Packaging Code",
+          "type": "AN",
+          "min": 3,
+          "max": 5,
+          "usage": "optional",
+          "citation": {
+            "page": 22
+          }
+        }
       ]
     },
     {
@@ -278,12 +1190,66 @@
       "usage": "required",
       "maxUse": 200000,
       "note": "One item level per distinct product in the carton. A mixed carton has several.",
-      "citation": { "page": 23 },
+      "citation": {
+        "page": 23
+      },
       "elements": [
-        { "ref": "HL01", "id": "628", "name": "Hierarchical ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "citation": { "page": 23 } },
-        { "ref": "HL02", "id": "734", "name": "Hierarchical Parent ID Number", "type": "AN", "min": 1, "max": 12, "usage": "required", "note": "The HL01 of the pack containing this item.", "citation": { "page": 23 } },
-        { "ref": "HL03", "id": "735", "name": "Hierarchical Level Code", "type": "ID", "min": 1, "max": 2, "usage": "required", "values": [{ "code": "I", "description": "Item" }], "citation": { "page": 23 } },
-        { "ref": "HL04", "id": "736", "name": "Hierarchical Child Code", "type": "ID", "min": 1, "max": 1, "usage": "notUsed", "note": "Omit at item level, nothing is subordinate to it.", "citation": { "page": 23 } }
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "note": "The HL01 of the pack containing this item.",
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "I",
+              "description": "Item"
+            }
+          ],
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "notUsed",
+          "note": "Omit at item level, nothing is subordinate to it.",
+          "citation": {
+            "page": 23
+          }
+        }
       ]
     },
     {
@@ -295,13 +1261,84 @@
       "usage": "required",
       "maxUse": 1,
       "note": "Both identifiers are required. Crestfield matches on UP and reports on BP, so sending only one makes the receipt unmatchable.",
-      "citation": { "page": 24 },
+      "citation": {
+        "page": 24
+      },
       "elements": [
-        { "ref": "LIN01", "id": "350", "name": "Assigned Identification", "type": "AN", "min": 1, "max": 20, "usage": "optional", "citation": { "page": 24 } },
-        { "ref": "LIN02", "id": "235", "name": "Product/Service ID Qualifier", "type": "ID", "min": 2, "max": 2, "usage": "required", "values": [{ "code": "UP", "description": "GTIN-12 (UPC)" }], "citation": { "page": 24 } },
-        { "ref": "LIN03", "id": "234", "name": "Product/Service ID", "type": "AN", "min": 1, "max": 48, "usage": "required", "note": "12 digits, no check-digit separator.", "citation": { "page": 24 } },
-        { "ref": "LIN04", "id": "235", "name": "Product/Service ID Qualifier", "type": "ID", "min": 2, "max": 2, "usage": "required", "values": [{ "code": "BP", "description": "Buyer's part number" }], "citation": { "page": 24 } },
-        { "ref": "LIN05", "id": "234", "name": "Product/Service ID", "type": "AN", "min": 1, "max": 48, "usage": "required", "note": "The Crestfield item number from the 850.", "citation": { "page": 24 } }
+        {
+          "ref": "LIN01",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "optional",
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "LIN02",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "UP",
+              "description": "GTIN-12 (UPC)"
+            }
+          ],
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "LIN03",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "note": "12 digits, no check-digit separator.",
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "LIN04",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "BP",
+              "description": "Buyer's part number"
+            }
+          ],
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "LIN05",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "note": "The Crestfield item number from the 850.",
+          "citation": {
+            "page": 24
+          }
+        }
       ]
     },
     {
@@ -312,11 +1349,58 @@
       "loopId": "HL-I",
       "usage": "required",
       "maxUse": 1,
-      "citation": { "page": 25 },
+      "citation": {
+        "page": 25
+      },
       "elements": [
-        { "ref": "SN102", "id": "382", "name": "Number of Units Shipped", "type": "R", "min": 1, "max": 10, "usage": "required", "note": "Quantity of this item in this carton, not on the whole order.", "citation": { "page": 25 } },
-        { "ref": "SN103", "id": "355", "name": "Unit or Basis for Measurement Code", "type": "ID", "min": 2, "max": 2, "usage": "required", "values": [{ "code": "EA", "description": "Each" }, { "code": "CA", "description": "Case" }], "note": "Must match the unit of measure on the 850 line.", "citation": { "page": 25 } },
-        { "ref": "SN105", "id": "330", "name": "Quantity Ordered", "type": "R", "min": 1, "max": 15, "usage": "optional", "citation": { "page": 25 } }
+        {
+          "ref": "SN102",
+          "id": "382",
+          "name": "Number of Units Shipped",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "note": "Quantity of this item in this carton, not on the whole order.",
+          "citation": {
+            "page": 25
+          }
+        },
+        {
+          "ref": "SN103",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "EA",
+              "description": "Each"
+            },
+            {
+              "code": "CA",
+              "description": "Case"
+            }
+          ],
+          "note": "Must match the unit of measure on the 850 line.",
+          "citation": {
+            "page": 25
+          }
+        },
+        {
+          "ref": "SN105",
+          "id": "330",
+          "name": "Quantity Ordered",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "optional",
+          "citation": {
+            "page": 25
+          }
+        }
       ]
     },
     {
@@ -327,9 +1411,23 @@
       "loopId": null,
       "usage": "required",
       "maxUse": 1,
-      "citation": { "page": 26 },
+      "citation": {
+        "page": 26
+      },
       "elements": [
-        { "ref": "CTT01", "id": "354", "name": "Number of Line Items", "type": "N0", "min": 1, "max": 6, "usage": "required", "note": "Total count of HL segments in the transaction, all levels.", "citation": { "page": 26 } }
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "note": "Total count of HL segments in the transaction, all levels.",
+          "citation": {
+            "page": 26
+          }
+        }
       ]
     },
     {
@@ -340,33 +1438,103 @@
       "loopId": null,
       "usage": "required",
       "maxUse": 1,
-      "citation": { "page": 26 },
+      "citation": {
+        "page": 26
+      },
       "elements": [
-        { "ref": "SE01", "id": "96", "name": "Number of Included Segments", "type": "N0", "min": 1, "max": 10, "usage": "required", "note": "Inclusive of ST and SE.", "citation": { "page": 26 } },
-        { "ref": "SE02", "id": "329", "name": "Transaction Set Control Number", "type": "AN", "min": 4, "max": 9, "usage": "required", "note": "Must equal ST02.", "citation": { "page": 26 } }
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 26
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 26
+          }
+        }
       ]
     }
   ],
   "codeLists": {
     "HL03": [
-      { "code": "S", "description": "Shipment", "note": "Exactly one, always HL01 = 1" },
-      { "code": "O", "description": "Order", "note": "One per purchase order" },
-      { "code": "P", "description": "Pack", "note": "One per carton, mandatory at Crestfield" },
-      { "code": "I", "description": "Item", "note": "One per product within a carton" }
+      {
+        "code": "S",
+        "description": "Shipment",
+        "note": "Exactly one, always HL01 = 1"
+      },
+      {
+        "code": "O",
+        "description": "Order",
+        "note": "One per purchase order"
+      },
+      {
+        "code": "P",
+        "description": "Pack",
+        "note": "One per carton, mandatory at Crestfield"
+      },
+      {
+        "code": "I",
+        "description": "Item",
+        "note": "One per product within a carton"
+      }
     ],
     "TD504": [
-      { "code": "M", "description": "Motor, common carrier" },
-      { "code": "LT", "description": "Less than trailer load" },
-      { "code": "SR", "description": "Supplier's own truck" }
+      {
+        "code": "M",
+        "description": "Motor, common carrier"
+      },
+      {
+        "code": "LT",
+        "description": "Less than trailer load"
+      },
+      {
+        "code": "SR",
+        "description": "Supplier's own truck"
+      }
     ],
     "REF01": [
-      { "code": "BM", "description": "Bill of lading number", "note": "Required on every ASN" },
-      { "code": "CN", "description": "Carrier's reference number (PRO)", "note": "Required when TD504 is LT" },
-      { "code": "SI", "description": "Shipper's identifying number for shipment" }
+      {
+        "code": "BM",
+        "description": "Bill of lading number",
+        "note": "Required on every ASN"
+      },
+      {
+        "code": "CN",
+        "description": "Carrier's reference number (PRO)",
+        "note": "Required when TD504 is LT"
+      },
+      {
+        "code": "SI",
+        "description": "Shipper's identifying number for shipment"
+      }
     ],
     "DTM01": [
-      { "code": "011", "description": "Shipped", "note": "Required" },
-      { "code": "017", "description": "Estimated delivery", "note": "Required when an appointment exists" }
+      {
+        "code": "011",
+        "description": "Shipped",
+        "note": "Required"
+      },
+      {
+        "code": "017",
+        "description": "Estimated delivery",
+        "note": "Required when an appointment exists"
+      }
     ]
   },
   "rules": [
@@ -376,7 +1544,9 @@
       "statement": "BSN05 must be 0001. The transaction must carry all four levels: shipment, order, pack, item.",
       "rationale": "Crestfield receives by scanning carton labels. Without a pack level there is nothing for the scan to match, and the trailer is received manually.",
       "appliesTo": "BSN05",
-      "citation": { "page": 10 }
+      "citation": {
+        "page": 10
+      }
     },
     {
       "id": "R-002",
@@ -384,7 +1554,9 @@
       "statement": "Every Pack-level HL must carry exactly one MAN segment with MAN01 = GM and an 18-digit MAN02 whose mod-10 check digit is valid.",
       "rationale": "The SSCC is the join between the physical carton and this transaction. A missing or malformed SSCC makes the carton unreceivable.",
       "appliesTo": "HL-P/MAN",
-      "citation": { "page": 21 }
+      "citation": {
+        "page": 21
+      }
     },
     {
       "id": "R-003",
@@ -392,7 +1564,9 @@
       "statement": "MAN02 values must be unique within the transaction and must not repeat any SSCC sent to Crestfield in the previous 12 months.",
       "rationale": "A duplicate SSCC silently overwrites an earlier receipt and produces an inventory discrepancy nobody can trace.",
       "appliesTo": "HL-P/MAN02",
-      "citation": { "page": 21 }
+      "citation": {
+        "page": 21
+      }
     },
     {
       "id": "R-004",
@@ -400,7 +1574,9 @@
       "statement": "BSN02 must be unique across all shipments sent to Crestfield for 24 months.",
       "rationale": "Shipment identifier is the key for every downstream enquiry and chargeback dispute.",
       "appliesTo": "BSN02",
-      "citation": { "page": 9 }
+      "citation": {
+        "page": 9
+      }
     },
     {
       "id": "R-005",
@@ -408,7 +1584,9 @@
       "statement": "PRF01 must match an open Crestfield purchase order, with leading zeros preserved.",
       "rationale": "An ASN against an unknown PO cannot be received and is returned to the supplier for correction.",
       "appliesTo": "HL-O/PRF01",
-      "citation": { "page": 19 }
+      "citation": {
+        "page": 19
+      }
     },
     {
       "id": "R-006",
@@ -416,7 +1594,9 @@
       "statement": "CTT01 must equal the total number of HL segments in the transaction, counting all four levels.",
       "rationale": "A mismatch indicates a truncated transmission, so Crestfield rejects rather than receive a partial trailer.",
       "appliesTo": "CTT01",
-      "citation": { "page": 26 }
+      "citation": {
+        "page": 26
+      }
     },
     {
       "id": "R-007",
@@ -424,7 +1604,9 @@
       "statement": "TD102 must equal the number of Pack-level HL segments in the transaction.",
       "rationale": "Carton count on the bill of lading and carton count in the ASN have to agree before the trailer is unloaded.",
       "appliesTo": "TD102",
-      "citation": { "page": 13 }
+      "citation": {
+        "page": 13
+      }
     },
     {
       "id": "R-008",
@@ -432,7 +1614,9 @@
       "statement": "N1*ST must carry N103 = 92 and a Crestfield DC code listed on your routing guide.",
       "rationale": "The envelope does not identify the DC, so this is the only routing information in the transaction.",
       "appliesTo": "HL-S/N1",
-      "citation": { "page": 17 }
+      "citation": {
+        "page": 17
+      }
     },
     {
       "id": "R-009",
@@ -440,7 +1624,9 @@
       "statement": "SN102 summed across all item levels for a given PO line must not exceed the quantity ordered on that line.",
       "rationale": "Crestfield receives to the ordered quantity. Overage is held at the dock pending buyer approval rather than rejected outright.",
       "appliesTo": "HL-I/SN102",
-      "citation": { "page": 25 }
+      "citation": {
+        "page": 25
+      }
     },
     {
       "id": "R-010",
@@ -448,7 +1634,9 @@
       "statement": "The ASN must be received by Crestfield before the trailer arrives at the DC, and in no case later than 60 minutes after departure from your facility.",
       "rationale": "A trailer that arrives before its ASN is turned away or held, and the delay is charged back.",
       "appliesTo": "transmission",
-      "citation": { "page": 5 }
+      "citation": {
+        "page": 5
+      }
     },
     {
       "id": "R-011",
@@ -456,7 +1644,9 @@
       "statement": "Cancellations must be sent as BSN01 = 01 carrying the original BSN02, and must reach Crestfield before the trailer arrives.",
       "rationale": "A cancellation after arrival cannot be applied, and the receipt proceeds against the original ASN.",
       "appliesTo": "BSN01",
-      "citation": { "page": 9 }
+      "citation": {
+        "page": 9
+      }
     },
     {
       "id": "R-012",
@@ -464,7 +1654,9 @@
       "statement": "Crestfield returns a 997 functional acknowledgment within 60 minutes of receiving an interchange. Absence of a 997 after 60 minutes should be treated as a transmission failure on your side.",
       "rationale": "A silent failure is the most common reason a supplier believes an ASN was sent when Crestfield never received it.",
       "appliesTo": "transmission",
-      "citation": { "page": 7 }
+      "citation": {
+        "page": 7
+      }
     },
     {
       "id": "R-013",
@@ -472,7 +1664,9 @@
       "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
       "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
       "appliesTo": "ISA15",
-      "citation": { "page": 7 }
+      "citation": {
+        "page": 7
+      }
     }
   ],
   "scenarios": [
@@ -508,7 +1702,17 @@
     }
   ],
   "contacts": [
-    { "role": "EDI operations", "name": "Crestfield EDI Support", "email": "edi-support@crestfield.example", "note": "Transmission failures and 997 queries. Monday to Friday, 7am to 7pm Eastern." },
-    { "role": "Supplier onboarding", "name": "Crestfield Supplier Enablement", "email": "supplier-onboarding@crestfield.example", "note": "Certification scheduling and DC routing guides." }
+    {
+      "role": "EDI operations",
+      "name": "Crestfield EDI Support",
+      "email": "edi-support@crestfield.example",
+      "note": "Transmission failures and 997 queries. Monday to Friday, 7am to 7pm Eastern."
+    },
+    {
+      "role": "Supplier onboarding",
+      "name": "Crestfield Supplier Enablement",
+      "email": "supplier-onboarding@crestfield.example",
+      "note": "Certification scheduling and DC routing guides."
+    }
   ]
 }

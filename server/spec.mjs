@@ -40,6 +40,7 @@ export function emptySpec(overrides = {}) {
       ...overrides.guide
     },
     delimiters: { segment: '~', element: '*', component: '>', repetition: '^' },
+    loops: {},
     envelope: { isa: [], gs: [], st: [] },
     segments: [],
     codeLists: {},
@@ -144,6 +145,88 @@ export function specStats(spec) {
     scenarios: (spec.scenarios || []).length,
     citedFraction: citable === 0 ? 0 : cited / citable
   };
+}
+
+/**
+ * X12 organises a transaction set into three areas, and so does every
+ * implementation guide a partner has ever read. Grouping by area and then by loop
+ * is the structure people already navigate, rather than an ordering of our own.
+ */
+export const AREAS = [
+  { key: 'header', label: 'Heading' },
+  { key: 'detail', label: 'Detail' },
+  { key: 'summary', label: 'Summary' }
+];
+
+/**
+ * Loop metadata, explicit in the spec where the hub stated it and derived from the
+ * segments where it did not, so a guide compiled from a thin PDF still renders.
+ */
+export function loopInfo(spec, loopId) {
+  if (!loopId) return null;
+  const declared = spec.loops?.[loopId];
+  const members = (spec.segments || []).filter((s) => s.loopId === loopId);
+  const first = members[0];
+  return {
+    id: loopId,
+    name: declared?.name || loopId,
+    usage: declared?.usage || first?.usage || 'optional',
+    repeat: declared?.repeat ?? null,
+    parent: declared?.parent ?? null,
+    note: declared?.note || null,
+    citation: declared?.citation || first?.citation || null,
+    segments: members
+  };
+}
+
+/** Areas, each holding an ordered mix of bare segments and loops. */
+export function outline(spec) {
+  return AREAS.map(({ key, label }) => {
+    const inArea = (spec.segments || []).filter((s) => (s.level || 'detail') === key);
+    const rows = [];
+    const seenLoop = new Set();
+    for (const seg of inArea) {
+      if (!seg.loopId) {
+        rows.push({ type: 'segment', segment: seg });
+        continue;
+      }
+      if (seenLoop.has(seg.loopId)) continue;
+      seenLoop.add(seg.loopId);
+      rows.push({ type: 'loop', loop: loopInfo(spec, seg.loopId) });
+    }
+    return { key, label, rows, count: inArea.length };
+  }).filter((a) => a.count > 0);
+}
+
+/** Stable anchor for a segment, used by the sidebar, the index and deep links. */
+export function segAnchor(seg) {
+  return `s-${String(seg.id).toLowerCase()}-${String(seg.pos || '0').toLowerCase()}${seg.loopId ? `-${String(seg.loopId).toLowerCase().replace(/[^a-z0-9]+/g, '')}` : ''}`;
+}
+
+export function maxUseLabel(n) {
+  if (n == null || n === '') return '';
+  const v = Number(n);
+  if (!Number.isFinite(v)) return String(n);
+  return v >= 100000 ? 'Max >1' : `Max ${v}`;
+}
+
+export function repeatLabel(n) {
+  if (n == null || n === '') return '';
+  const v = Number(n);
+  if (!Number.isFinite(v)) return String(n);
+  return v >= 100000 ? 'Repeat >1' : `Repeat ${v}`;
+}
+
+const TYPE_NAMES = {
+  AN: 'String', ID: 'Identifier', DT: 'Date', TM: 'Time',
+  N0: 'Numeric', N2: 'Decimal', R: 'Decimal', B: 'Binary'
+};
+
+export function typeLabel(t) {
+  if (!t) return '';
+  const code = String(t).toUpperCase();
+  const name = TYPE_NAMES[code];
+  return name ? `${name} (${code})` : code;
 }
 
 export function segmentsByLoop(spec) {

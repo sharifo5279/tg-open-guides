@@ -220,3 +220,159 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
   .brand-name { display: none; }
   .lede { font-size: 16px; }
 }
+
+/* =====================================================================
+   Guide page: a reference document, not a marketing page.
+   Persistent structure tree on the left, dense tables on the right,
+   OpenText tokens throughout. Light surfaces only.
+   ===================================================================== */
+
+.wide { max-width: 1480px; margin: 0 auto; padding: 0 28px; }
+
+.crumbs { border-bottom: 1px solid var(--line); background: var(--cloud); }
+.crumbs .wide { display: flex; gap: 8px; align-items: center; height: 38px; font-size: 13px; color: var(--slate); }
+.crumbs a { color: var(--slate); }
+.crumbs a:hover { color: var(--primary); text-decoration: none; }
+.crumbs span { color: #aab2bf; }
+.crumbs b { color: var(--ink); font-weight: 600; font-family: var(--mono); font-size: 12px; }
+
+.guidehead { border-bottom: 1px solid var(--line); padding: 26px 0 22px; }
+.guidehead h1 { font-size: 34px; line-height: 1.14; margin-bottom: 10px; }
+.guidehead .lede { font-size: 16px; max-width: 86ch; margin: 14px 0 0; }
+.guidehead .specline { margin: 0; font-size: 13px; gap: 0 22px; }
+.guidehead .attested { margin-top: 16px; max-width: 110ch; }
+.guidehead .copyrow { margin-top: 16px; }
+
+/* Split layout */
+.wide-split { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 36px; align-items: start; }
+.guidebody { padding: 0 0 40px; }
+
+.side { position: sticky; top: 60px; max-height: calc(100vh - 60px); overflow-y: auto; padding: 20px 0 32px; border-right: 1px solid var(--line); }
+.side-in { padding-right: 18px; }
+.side-filter { width: 100%; font: 400 13px/1.4 var(--sans); color: var(--ink); padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; margin-bottom: 16px; }
+.side-filter:focus { outline: 2px solid var(--primary); outline-offset: -1px; border-color: var(--primary); }
+.side-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink); margin: 0 0 7px; }
+.side-area { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--slate); margin: 14px 0 5px; }
+.side-list { list-style: none; margin: 0 0 14px; padding: 0; font-size: 13px; }
+.side-list li { margin: 0; }
+.side-list a { display: flex; gap: 7px; align-items: baseline; color: var(--slate); padding: 3px 8px; border-radius: 6px; border-left: 2px solid transparent; }
+.side-list a:hover { color: var(--ink); background: var(--cloud); text-decoration: none; }
+.side-list a.cur { color: var(--primary); border-left-color: var(--primary); background: #F2F7FF; font-weight: 500; }
+.side-tree .t-id { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--ink); flex: none; min-width: 30px; }
+.side-tree .t-nm { font-size: 12px; color: var(--slate); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side-tree a:hover .t-nm { color: var(--ink); }
+.t-loop { margin: 6px 0 2px; }
+.t-loophead { display: flex; align-items: baseline; gap: 6px; font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--ink); padding: 2px 8px; letter-spacing: .02em; }
+.t-rep { font-weight: 400; font-size: 10px; color: var(--slate); letter-spacing: 0; }
+.t-sub { margin: 0 0 4px 0; padding-left: 10px; border-left: 1px solid var(--line); }
+
+/* Document column */
+.doc { min-width: 0; padding-top: 28px; }
+.dsec { padding-bottom: 34px; margin-bottom: 30px; border-bottom: 1px solid var(--line); scroll-margin-top: 72px; }
+.dsec:last-child { border-bottom: 0; }
+.dsec > h2 { font-size: 23px; margin-bottom: 5px; }
+.dsec > h3 { margin-top: 22px; }
+
+/* Requirement cells: text, never chips */
+.rq { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.rq-m { color: var(--ink); }
+.rq-c { color: var(--warning-ink); }
+.rq-o { color: var(--slate); font-weight: 400; }
+.rq-n { color: var(--slate); font-weight: 400; text-decoration: line-through; }
+
+/* Required-segment cards */
+.reqgrid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.reqcard { padding: 11px 13px; border-radius: var(--r-s); }
+.reqcard .rc-seg { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--primary); }
+.reqcard .rc-seg:hover { text-decoration: none; color: var(--primary-dark); }
+.reqcard .rc-loop { font-family: var(--mono); font-size: 10px; color: var(--slate); margin-left: 6px; }
+.reqcard .rc-name { font-size: 13px; margin: 3px 0 5px; font-weight: 500; }
+.reqcard .rc-note code { font-size: 10px; padding: 1px 4px; }
+
+/* Structure index */
+.tbl-ix td, .tbl-ix th { padding: 6px 12px; }
+.tbl-ix tr.ix-area td { background: var(--cloud); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink); padding: 7px 12px; }
+.tbl-ix tr.ix-loop td { background: #FBFCFD; }
+.tbl-ix tr.ix-loop b { font-family: var(--mono); font-size: 12px; color: var(--ink); }
+.tbl-ix tr.ix-in td:first-child, .tbl-ix tr.ix-in td:nth-child(2) { padding-left: 26px; }
+.tbl-ix .ix-max { color: var(--slate); font-size: 12px; white-space: nowrap; }
+.tbl-ix a { font-weight: 600; }
+
+/* Element tables */
+.tbl-el th { font-size: 11px; letter-spacing: .05em; }
+.tbl-el td { padding: 7px 12px; font-size: 13px; }
+.tbl-el .el-dict { font-size: 10px; color: var(--slate); }
+.tbl-el tr.el-unused { opacity: .6; }
+.nowrap { white-space: nowrap; }
+.codelist { list-style: none; margin: 4px 0 0; padding: 0; font-size: 12px; }
+.codelist li { margin-bottom: 2px; }
+.codelist code { font-size: 11px; padding: 1px 4px; font-weight: 600; }
+
+/* Loop and segment blocks in the reference */
+.area-h { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--slate); padding-bottom: 6px; border-bottom: 2px solid var(--ink); margin: 26px 0 0; }
+.areablock:first-of-type .area-h { margin-top: 14px; }
+.loopblock { margin-top: 18px; border-left: 2px solid var(--line); padding-left: 16px; }
+.loop-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 6px 0; }
+.loop-id { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--ink); }
+.loop-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.loop-note { font-size: 13px; color: var(--slate); margin: 0 0 10px; max-width: 86ch; }
+
+.seg { padding: 14px 0 18px; border-bottom: 1px solid var(--line); scroll-margin-top: 72px; }
+.seg:last-child { border-bottom: 0; }
+.seg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+.seg-title { font-size: 15px; font-weight: 600; margin: 0; display: flex; align-items: baseline; gap: 9px; }
+.seg-id { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--ink); }
+.seg-facts { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.seg-fact { font-size: 12px; color: var(--slate); white-space: nowrap; }
+.seg-link { font-family: var(--mono); font-size: 13px; color: #c3c9d4; }
+.seg-link:hover { color: var(--primary); text-decoration: none; }
+.seg-note { font-size: 13px; color: var(--slate); margin: 4px 0 10px; max-width: 90ch; }
+
+.cl { margin-bottom: 18px; }
+.cl-h { font-size: 13px; font-weight: 700; color: var(--ink); margin: 0 0 6px; }
+
+.agentbox pre { margin: 8px 0 10px; }
+.dsec .scenario { margin-bottom: 8px; }
+
+@media (max-width: 1100px) {
+  .wide-split { grid-template-columns: 1fr; gap: 0; }
+  .side { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .side-in { padding-right: 0; }
+  .side-nav { columns: 2; column-gap: 28px; }
+  .doc { padding-top: 20px; }
+}
+@media (max-width: 640px) {
+  .wide { padding: 0 18px; }
+  .guidehead h1 { font-size: 26px; }
+  .side-nav { columns: 1; }
+}
+
+/* Code values inside reference tables are data, not inline prose code, so they
+   stay plain monospace rather than becoming pink chips. Chips everywhere make a
+   dense table unreadable. */
+.tbl code, .codelist code, .reqcard code, .side code {
+  background: none; padding: 0; color: var(--ink); font-weight: 600;
+}
+
+/* The notes column carries a hub note plus a code list, so it needs a readable
+   measure of its own rather than whatever width the table leaves it. */
+.tbl-el { table-layout: fixed; }
+.tbl-el th:nth-child(1), .tbl-el td:nth-child(1) { width: 76px; }
+.tbl-el th:nth-child(2), .tbl-el td:nth-child(2) { width: 92px; }
+.tbl-el th:nth-child(3), .tbl-el td:nth-child(3) { width: 16%; }
+.tbl-el th:nth-child(4), .tbl-el td:nth-child(4) { width: 134px; }
+.tbl-el th:nth-child(5), .tbl-el td:nth-child(5) { width: 112px; }
+.tbl-el th:nth-child(6), .tbl-el td:nth-child(6),
+.tbl-el th:nth-child(7), .tbl-el td:nth-child(7) { width: 48px; }
+.tbl-el th { white-space: normal; padding-right: 14px; }
+.tbl-el td { word-wrap: break-word; overflow-wrap: anywhere; }
+.tbl-el .el-note { line-height: 1.45; display: block; }
+
+.codelist { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; }
+.codelist li { display: flex; gap: 8px; align-items: baseline; margin-bottom: 3px; }
+.codelist code { flex: none; min-width: 24px; font-size: 11px; }
+.codelist .cv { flex: 1 1 auto; min-width: 0; }
+.codelist .cv .el-note { display: block; margin-top: 0; }
+
+.reqcard .rc-note code { font-size: 11px; margin-right: 6px; display: inline-block; }
+.tbl td.mono code { font-size: 12px; }
