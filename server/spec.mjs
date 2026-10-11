@@ -229,7 +229,7 @@ export function specToMarkdown(spec, { baseUrl = '', guidePath = '', version = n
     L.push(`### ${heading}`);
     L.push('');
     for (const seg of group.segments) {
-      L.push(`#### ${seg.pos ? `${seg.pos} ` : ''}${seg.id} — ${seg.name || ''}`);
+      L.push(`#### ${seg.pos ? `${seg.pos} ` : ''}${seg.id} ${seg.name || ''}`);
       L.push('');
       const bits = [usageLabel(seg.usage)];
       if (seg.maxUse) bits.push(`max use ${seg.maxUse}`);
@@ -293,7 +293,7 @@ export function specToMarkdown(spec, { baseUrl = '', guidePath = '', version = n
     L.push('## Scenarios the hub expects partners to support');
     L.push('');
     for (const s of spec.scenarios) {
-      L.push(`### ${s.id} — ${s.name}`);
+      L.push(`### ${s.id}: ${s.name}`);
       L.push('');
       if (s.description) {
         L.push(s.description);
@@ -310,7 +310,7 @@ export function specToMarkdown(spec, { baseUrl = '', guidePath = '', version = n
     L.push('## Contacts');
     L.push('');
     for (const c of spec.contacts) {
-      L.push(`- ${c.role ? `${c.role}: ` : ''}${c.name || ''}${c.email ? ` <${c.email}>` : ''}${c.note ? ` — ${c.note}` : ''}`);
+      L.push(`- ${c.role ? `${c.role}: ` : ''}${c.name || ''}${c.email ? ` <${c.email}>` : ''}${c.note ? `, ${c.note}` : ''}`);
     }
     L.push('');
   }
