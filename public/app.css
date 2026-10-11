@@ -577,43 +577,6 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 .hhero .lede { font-size: 17px; max-width: 80ch; margin: 13px 0 0; }
 .hhero .attested { margin-top: 16px; max-width: 110ch; }
 
-/* -------------------------------------------------------------- the flow */
-/* No connector rail between steps: with up to six steps the row wraps on a
-   laptop, and a rail that survives the first row and abandons the second is
-   worse than none. The ordinals carry the sequence through every reflow. */
-.roleh { font-size: 14px; font-weight: 700; color: var(--ink); margin: 18px 0 8px; padding-bottom: 5px; border-bottom: 1px solid var(--line); }
-.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(206px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
-.flowstep { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px 13px; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-c); }
-.fs-n { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--primary); }
-.fs-label { font-size: 15px; font-weight: 700; color: var(--ink); margin: 1px 0 3px; letter-spacing: -.012em; }
-.fs-what { font-size: 13px; line-height: 1.45; color: var(--slate); margin: 0 0 10px; }
-.fs-docs { list-style: none; margin: auto 0 0; padding: 9px 0 0; border-top: 1px solid var(--line); }
-.fs-doc { min-width: 0; }
-.fs-doc + .fs-doc { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
-.fs-set { font-family: var(--mono); font-size: 13px; font-weight: 700; }
-.fs-set:hover { text-decoration: none; color: var(--primary-dark); }
-.fs-title { display: block; font-size: 13px; line-height: 1.4; color: var(--ink); }
-.fs-doc .dirmark { margin-top: 2px; }
-
-/* Direction decides whether a document is work for the partner or something
-   arriving at them, so it is drawn rather than chipped: a triangle and a
-   word. Outbound takes the accent, because that is what the reader builds. */
-.dirmark { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--slate); white-space: nowrap; }
-.dirmark::before { content: ""; flex: none; width: 0; height: 0; border-style: solid; }
-.dirmark.out { color: var(--primary-dark); }
-.dirmark.out::before { border-width: 4px 0 4px 6px; border-color: transparent transparent transparent var(--primary); }
-.dirmark.in::before { border-width: 4px 6px 4px 0; border-color: transparent var(--slate) transparent transparent; }
-
-/* Standing feeds sit outside the numbered sequence: an inventory advice is a
-   cadence, not a step, and numbering it says something untrue about when it
-   happens. */
-.feeds { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
-.feeds h3 { font-size: 15px; margin-bottom: 3px; }
-.feedlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; margin: 10px 0 0; padding: 0; list-style: none; }
-.feedlist li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 1px 10px; align-items: baseline; font-size: 13px; }
-.feedlist .fs-set { grid-row: 1 / span 2; }
-.flow-note { font-size: 14px; line-height: 1.5; color: var(--slate); margin: 14px 0 0; max-width: 84ch; }
-
 /* ------------------------------------------------------- hub-wide facts */
 .factgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 14px 26px; margin: 0; }
 .fact { min-width: 0; }
@@ -651,7 +614,7 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 
 /* Grid items default to min-width:auto, so one long unbroken string widens
    the whole page. Same fix as .twocol and .wide-split. */
-.flow > *, .hublist > *, .factgrid > *, .contactgrid > *, .how > *, .feedlist > * { min-width: 0; }
+.hublist > *, .factgrid > *, .contactgrid > * , .how > * { min-width: 0; }
 
 @media (max-width: 680px) {
   .hhero { padding: 20px 0 18px; }
@@ -664,11 +627,10 @@ code { overflow-wrap: anywhere; word-break: break-word; }
   .hubrow > a { padding: 10px 8px 11px 3px; }
 }
 @media (max-width: 420px) {
-  .flow { grid-template-columns: 1fr; }
   .hhero h1 { font-size: 23px; }
   .factgrid { grid-template-columns: 1fr; gap: 12px; }
 }
 @media (hover: none) and (pointer: coarse) {
   .hubrow > a { min-height: 44px; }
-  .fs-set, .dr-set, .dr-title { padding: 2px 0; }
+  .dr-set, .dr-title { padding: 2px 0; }
 }

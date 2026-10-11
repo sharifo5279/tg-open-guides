@@ -1,5 +1,5 @@
 import { esc, inlineProse, layout, severityPill } from './html.mjs';
-import { DIRECTIONS, buildFlow, flowAbsences, FEED_SETS, ALWAYS_SETS } from '../spec.mjs';
+import { DIRECTIONS } from '../spec.mjs';
 
 /**
  * Home and the hub front door.
@@ -76,6 +76,8 @@ ${!dbUp ? `<section class="section tight"><div class="shell"><div class="notice"
 /* ---------------------------------------------------------------- hub page */
 
 /** The data's role keys are short; the page addresses a person. */
+const capitalise = (v) => String(v || '').replace(/^./, (ch) => ch.toUpperCase());
+
 const ROLE_LABELS = {
   carrier: 'carrier',
   warehouse: 'warehouse operator',
@@ -90,67 +92,15 @@ function dirmark(direction) {
     : '<span class="dirmark in">you receive</span>';
 }
 
-function flowDoc(g) {
-  return `<li class="fs-doc">
-  <a class="fs-set" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.transaction_set)}</a>
-  <a class="fs-title" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(shortTitle(g.title))}</a>
-  ${dirmark(g.direction)}
-</li>`;
-}
-
-/** The flow card has room for the document, not for a sentence about it. */
-function shortTitle(title) {
-  return String(title || '').replace(/\s*\([0-9]{3}\)\s*/, ' ').replace(/\s+(supplier|vendor|carrier|warehouse|partner)\s+requirements$/i, '').replace(/\s+specification$/i, '').trim();
-}
-
-function docRow(g) {
+function docRow(g, role = null) {
   return `<li class="drow">
   <a class="dr-set" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.transaction_set)}</a>
   <span class="dr-main">
     <a class="dr-title" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.title)}</a>
-    <span class="dr-meta">${esc(g.standard)} ${esc(g.std_version)} &middot; guide v${esc(g.cur_version)}</span>
+    <span class="dr-meta">${esc(g.standard)} ${esc(g.std_version)} &middot; guide v${esc(g.cur_version)}${role ? ` &middot; ${esc(role)}` : ''}</span>
   </span>
   <span class="dr-att${g.attested_by ? '' : ' un'}">${g.attested_by ? `Attested ${esc(String(g.published_at).slice(0, 10))}` : 'Not attested'}</span>
 </li>`;
-}
-
-function flowSection(hub, guides, roleLabel = null) {
-  const flow = buildFlow(guides);
-  const absences = flowAbsences(guides, hub.name);
-  if (!flow.stages.length && !flow.feeds.length && !flow.other.length) return '';
-
-  return `
-  ${roleLabel ? `<h3 class="roleh">${esc((ROLE_LABELS[roleLabel] || roleLabel).replace(/^./, (ch) => ch.toUpperCase()))} documents</h3>` : ''}
-  <ol class="flow">
-    ${flow.stages.map((st, i) => `<li class="flowstep">
-      <span class="fs-n">Step ${i + 1}</span>
-      <span class="fs-label">${esc(st.label)}</span>
-      <p class="fs-what">${esc(st.what)}</p>
-      <ul class="fs-docs">${st.guides.map(flowDoc).join('')}</ul>
-    </li>`).join('')}
-    ${flow.other.length ? `<li class="flowstep">
-      <span class="fs-n">Also</span>
-      <span class="fs-label">Other documents</span>
-      <p class="fs-what">Published by ${esc(hub.name)}, outside the usual sequence.</p>
-      <ul class="fs-docs">${flow.other.map(flowDoc).join('')}</ul>
-    </li>` : ''}
-  </ol>
-  ${absences.length ? `<p class="flow-note">${absences.map((a) => esc(a)).join(' ')}</p>` : ''}
-  ${(flow.feeds.length || flow.always.length) ? `<div class="feeds">
-    <h3>Standing feeds</h3>
-    <ul class="feedlist">
-      ${flow.feeds.map((g) => `<li>
-        <a class="fs-set" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.transaction_set)}</a>
-        <span class="fs-title">${esc(FEED_SETS[g.transaction_set] || shortTitle(g.title))}</span>
-        <span class="rc-note">${dirmark(g.direction)}</span>
-      </li>`).join('')}
-      ${flow.always.map((g) => `<li>
-        <a class="fs-set" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.transaction_set)}</a>
-        <span class="fs-title">${esc(ALWAYS_SETS[g.transaction_set] || shortTitle(g.title))}</span>
-        <span class="rc-note">${esc(hub.ackWindow || 'Returned for every interchange')}, both directions.</span>
-      </li>`).join('')}
-    </ul>
-  </div>` : ''}`;
 }
 
 export function renderHub({ hub, guides, baseUrl = '' }) {
@@ -214,10 +164,17 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
 </div></div>
 
 <section class="section"><div class="shell">
-  <h2>Document sequence</h2>
-  <p class="section-sub">Documents in the order they are exchanged. Identifiers set in one document are matched in later ones.</p>
-  ${flows.map((f) => flowSection(hub, f.guides, f.role)).join('')}
-  <p class="rc-note" style="margin-top:16px">Sequence grouping is provided by OpenText. ${esc(hub.name)} attests the guides, not the sequence.</p>
+  <h2>Every document</h2>
+  <p class="section-sub">Grouped by direction of exchange.${multiRole ? ` Each document states which ${esc(hub.name)} partner it applies to.` : ''}</p>
+  ${outbound.length ? `<div class="dgroup">
+    <div class="dgroup-h"><h3>Outbound to ${esc(hub.name)}</h3><span class="dg-n">${outbound.length}</span></div>
+    <ul class="dlist">${outbound.map((g) => docRow(g, multiRole ? capitalise(ROLE_LABELS[hub.setRoles?.[g.transaction_set]] || '') : null)).join('')}</ul>
+  </div>` : ''}
+  ${inbound.length ? `<div class="dgroup">
+    <div class="dgroup-h"><h3>Inbound from ${esc(hub.name)}</h3><span class="dg-n">${inbound.length}</span></div>
+    <ul class="dlist">${inbound.map((g) => docRow(g, multiRole ? capitalise(ROLE_LABELS[hub.setRoles?.[g.transaction_set]] || '') : null)).join('')}</ul>
+  </div>` : ''}
+  <p class="rc-note" style="margin-top:16px">Attestation records an authorized representative and approval date. Published versions remain accessible and unchanged. Attestation does not guarantee acceptance of a conforming file.</p>
 </div></section>
 
 ${rules.length ? `<section class="section"><div class="shell">
@@ -255,20 +212,6 @@ ${rules.length ? `<section class="section"><div class="shell">
     ${env.usageNote ? `<div class="fact fact-wide"><p class="f-lab">Test to production</p><p class="f-val">${esc(env.usageNote)}</p></div>` : ''}
   </div>
 </div></div></section>
-
-<section class="section"><div class="shell">
-  <h2>Every document</h2>
-  <p class="section-sub">Grouped by direction of exchange.</p>
-  ${outbound.length ? `<div class="dgroup">
-    <div class="dgroup-h"><h3>Outbound to ${esc(hub.name)}</h3><span class="dg-n">${outbound.length}</span></div>
-    <ul class="dlist">${outbound.map(docRow).join('')}</ul>
-  </div>` : ''}
-  ${inbound.length ? `<div class="dgroup">
-    <div class="dgroup-h"><h3>Inbound from ${esc(hub.name)}</h3><span class="dg-n">${inbound.length}</span></div>
-    <ul class="dlist">${inbound.map(docRow).join('')}</ul>
-  </div>` : ''}
-  <p class="rc-note" style="margin-top:16px">Attestation records an authorized representative and approval date. Published versions remain accessible and unchanged. Attestation does not guarantee acceptance of a conforming file.</p>
-</div></section>
 
 <section class="section"><div class="shell"><div class="twocol">
   <div>
