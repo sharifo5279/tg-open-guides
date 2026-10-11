@@ -2,29 +2,30 @@
  * Product backlog for Trading Grid Open Guides as a standalone SaaS.
  *
  * Scope: a self-contained product on its own domain, hosted on Render, with its
- * own accounts. No Trading Grid integration, no white labelling, no billing.
- * Every registered account is fully entitled; personas differ by permission,
- * not by plan.
+ * own accounts. No Trading Grid entitlements or sign-on, no billing. Every
+ * registered account is fully entitled; personas differ by permission, not by
+ * plan.
  *
  * Content is data rather than markup so it can be edited without touching a
  * renderer.
  */
 
 export const PERSONAS = [
-  { id: 'hub-owner', name: 'Hub owner', who: 'EDI or supply chain lead at a buying organisation.', needs: 'Create the hub, publish guides, attest versions, invite partners.' },
-  { id: 'hub-editor', name: 'Hub editor', who: 'Analyst or consultant drafting on the hub’s behalf.', needs: 'Import and edit guides. Cannot attest or publish.' },
-  { id: 'hub-admin', name: 'Hub administrator', who: 'Owner of the account, often the same person initially.', needs: 'Manage users, roles and hub profile.' },
-  { id: 'partner-reader', name: 'Partner reader', who: 'Developer or analyst at a trading partner.', needs: 'Read requirements without an account.' },
+  { id: 'hub-owner', name: 'Hub owner', who: 'EDI or supply chain lead at a buying organisation.', needs: 'Create the hub, publish guides, attest versions, approve access, invite partners.' },
+  { id: 'hub-editor', name: 'Hub editor', who: 'Analyst drafting on the hub’s behalf.', needs: 'Run the authoring agent and correct its output. Cannot attest or publish.' },
+  { id: 'hub-admin', name: 'Hub administrator', who: 'Owner of the account, often the same person initially.', needs: 'Manage users, roles, hub profile and identity.' },
+  { id: 'ps-author', name: 'Professional services author', who: 'OpenText consultant engaged by a hub to write its guides.', needs: 'Author across assigned hubs, then hand the version to the owner. Cannot attest or publish.' },
+  { id: 'partner-reader', name: 'Partner reader', who: 'Developer or analyst at a trading partner.', needs: 'Read open guides without an account. Request access to the rest.' },
   { id: 'partner-member', name: 'Partner member', who: 'Named contact at an invited partner.', needs: 'Track versions, receive change notices, convert to a hub.' },
-  { id: 'agent', name: 'Agent', who: 'Software reading on a partner’s behalf.', needs: 'Machine-readable requirements, no credentials for public guides.' },
-  { id: 'platform-admin', name: 'Platform administrator', who: 'Operator of the service.', needs: 'Account administration, abuse handling, support access.' }
+  { id: 'agent', name: 'Agent', who: 'Software reading on a partner’s behalf.', needs: 'Machine-readable requirements, no credentials for open guides.' },
+  { id: 'platform-admin', name: 'Platform administrator', who: 'Operator of the service.', needs: 'Account administration, engagement assignment, abuse handling, support access.' }
 ];
 
 export const EPICS = [
   {
     id: 'E1',
     name: 'Accounts and access',
-    why: 'Nothing else can ship without identity. Currently the application has no users at all.',
+    why: 'Nothing else can ship without identity. The application has no users at all today.',
     items: [
       { id: 'E1-1', title: 'Google sign-in', detail: 'Registration and login with a Google account. No password storage.', personas: ['hub-owner', 'hub-admin', 'partner-member'], size: 'M', state: 'Not started' },
       { id: 'E1-2', title: 'Email sign-in fallback', detail: 'Magic link for users without a Google account.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Not started' },
@@ -32,7 +33,8 @@ export const EPICS = [
       { id: 'E1-4', title: 'Account record', detail: 'An account owns one or more hubs. Separates the person from the organisation.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
       { id: 'E1-5', title: 'Roles and permissions', detail: 'Owner, editor and reader per hub. Only owners attest and publish.', personas: ['hub-admin', 'hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E1-6', title: 'Invite users to a hub', detail: 'Invite by email, assign a role, revoke access.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
-      { id: 'E1-7', title: 'Full entitlement', detail: 'Every account has every capability. No plans, no billing, no usage limits.', personas: ['platform-admin'], size: 'S', state: 'Decided' }
+      { id: 'E1-7', title: 'Professional services author role', detail: 'Authors across the hubs assigned to an engagement. Cannot attest or publish.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E1-8', title: 'Full entitlement', detail: 'Every account has every capability. No plans, no billing, no commercial metering.', personas: ['platform-admin'], size: 'S', state: 'Decided' }
     ]
   },
   {
@@ -43,7 +45,7 @@ export const EPICS = [
       { id: 'E2-1', title: 'Remove platform assumptions', detail: 'No Trading Grid identifiers, entitlements or sign-on anywhere in the data model.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E2-2', title: 'Own domain and TLS', detail: 'Move off the temporary Render subdomain to a product domain.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E2-3', title: 'Managed Postgres', detail: 'Provision the database and run migrations on deploy.', personas: ['platform-admin'], size: 'S', state: 'Blocked' },
-      { id: 'E2-4', title: 'Model provider configuration', detail: 'One adapter, key set per environment. Required for guide import.', personas: ['platform-admin'], size: 'S', state: 'Blocked' },
+      { id: 'E2-4', title: 'Model provider configuration', detail: 'One adapter, keys held by the application. Required for the authoring agent.', personas: ['platform-admin'], size: 'S', state: 'Blocked' },
       { id: 'E2-5', title: 'Backups and restore test', detail: 'Scheduled backups with a documented restore.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E2-6', title: 'Environments', detail: 'Separate staging and production services.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
     ]
@@ -63,86 +65,143 @@ export const EPICS = [
   },
   {
     id: 'E4',
-    name: 'Guide authoring',
-    why: 'Import exists but has never run against the database. Manual and agent-assisted paths do not exist.',
+    name: 'Hub identity',
+    why: 'A partner should recognise whose requirements they are reading. Parameters only, not a theme engine.',
     items: [
-      { id: 'E4-1', title: 'PDF import', detail: 'Upload, extract per page, compile to a draft with citations.', personas: ['hub-editor'], size: 'L', state: 'Built, untested' },
-      { id: 'E4-2', title: 'Triaged review', detail: 'Gaps first, uncertain items next, confident items collapsed.', personas: ['hub-editor'], size: 'M', state: 'Built, untested' },
-      { id: 'E4-3', title: 'Agent-authored guides', detail: 'An agent drafts a guide from a hub’s source documents and answers follow-up questions from the editor.', personas: ['hub-editor'], size: 'L', state: 'Not started' },
-      { id: 'E4-4', title: 'Manual guide creation', detail: 'Author a guide with no source document, for hubs whose requirements are not written down.', personas: ['hub-editor'], size: 'L', state: 'Not started' },
-      { id: 'E4-5', title: 'Import from Excel or Word', detail: 'Many hubs hold requirements in a spreadsheet rather than a PDF.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E4-6', title: 'Edit a published guide', detail: 'Open a published version as a new draft, diff against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E4-7', title: 'Scenarios editor', detail: 'The hub declares its own processes. This is where process lives, not in a platform-defined sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
+      { id: 'E4-1', title: 'Logo upload', detail: 'One logo per hub, with format and size limits, shown on the hub and guide pages.', personas: ['hub-admin'], size: 'S', state: 'Not started' },
+      { id: 'E4-2', title: 'Accent colour', detail: 'One colour, rejected if it fails contrast against the page.', personas: ['hub-admin'], size: 'S', state: 'Not started' },
+      { id: 'E4-3', title: 'Display name and strapline', detail: 'What partners read at the top of the hub page.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E4-4', title: 'Identity at first sign-in', detail: 'Collect logo, colour and display name during hub creation. Skippable.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E4-5', title: 'Default identity', detail: 'Hub initials and the product accent when nothing is uploaded.', personas: ['hub-admin'], size: 'S', state: 'Not started' }
     ]
   },
   {
     id: 'E5',
-    name: 'Attestation and publishing',
-    why: 'Attestation is the product’s central claim and currently has no identity behind it.',
+    name: 'Guide authoring',
+    why: 'Authoring is the agent’s work. People correct and attest. The application supplies the model keys, so no hub configures a provider.',
     items: [
-      { id: 'E5-1', title: 'Attestation by a signed-in owner', detail: 'Replace the open link with an authenticated action recording the account.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
-      { id: 'E5-2', title: 'Attestation request', detail: 'An editor sends a version to an owner for signature, with a reminder.', personas: ['hub-editor', 'hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E5-3', title: 'Visibility control', detail: 'Public, unlisted or partners only, changeable after publication.', personas: ['hub-owner'], size: 'S', state: 'Partial' },
-      { id: 'E5-4', title: 'Version diff', detail: 'Show what changed between two published versions.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Not started' },
-      { id: 'E5-5', title: 'Withdraw a version', detail: 'Mark a published version as withdrawn without deleting it.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
-      { id: 'E5-6', title: 'Attestation record export', detail: 'A downloadable record of who signed what and when.', personas: ['hub-owner'], size: 'S', state: 'Not started' }
+      { id: 'E5-1', title: 'Built-in authoring agent', detail: 'Reads a hub’s source documents and drafts a guide, with a citation for every statement.', personas: ['hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E5-2', title: 'Platform-supplied model keys', detail: 'Keys are held by the application and never exposed to a hub.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E5-3', title: 'Agent limits', detail: 'Caps per hub and per document on pages, runs and tokens, with a stated message at the limit.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Not started' },
+      { id: 'E5-4', title: 'Agent audit trail', detail: 'Each run records the source, prompt version, model, output and who started it.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E5-5', title: 'Agent questions to the editor', detail: 'Where the source is silent or contradictory, the agent asks instead of asserting.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-6', title: 'PDF extraction', detail: 'Per-page text extraction feeding the agent.', personas: ['hub-editor'], size: 'L', state: 'Built, untested' },
+      { id: 'E5-7', title: 'Triaged review', detail: 'Gaps first, uncertain items next, confident items collapsed.', personas: ['hub-editor'], size: 'M', state: 'Built, untested' },
+      { id: 'E5-8', title: 'Excel and Word sources', detail: 'Many hubs keep requirements in a spreadsheet rather than a PDF.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-9', title: 'Manual correction', detail: 'Edit any field the agent produced. The fallback path, not the primary one.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-10', title: 'Revise a published guide', detail: 'Open a published version as a new draft and diff it against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-11', title: 'Scenarios editor', detail: 'The hub declares its own processes. Process lives here, not in a platform sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
     ]
   },
   {
     id: 'E6',
-    name: 'Partner network',
-    why: 'The growth path is a partner reading a guide, then publishing their own. Nothing supports that today.',
+    name: 'Attestation and publishing',
+    why: 'Attestation is the product’s central claim and currently has no identity behind it.',
     items: [
-      { id: 'E6-1', title: 'Invite partners', detail: 'A hub invites its trading partners by email to its guides.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E6-2', title: 'Partner membership', detail: 'An invited partner gets an account linked to the hub, without seeing other partners.', personas: ['partner-member'], size: 'M', state: 'Not started' },
-      { id: 'E6-3', title: 'Change notification', detail: 'Notify partner members when a guide they follow publishes a new version.', personas: ['partner-member'], size: 'M', state: 'Not started' },
-      { id: 'E6-4', title: 'Partner becomes a hub', detail: 'A partner creates its own hub from the same account and publishes to its own suppliers.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E6-5', title: 'Acknowledge receipt', detail: 'A partner records that it has read a version, giving the hub evidence of distribution.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E6-6', title: 'Partner directory', detail: 'A hub sees which partners have accounts and which versions they are on.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
+      { id: 'E6-1', title: 'Attestation by a signed-in owner', detail: 'Replace the open link with an authenticated action recording the account.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
+      { id: 'E6-2', title: 'Attestation request', detail: 'An editor or professional services author sends a version to the owner for signature.', personas: ['hub-editor', 'ps-author', 'hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E6-3', title: 'Version diff', detail: 'Show what changed between two published versions.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Not started' },
+      { id: 'E6-4', title: 'Withdraw a version', detail: 'Mark a published version as withdrawn without deleting it.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E6-5', title: 'Attestation record export', detail: 'A downloadable record of who signed what and when.', personas: ['hub-owner'], size: 'S', state: 'Not started' }
     ]
   },
   {
     id: 'E7',
-    name: 'Agent access',
-    why: 'Built and working for public guides. Private guides have no agent authentication.',
+    name: 'Guide access control',
+    why: 'Each hub decides per guide whether a partner needs approval. Open guides onboard partners fastest and are the recommended default.',
     items: [
-      { id: 'E7-1', title: 'Public JSON, Markdown and MCP', detail: 'Served from the published version.', personas: ['agent'], size: 'M', state: 'Done' },
-      { id: 'E7-2', title: 'API keys for private guides', detail: 'A partner member issues a key to read guides that are not public.', personas: ['partner-member', 'agent'], size: 'M', state: 'Not started' },
-      { id: 'E7-3', title: 'MCP authentication', detail: 'Carry the key through the MCP transport and scope results to it.', personas: ['agent'], size: 'M', state: 'Not started' },
-      { id: 'E7-4', title: 'Rate limiting', detail: 'Per-key and per-address limits on all read surfaces.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
+      { id: 'E7-1', title: 'Per-guide visibility', detail: 'Open, approval required or unlisted, set per guide and changeable after publication.', personas: ['hub-owner'], size: 'S', state: 'Partial' },
+      { id: 'E7-2', title: 'Open by default', detail: 'New guides are open. The onboarding effect is stated at the point of choice.', personas: ['hub-owner'], size: 'S', state: 'Decided' },
+      { id: 'E7-3', title: 'Mixed visibility in one hub', detail: 'A hub keeps some guides open and others behind approval, without a second hub.', personas: ['hub-owner'], size: 'S', state: 'Decided' },
+      { id: 'E7-4', title: 'Partner access request', detail: 'A partner requests a guide behind approval, stating who they are and why.', personas: ['partner-reader'], size: 'M', state: 'Not started' },
+      { id: 'E7-5', title: 'Request notice to the approver', detail: 'The owner receives the request by email and can approve or decline from it.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E7-6', title: 'Approval queue', detail: 'Pending requests in one list, with bulk approval for a known partner.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E7-7', title: 'Access grants', detail: 'An approval grants that account read access to that guide. Recorded and revocable.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Not started' },
+      { id: 'E7-8', title: 'Approval delegation', detail: 'Name who approves requests when the owner is unavailable.', personas: ['hub-admin'], size: 'S', state: 'Not started' }
     ]
   },
   {
     id: 'E8',
-    name: 'Administration and operations',
-    why: 'Running a multi-tenant service needs tenant isolation, support access and an audit trail.',
+    name: 'Partner network',
+    why: 'The growth path is a partner reading a guide, then publishing their own. Nothing supports that today.',
     items: [
-      { id: 'E8-1', title: 'Tenant isolation', detail: 'Every query scoped by hub. Tested, not assumed.', personas: ['platform-admin'], size: 'L', state: 'Not started' },
-      { id: 'E8-2', title: 'Platform admin console', detail: 'List accounts and hubs, suspend an account, handle abuse reports.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E8-3', title: 'Audit log', detail: 'Who changed, attested, published or withdrew what, and when.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E8-4', title: 'Transactional email', detail: 'Invitations, attestation requests, change notices.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E8-5', title: 'Error reporting and uptime', detail: 'Server error capture and an external health check.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E8-6', title: 'Account deletion and export', detail: 'Delete an account and export its hubs and guides.', personas: ['hub-admin'], size: 'M', state: 'Not started' }
+      { id: 'E8-1', title: 'Invite partners', detail: 'A hub invites its trading partners by email to its guides.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E8-2', title: 'Partner membership', detail: 'An invited partner gets an account linked to the hub, without seeing other partners.', personas: ['partner-member'], size: 'M', state: 'Not started' },
+      { id: 'E8-3', title: 'Partner becomes a hub', detail: 'A partner creates its own hub from the same account and publishes to its own suppliers.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E8-4', title: 'Acknowledge receipt', detail: 'A partner records that it has read a version, giving the hub evidence of distribution.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E8-5', title: 'Partner directory', detail: 'A hub sees which partners have accounts and which versions they are on.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
     ]
   },
   {
     id: 'E9',
-    name: 'Legal and compliance',
-    why: 'Public distribution of hub requirements under an OpenText domain needs review before any real hub publishes.',
+    name: 'Agent access',
+    why: 'Built and working for open guides. Guides behind approval have no agent authentication.',
     items: [
-      { id: 'E9-1', title: 'X12 licensing review', detail: 'X12 licenses its standard. Confirm what guide content may be published publicly.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E9-2', title: 'Terms of service', detail: 'Including who owns published guide content and what attestation means.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E9-3', title: 'Privacy notice', detail: 'Accounts hold names and work email addresses.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E9-4', title: 'Content ownership on authored guides', detail: 'When a consultant authors for a hub, the hub owns and attests the result.', personas: ['hub-owner', 'platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E9-5', title: 'Accessibility review', detail: 'Keyboard navigation, contrast and screen reader pass on the reading surfaces.', personas: ['partner-reader'], size: 'M', state: 'Not started' }
+      { id: 'E9-1', title: 'Open JSON, Markdown and MCP', detail: 'Served from the published version.', personas: ['agent'], size: 'M', state: 'Done' },
+      { id: 'E9-2', title: 'API keys for restricted guides', detail: 'A partner member issues a key to read guides held behind approval.', personas: ['partner-member', 'agent'], size: 'M', state: 'Not started' },
+      { id: 'E9-3', title: 'MCP authentication', detail: 'Carry the key through the MCP transport and scope results to it.', personas: ['agent'], size: 'M', state: 'Not started' },
+      { id: 'E9-4', title: 'Rate limiting', detail: 'Per-key and per-address limits on all read surfaces.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
+    ]
+  },
+  {
+    id: 'E10',
+    name: 'Notifications and email',
+    why: 'Registration, invitations and approvals all depend on mail that arrives. None of it is wired today.',
+    items: [
+      { id: 'E10-1', title: 'Email delivery provider', detail: 'One provider, configured per environment, with delivery failures logged.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E10-2', title: 'Sender domain authentication', detail: 'SPF, DKIM and DMARC on the sending domain so invitations are not filtered.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E10-3', title: 'Registration confirmation', detail: 'Confirm the address and name the account it created.', personas: ['hub-owner', 'partner-member'], size: 'S', state: 'Not started' },
+      { id: 'E10-4', title: 'Hub user invitation', detail: 'Invitation to join a hub with a role, on an expiring link.', personas: ['hub-admin'], size: 'S', state: 'Not started' },
+      { id: 'E10-5', title: 'Partner invitation', detail: 'Invitation from a hub to a trading partner, naming the guides.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E10-6', title: 'Access request and decision', detail: 'Request to the approver, decision to the requester.', personas: ['hub-owner', 'partner-reader'], size: 'S', state: 'Not started' },
+      { id: 'E10-7', title: 'Attestation request and reminder', detail: 'To the owner, with one reminder before the request expires.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E10-8', title: 'Version change notice', detail: 'To partner members following a guide that has published a new version.', personas: ['partner-member'], size: 'S', state: 'Not started' },
+      { id: 'E10-9', title: 'Notification preferences', detail: 'Per-user control over change notices, with an unsubscribe link in every notice.', personas: ['partner-member'], size: 'S', state: 'Not started' },
+      { id: 'E10-10', title: 'Email templates', detail: 'One layout, with hub identity applied when the message comes from a hub.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
+    ]
+  },
+  {
+    id: 'E11',
+    name: 'Administration and operations',
+    why: 'Running a multi-tenant service needs tenant isolation, support access and an audit trail.',
+    items: [
+      { id: 'E11-1', title: 'Tenant isolation', detail: 'Every query scoped by hub. Tested, not assumed.', personas: ['platform-admin'], size: 'L', state: 'Not started' },
+      { id: 'E11-2', title: 'Platform admin console', detail: 'List accounts and hubs, suspend an account, handle abuse reports.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E11-3', title: 'Engagement assignment', detail: 'Assign a professional services author to a hub for a period, recorded in the audit log.', personas: ['platform-admin', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E11-4', title: 'Audit log', detail: 'Who changed, attested, published, approved or withdrew what, and when.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E11-5', title: 'Error reporting and uptime', detail: 'Server error capture and an external health check.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E11-6', title: 'Account deletion and export', detail: 'Delete an account and export its hubs and guides.', personas: ['hub-admin'], size: 'M', state: 'Not started' }
+    ]
+  },
+  {
+    id: 'E12',
+    name: 'Legal and compliance',
+    why: 'Public distribution of hub requirements needs review before any real hub publishes.',
+    items: [
+      { id: 'E12-1', title: 'X12 licensing review', detail: 'X12 licenses its standard. Confirm what guide content may be published openly.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E12-2', title: 'Terms of service', detail: 'Including who owns published guide content and what attestation means.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E12-3', title: 'Privacy notice', detail: 'Accounts hold names and work email addresses.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E12-4', title: 'Ownership of authored guides', detail: 'When professional services authors for a hub, the hub owns and attests the result.', personas: ['hub-owner', 'ps-author', 'platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E12-5', title: 'Agent output disclosure', detail: 'State on the guide that a draft was agent-authored and attested by a named person.', personas: ['partner-reader', 'platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E12-6', title: 'Accessibility review', detail: 'Keyboard navigation, contrast and screen reader pass on the reading surfaces.', personas: ['partner-reader'], size: 'M', state: 'Not started' }
+    ]
+  },
+  {
+    id: 'E13',
+    name: 'Later horizon',
+    why: 'Sequenced after the items above. Recorded so the direction is not lost.',
+    items: [
+      { id: 'E13-1', title: 'Enterprise single sign-on', detail: 'SAML and OIDC against a hub’s own identity provider, with directory-driven roles.', personas: ['hub-admin'], size: 'L', state: 'Later' },
+      { id: 'E13-2', title: 'Hub-owned domain', detail: 'Serve a hub’s guides on its own domain with a managed certificate.', personas: ['hub-owner'], size: 'L', state: 'Later' },
+      { id: 'E13-3', title: 'Aviator agent ecosystem', detail: 'The authoring agent joins the Trading Grid Aviator agent ecosystem. It ships standalone first.', personas: ['hub-editor', 'platform-admin'], size: 'L', state: 'Later' }
     ]
   }
 ];
 
 export const OUT_OF_SCOPE = [
-  'Trading Grid integration or single sign-on.',
-  'White labelling and customer-branded domains.',
-  'Billing, plans, metering and usage limits.',
+  'Trading Grid entitlements and sign-on.',
+  'Full theme control. Hub identity is a logo, one accent colour and a display name.',
+  'Billing, plans and commercial metering. Every account is fully entitled.',
   'File validation, partner certification and mapping.',
   'Connectivity provisioning: AS2, SFTP, certificates.',
   'A platform-defined business process model. Process is declared by each hub as scenarios.',
