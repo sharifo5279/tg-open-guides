@@ -80,14 +80,20 @@ export function validateSpec(spec) {
     errors.push('segments is empty, there is nothing to publish');
   }
 
+  // A position is unique within its area and loop, not across the whole set:
+  // X12 numbers positions per area, so 0100 legitimately appears in the heading,
+  // in each detail loop and in the summary.
   const seenPos = new Set();
   for (const [i, seg] of (spec.segments || []).entries()) {
     const where = `segments[${i}]${seg?.id ? ` (${seg.id})` : ''}`;
     if (!seg?.id) errors.push(`${where}: id is missing`);
     if (!seg?.pos) warnings.push(`${where}: pos is missing, ordering will fall back to array order`);
     if (seg?.pos) {
-      if (seenPos.has(seg.pos)) errors.push(`${where}: duplicate pos "${seg.pos}"`);
-      seenPos.add(seg.pos);
+      const key = `${seg.level || ''}|${seg.loopId || ''}|${seg.pos}|${seg.id}`;
+      if (seenPos.has(key)) {
+        errors.push(`${where}: duplicate pos "${seg.pos}" within ${seg.level || 'body'}${seg.loopId ? `/${seg.loopId}` : ''}`);
+      }
+      seenPos.add(key);
     }
     if (seg?.usage && !USAGE.includes(seg.usage)) {
       errors.push(`${where}: usage "${seg.usage}" is not one of ${USAGE.join(', ')}`);

@@ -1,0 +1,1064 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Meridian Industrial Supply",
+      "slug": "meridian-industrial",
+      "legalName": "Meridian Industrial Supply Co.",
+      "industry": "Industrial distribution and MRO"
+    },
+    "title": "Purchase Order Acknowledgment (855) supplier requirements",
+    "standard": "X12",
+    "transactionSet": "855",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "Meridian quotes lead times to its customers from the acknowledgment, so an optimistic date here becomes a missed commitment downstream.",
+    "effectiveFrom": "2026-06-15",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Meridian Supplier EDI Requirements v5.3 (PDF, April 2026)",
+    "attestation": {
+      "name": "Russ Ekstrand",
+      "role": "Director, Supplier Operations",
+      "date": "2026-06-03"
+    },
+    "sourcePages": 44
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "optional",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 10
+      }
+    },
+    "PO1": {
+      "name": "Line item",
+      "usage": "required",
+      "repeat": 100000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 11
+      }
+    },
+    "ACK": {
+      "name": "Acknowledged line",
+      "usage": "required",
+      "repeat": 100000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 12
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "DUNS. Drop-ship suppliers use the same DUNS as their stocking relationship.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "556201349",
+        "note": "Meridian Industrial Supply identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Meridian Industrial Supply returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during certification. Meridian certifies stocking and drop-ship flows separately because the ship-to differs.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "PR",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "MERIDIANIS",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Meridian Industrial Supply does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "855",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BAK",
+      "name": "Beginning Segment for Purchase Order Acknowledgment",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BAK01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BAK02",
+          "id": "587",
+          "name": "Acknowledgment Type",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BAK03",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": "The PO being acknowledged.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BAK04",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Original PO date.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BAK08",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": "Acknowledgment date.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1500",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "PO1",
+      "name": "Baseline Item Data",
+      "level": "detail",
+      "loopId": "PO1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "PO101",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "required",
+          "values": [],
+          "note": "Line number, unique within the order.",
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO102",
+          "id": "330",
+          "name": "Quantity Ordered",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO103",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO104",
+          "id": "212",
+          "name": "Unit Price",
+          "type": "R",
+          "min": 1,
+          "max": 17,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO106",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO107",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO108",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PO109",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0270",
+      "id": "ACK",
+      "name": "Line Item Acknowledgment",
+      "level": "detail",
+      "loopId": "ACK",
+      "usage": "required",
+      "maxUse": 104,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "ACK01",
+          "id": "668",
+          "name": "Line Item Status Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "IA",
+              "description": "Accepted",
+              "note": null
+            },
+            {
+              "code": "IR",
+              "description": "Rejected",
+              "note": null
+            },
+            {
+              "code": "IQ",
+              "description": "Quantity changed",
+              "note": null
+            },
+            {
+              "code": "IB",
+              "description": "Backordered",
+              "note": null
+            },
+            {
+              "code": "DR",
+              "description": "Date rescheduled",
+              "note": null
+            },
+            {
+              "code": "IS",
+              "description": "Substituted",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "ACK02",
+          "id": "380",
+          "name": "Quantity",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "ACK03",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "ACK04",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "optional",
+          "values": [
+            {
+              "code": "068",
+              "description": "Current schedule ship",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "ACK05",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "detail",
+      "loopId": "ACK",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "ACK01": [
+      {
+        "code": "IA",
+        "description": "Accepted",
+        "note": null
+      },
+      {
+        "code": "IR",
+        "description": "Rejected",
+        "note": null
+      },
+      {
+        "code": "IQ",
+        "description": "Quantity changed",
+        "note": null
+      },
+      {
+        "code": "IB",
+        "description": "Backordered",
+        "note": null
+      },
+      {
+        "code": "DR",
+        "description": "Date rescheduled",
+        "note": null
+      },
+      {
+        "code": "IS",
+        "description": "Substituted",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Acknowledge within 24 hours, or within four hours for drop-ship orders.",
+      "rationale": "Meridian confirms a delivery date to the end customer from this document, and the customer is waiting.",
+      "appliesTo": "855 response",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Every acknowledgment must carry a ship date, including backordered lines.",
+      "rationale": "Meridian cannot quote a date to its customer without one, and the order sits in an exception queue.",
+      "appliesTo": "ACK05",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "A substitution must be functionally equivalent and pre-approved on the Meridian cross-reference. Unapproved substitutes are returned at supplier cost.",
+      "rationale": "MRO substitutes affect equipment compatibility.",
+      "appliesTo": "ACK01",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Drop-ship transactions must carry the end customer in N1*ST and Meridian in N1*BY. Reversing these ships product to the wrong address.",
+      "rationale": "Roughly 40 percent of Meridian volume ships directly to the end customer, and the ship-to is not Meridian.",
+      "appliesTo": "N1",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Meridian returns a 997 within two hours and operates a nightly maintenance window from 02:00 to 03:00 Central.",
+      "rationale": "Transmissions during the window queue and process at 03:00.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 20
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Stocking acknowledgment",
+      "description": "Normal replenishment.",
+      "requirement": "Inside 24 hours.",
+      "citation": {
+        "page": 21
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Drop-ship acknowledgment",
+      "description": "Direct shipment order.",
+      "requirement": "Inside four hours with a firm ship date.",
+      "citation": {
+        "page": 22
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Partial with backorder",
+      "description": "Some quantity now, rest to follow.",
+      "requirement": "IQ and IB with dates on both.",
+      "citation": {
+        "page": 23
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier operations",
+      "name": "Meridian Supplier EDI",
+      "email": "supplier-edi@meridianindustrial.example",
+      "note": "7am to 7pm Central."
+    },
+    {
+      "role": "Drop-ship programme",
+      "name": "Meridian Direct Fulfilment",
+      "email": "dropship@meridianindustrial.example",
+      "note": "End customer address and delivery questions."
+    }
+  ]
+}

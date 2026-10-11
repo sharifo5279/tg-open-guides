@@ -1,0 +1,1396 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Crestfield Consumer Brands",
+      "slug": "crestfield",
+      "legalName": "Crestfield Consumer Brands, Inc.",
+      "industry": "Retail and consumer packaged goods"
+    },
+    "title": "Invoice (810) supplier requirements",
+    "standard": "X12",
+    "transactionSet": "810",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "Crestfield matches every invoice three ways: to the purchase order, to the receipt, and to the contracted price. All three must agree or the invoice holds.",
+    "effectiveFrom": "2026-04-01",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Crestfield EDI Implementation Guide v4.2 (PDF, January 2024)",
+    "attestation": {
+      "name": "Dana Whitfield",
+      "role": "Director, EDI Operations",
+      "date": "2026-03-20"
+    },
+    "sourcePages": 34
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "required",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 10
+      }
+    },
+    "IT1": {
+      "name": "Invoice line item",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 15
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "Your 9-digit DUNS, left justified, space filled to 15.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "078115096",
+        "note": "Crestfield Consumer Brands identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Crestfield Consumer Brands returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during certification, P once Crestfield confirms production cutover in writing. Sending P before cutover routes your transaction into a queue nobody watches.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "IN",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "CRESTFIELD",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Crestfield Consumer Brands does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "810",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BIG",
+      "name": "Beginning Segment for Invoice",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BIG01",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Invoice date.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIG02",
+          "id": "76",
+          "name": "Invoice Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIG03",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": "Purchase order date.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIG04",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": "The Crestfield PO number. An invoice without a matchable PO cannot be paid.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIG07",
+          "id": "640",
+          "name": "Transaction Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [
+            {
+              "code": "DI",
+              "description": "Debit invoice",
+              "note": null
+            },
+            {
+              "code": "CR",
+              "description": "Credit memo",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "CUR",
+      "name": "Currency",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "CUR01",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "BY",
+              "description": "Buying party",
+              "note": null
+            },
+            {
+              "code": "SE",
+              "description": "Selling party",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "CUR02",
+          "id": "100",
+          "name": "Currency Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0700",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0900",
+      "id": "N3",
+      "name": "Address Information",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 2,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "N301",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N302",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1000",
+      "id": "N4",
+      "name": "Geographic Location",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "N401",
+          "id": "19",
+          "name": "City Name",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "N402",
+          "id": "156",
+          "name": "State or Province Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "N403",
+          "id": "116",
+          "name": "Postal Code",
+          "type": "ID",
+          "min": 3,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "N404",
+          "id": "26",
+          "name": "Country Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "conditional",
+          "values": [],
+          "note": "Required when the address is outside the United States.",
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1300",
+      "id": "ITD",
+      "name": "Terms of Sale/Deferred Terms of Sale",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 5,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "ITD01",
+          "id": "336",
+          "name": "Terms Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "ITD02",
+          "id": "333",
+          "name": "Terms Basis Date Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "ITD03",
+          "id": "338",
+          "name": "Terms Discount Percent",
+          "type": "R",
+          "min": 1,
+          "max": 6,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "ITD07",
+          "id": "386",
+          "name": "Terms Net Days",
+          "type": "N0",
+          "min": 1,
+          "max": 3,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1400",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "IT1",
+      "name": "Baseline Item Data (Invoice)",
+      "level": "detail",
+      "loopId": "IT1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "IT101",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal the PO1 line number from the 850, so Crestfield can match line for line.",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "IT102",
+          "id": "358",
+          "name": "Quantity Invoiced",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "IT103",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "IT104",
+          "id": "212",
+          "name": "Unit Price",
+          "type": "R",
+          "min": 1,
+          "max": 17,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "IT106",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "IT107",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "PID",
+      "name": "Product/Item Description",
+      "level": "detail",
+      "loopId": "IT1",
+      "usage": "optional",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 16
+      },
+      "elements": [
+        {
+          "ref": "PID01",
+          "id": "349",
+          "name": "Item Description Type",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "F",
+              "description": "Free-form",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "PID05",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1200",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "detail",
+      "loopId": "IT1",
+      "usage": "optional",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 17
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1800",
+      "id": "SAC",
+      "name": "Service, Promotion, Allowance or Charge Information",
+      "level": "detail",
+      "loopId": "IT1",
+      "usage": "optional",
+      "maxUse": 25,
+      "note": null,
+      "citation": {
+        "page": 18
+      },
+      "elements": [
+        {
+          "ref": "SAC01",
+          "id": "248",
+          "name": "Allowance or Charge Indicator",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Allowance",
+              "note": null
+            },
+            {
+              "code": "C",
+              "description": "Charge",
+              "note": null
+            },
+            {
+              "code": "N",
+              "description": "No allowance or charge",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "SAC02",
+          "id": "1300",
+          "name": "Service, Promotion, Allowance or Charge Code",
+          "type": "ID",
+          "min": 4,
+          "max": 4,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "SAC05",
+          "id": "610",
+          "name": "Amount",
+          "type": "N2",
+          "min": 1,
+          "max": 15,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "TDS",
+      "name": "Total Monetary Value Summary",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 19
+      },
+      "elements": [
+        {
+          "ref": "TDS01",
+          "id": "361",
+          "name": "Total Invoice Amount",
+          "type": "N2",
+          "min": 1,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": "Implied two decimals: $1,234.56 is sent as 123456.",
+          "citation": {
+            "page": 19
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "TXI",
+      "name": "Tax Information",
+      "level": "summary",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 20
+      },
+      "elements": [
+        {
+          "ref": "TXI01",
+          "id": "963",
+          "name": "Tax Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "TXI02",
+          "id": "782",
+          "name": "Monetary Amount",
+          "type": "R",
+          "min": 1,
+          "max": 18,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "TXI03",
+          "id": "954",
+          "name": "Percent",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "SAC",
+      "name": "Service, Promotion, Allowance or Charge Information",
+      "level": "summary",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 25,
+      "note": null,
+      "citation": {
+        "page": 21
+      },
+      "elements": [
+        {
+          "ref": "SAC01",
+          "id": "248",
+          "name": "Allowance or Charge Indicator",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Allowance",
+              "note": null
+            },
+            {
+              "code": "C",
+              "description": "Charge",
+              "note": null
+            },
+            {
+              "code": "N",
+              "description": "No allowance or charge",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "SAC02",
+          "id": "1300",
+          "name": "Service, Promotion, Allowance or Charge Code",
+          "type": "ID",
+          "min": 4,
+          "max": 4,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "SAC05",
+          "id": "610",
+          "name": "Amount",
+          "type": "N2",
+          "min": 1,
+          "max": 15,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 22
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 22
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 22
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 23
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 23
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {},
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "One invoice per purchase order per shipment. Consolidated invoices covering several POs are rejected.",
+      "rationale": "Crestfield reconciles payable against receipt at the PO level, and a consolidated invoice cannot be matched.",
+      "appliesTo": "BIG04",
+      "citation": {
+        "page": 24
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Invoice line quantity may not exceed the quantity Crestfield received against that PO line.",
+      "rationale": "Over-invoicing against receipt is the most common cause of a disputed payable.",
+      "appliesTo": "IT102",
+      "citation": {
+        "page": 25
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "Invoices received more than 90 days after the ship date are subject to rejection under the supplier agreement.",
+      "rationale": "Late invoices fall outside the accrual period and require manual approval.",
+      "appliesTo": "BIG01",
+      "citation": {
+        "page": 26
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "ISA15 must be T until Crestfield confirms production cutover in writing, and P thereafter.",
+      "rationale": "Production transactions sent during certification are not monitored, and test transactions sent after cutover are not received.",
+      "appliesTo": "ISA15",
+      "citation": {
+        "page": 27
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Crestfield returns a 997 within 60 minutes of receiving an interchange. No 997 after 60 minutes should be treated as a transmission failure on your side.",
+      "rationale": "A silent failure is the most common reason a supplier believes a document was sent when Crestfield never received it.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 28
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Standard invoice",
+      "description": "One PO, one shipment, matching quantities.",
+      "requirement": "The baseline.",
+      "citation": {
+        "page": 29
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Invoice with allowance",
+      "description": "A promotional allowance applied at line level.",
+      "requirement": "SAC with A and the allowance code from your trade agreement.",
+      "citation": {
+        "page": 30
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Credit memo",
+      "description": "A credit against a previously invoiced shipment.",
+      "requirement": "BIG07 = CR, referencing the original invoice in REF.",
+      "citation": {
+        "page": 30
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "EDI operations",
+      "name": "Crestfield EDI Support",
+      "email": "edi-support@crestfield.example",
+      "note": "Transmission failures and 997 queries. Monday to Friday, 7am to 7pm Eastern."
+    },
+    {
+      "role": "Supplier onboarding",
+      "name": "Crestfield Supplier Enablement",
+      "email": "supplier-onboarding@crestfield.example",
+      "note": "Certification scheduling and DC routing guides."
+    }
+  ]
+}

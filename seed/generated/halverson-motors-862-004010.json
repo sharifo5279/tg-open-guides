@@ -1,0 +1,1044 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Halverson Motors",
+      "slug": "halverson-motors",
+      "legalName": "Halverson Motor Corporation",
+      "industry": "Automotive manufacturing"
+    },
+    "title": "Shipping Schedule (862) specification",
+    "standard": "X12",
+    "transactionSet": "862",
+    "version": "004010",
+    "direction": "partner_receives",
+    "summary": "The shipping schedule is the firm ship authorisation inside the planning horizon. The 830 says what to plan for; the 862 says what to put on the truck.",
+    "effectiveFrom": "2026-01-05",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Halverson Motors Supplier EDI Standard, Revision 11 (PDF, September 2025)",
+    "attestation": {
+      "name": "Priya Raghunathan",
+      "role": "Manager, Supplier Systems Integration",
+      "date": "2025-12-24"
+    },
+    "sourcePages": 86
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ":",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "required",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 8
+      }
+    },
+    "LIN": {
+      "name": "Item schedule",
+      "usage": "required",
+      "repeat": 10000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    },
+    "FST": {
+      "name": "Forecast bucket",
+      "usage": "required",
+      "repeat": 100000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 13
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "Your DUNS. Halverson does not accept mutually defined (ZZ) qualifiers.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "042118770",
+        "note": "Halverson Motors identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Halverson Motors returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T throughout the test phase. Halverson schedules production cutover per plant, so a supplier may be P for one plant and T for another during a phased launch.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "SS",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "HALVERSON",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Halverson Motors does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "862",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BSS",
+      "name": "Beginning Segment for Shipping Schedule",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BSS01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original",
+              "note": null
+            },
+            {
+              "code": "05",
+              "description": "Replace",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSS02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSS03",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSS04",
+          "id": "675",
+          "name": "Schedule Type Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "DL",
+              "description": "Delivery based",
+              "note": null
+            }
+          ],
+          "note": "Dates are delivery dates at the plant dock, not ship dates. Work backwards using your transit time.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSS05",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Horizon start.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSS06",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Horizon end.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "LIN",
+      "name": "Item Identification (Schedule)",
+      "level": "detail",
+      "loopId": "LIN",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "LIN01",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "LIN02",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "BP",
+              "description": "Buyer's part number",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "LIN03",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "LIN04",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [
+            {
+              "code": "EC",
+              "description": "Engineering change level",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "LIN05",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "UIT",
+      "name": "Unit Detail",
+      "level": "detail",
+      "loopId": "LIN",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "UIT01",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "UIT02",
+          "id": "212",
+          "name": "Unit Price",
+          "type": "R",
+          "min": 1,
+          "max": 17,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "detail",
+      "loopId": "LIN",
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1200",
+      "id": "SHP",
+      "name": "Shipped/Received Information",
+      "level": "detail",
+      "loopId": "LIN",
+      "usage": "required",
+      "maxUse": 25,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "SHP01",
+          "id": "673",
+          "name": "Quantity Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "01",
+              "description": "Discrete quantity",
+              "note": null
+            },
+            {
+              "code": "02",
+              "description": "Cumulative quantity",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "SHP02",
+          "id": "380",
+          "name": "Quantity",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "SHP03",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "optional",
+          "values": [
+            {
+              "code": "011",
+              "description": "Shipped",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "SHP04",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "FST",
+      "name": "Forecast Schedule",
+      "level": "detail",
+      "loopId": "FST",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "FST01",
+          "id": "380",
+          "name": "Quantity",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "FST02",
+          "id": "680",
+          "name": "Forecast Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "C",
+              "description": "Firm",
+              "note": null
+            }
+          ],
+          "note": "Everything on an 862 is firm by definition.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "FST03",
+          "id": "681",
+          "name": "Forecast Timing Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "D",
+              "description": "Discrete",
+              "note": null
+            },
+            {
+              "code": "W",
+              "description": "Weekly bucket",
+              "note": null
+            },
+            {
+              "code": "M",
+              "description": "Monthly bucket",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "FST04",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Requirement date.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "FST05",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": "End of bucket, when FST03 is W or M.",
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "BSS04": [
+      {
+        "code": "DL",
+        "description": "Delivery based",
+        "note": null
+      }
+    ],
+    "FST02": [
+      {
+        "code": "C",
+        "description": "Firm",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Dates are required delivery dates at the receiving dock. Shipping on the date given will be late.",
+      "rationale": "Halverson plans dock receipt, not supplier despatch, and a shipment arriving on the requirement date has already missed the line.",
+      "appliesTo": "FST04",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "An 862 supersedes any overlapping requirement in the most recent 830 for the same part.",
+      "rationale": "Acting on both produces a double shipment.",
+      "appliesTo": "BSS01",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "Delivery outside the appointment window stated in the plant routing guide is refused at the gate.",
+      "rationale": "Dock capacity is sequenced, and an unscheduled trailer blocks a scheduled one.",
+      "appliesTo": "delivery",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
+      "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
+      "appliesTo": "REF",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "reject",
+      "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
+      "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
+      "appliesTo": "cumulative accounting",
+      "citation": {
+        "page": 20
+      }
+    },
+    {
+      "id": "R-006",
+      "severity": "info",
+      "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
+      "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 21
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Daily firm release",
+      "description": "A normal day of firm requirements.",
+      "requirement": "Treat every date as a dock delivery date.",
+      "citation": {
+        "page": 22
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Expedite inside transit time",
+      "description": "A requirement dated sooner than your normal transit.",
+      "requirement": "Contact materials planning rather than shipping short.",
+      "citation": {
+        "page": 23
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier systems",
+      "name": "Halverson EDI Helpdesk",
+      "email": "edi-helpdesk@halverson.example",
+      "note": "24 hours during production, excluding plant shutdown weeks."
+    },
+    {
+      "role": "Materials planning",
+      "name": "Plant Materials Group",
+      "email": "materials@halverson.example",
+      "note": "Release quantity and schedule questions."
+    }
+  ]
+}

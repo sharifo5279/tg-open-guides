@@ -1,0 +1,994 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Brightline Apparel",
+      "slug": "brightline-apparel",
+      "legalName": "Brightline Apparel Group",
+      "industry": "Apparel and footwear retail"
+    },
+    "title": "Purchase Order Change (860) specification",
+    "standard": "X12",
+    "transactionSet": "860",
+    "version": "004010",
+    "direction": "partner_receives",
+    "summary": "Apparel orders change constantly ahead of a floor set. Brightline sends changes right up to the ship window.",
+    "effectiveFrom": "2026-07-01",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Brightline Vendor Routing and EDI Manual, 2026 (PDF, May 2026)",
+    "attestation": {
+      "name": "Celia Marchetti",
+      "role": "Head of Vendor Compliance",
+      "date": "2026-06-19"
+    },
+    "sourcePages": 58
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "optional",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 10
+      }
+    },
+    "POC": {
+      "name": "Changed line",
+      "usage": "required",
+      "repeat": 100000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 11
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "12",
+        "note": "Brightline uses phone-number qualifier 12 for historical reasons. Your assigned ID is on your vendor setup sheet, not your DUNS.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "12",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "2125550180",
+        "note": "Brightline Apparel identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Brightline Apparel returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during testing. Brightline requires a successful parallel of all five transaction sets before any goes to production.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "PC",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "BRIGHTLINE",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Brightline Apparel does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "860",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BCH",
+      "name": "Beginning Segment for Purchase Order Change",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BCH01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "01",
+              "description": "Cancellation",
+              "note": null
+            },
+            {
+              "code": "04",
+              "description": "Change",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BCH02",
+          "id": "92",
+          "name": "Purchase Order Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BCH03",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BCH06",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Original order date.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BCH10",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Change date.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1500",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "POC",
+      "name": "Line Item Change",
+      "level": "detail",
+      "loopId": "POC",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "POC01",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "required",
+          "values": [],
+          "note": "The original line number.",
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "POC02",
+          "id": "670",
+          "name": "Change or Response Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "QI",
+              "description": "Quantity increase",
+              "note": null
+            },
+            {
+              "code": "QD",
+              "description": "Quantity decrease",
+              "note": null
+            },
+            {
+              "code": "CA",
+              "description": "Cancel line",
+              "note": null
+            },
+            {
+              "code": "DI",
+              "description": "Date change",
+              "note": null
+            },
+            {
+              "code": "PC",
+              "description": "Price change",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "POC03",
+          "id": "330",
+          "name": "Quantity Ordered",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "POC05",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "POC06",
+          "id": "212",
+          "name": "Unit Price",
+          "type": "R",
+          "min": 1,
+          "max": 17,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "POC08",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "POC09",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "PID",
+      "name": "Product/Item Description",
+      "level": "detail",
+      "loopId": "POC",
+      "usage": "optional",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "PID01",
+          "id": "349",
+          "name": "Item Description Type",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "F",
+              "description": "Free-form",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "PID05",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "detail",
+      "loopId": "POC",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "POC02": [
+      {
+        "code": "QI",
+        "description": "Quantity increase",
+        "note": null
+      },
+      {
+        "code": "QD",
+        "description": "Quantity decrease",
+        "note": null
+      },
+      {
+        "code": "CA",
+        "description": "Cancel line",
+        "note": null
+      },
+      {
+        "code": "DI",
+        "description": "Date change",
+        "note": null
+      },
+      {
+        "code": "PC",
+        "description": "Price change",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Quantity on a change is the new total for that size and colour, not an adjustment.",
+      "rationale": "Treating it as a delta double counts the change, which is the most common error on this document.",
+      "appliesTo": "POC03",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Acknowledge a change with an 855 within 24 hours.",
+      "rationale": "Brightline must know before the floor-set deadline whether the change can be met.",
+      "appliesTo": "855 response",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "Changes inside the ship window are advisory. If goods are already packed, notify the buyer rather than repacking.",
+      "rationale": "Repacking inside the window usually misses the window, which is worse than the original quantity.",
+      "appliesTo": "timing",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Every style must be identified by the Brightline style, colour and size combination. A style number alone is not sufficient on any transaction.",
+      "rationale": "Apparel is bought and sold at the size and colour level, and a style-level transaction cannot be allocated to a store.",
+      "appliesTo": "item identification",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "warn",
+      "statement": "Vendor compliance chargebacks are applied monthly against the standards in the routing manual, not against this guide alone.",
+      "rationale": "The routing manual covers physical packing and labelling, which EDI cannot express.",
+      "appliesTo": "compliance",
+      "citation": {
+        "page": 20
+      }
+    },
+    {
+      "id": "R-006",
+      "severity": "info",
+      "statement": "Brightline returns a 997 within four hours. The EDI interface is unavailable Sunday 02:00 to 06:00 Eastern for maintenance.",
+      "rationale": "The weekly window is used for item master and allocation processing.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 21
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Size curve adjustment",
+      "description": "Quantities moved between sizes.",
+      "requirement": "New totals per size, not deltas.",
+      "citation": {
+        "page": 22
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Colour cancellation",
+      "description": "One colourway dropped.",
+      "requirement": "CA on every line for that colour.",
+      "citation": {
+        "page": 23
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Vendor compliance",
+      "name": "Brightline Vendor Compliance",
+      "email": "vendorcompliance@brightlineapparel.example",
+      "note": "Chargeback disputes and routing questions."
+    },
+    {
+      "role": "EDI support",
+      "name": "Brightline EDI",
+      "email": "edi@brightlineapparel.example",
+      "note": "9am to 6pm Eastern, Monday to Friday."
+    }
+  ]
+}

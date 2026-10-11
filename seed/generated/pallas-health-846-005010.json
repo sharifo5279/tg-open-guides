@@ -1,0 +1,921 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Pallas Health System",
+      "slug": "pallas-health",
+      "legalName": "Pallas Health System",
+      "industry": "Healthcare provider supply chain"
+    },
+    "title": "Inventory Advice (846) supplier requirements",
+    "standard": "X12",
+    "transactionSet": "846",
+    "version": "005010",
+    "direction": "partner_sends",
+    "summary": "Availability drives Pallas substitution decisions during shortages, which are routine in medical supply.",
+    "effectiveFrom": "2026-05-01",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Pallas Supplier Integration Guide, 2026 Edition (PDF, December 2025)",
+    "attestation": {
+      "name": "Theo Alsager",
+      "role": "Director, Supply Chain Technology",
+      "date": "2026-04-19"
+    },
+    "sourcePages": 71
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "required",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    },
+    "LIN-INV": {
+      "name": "Inventory item",
+      "usage": "required",
+      "repeat": 10000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 10
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "DUNS. Pallas also accepts GLN (qualifier UL) for suppliers standardised on GS1.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "113440287",
+        "note": "Pallas Health System identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00501",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Pallas Health System returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T until Pallas confirms production. Pallas certifies per transaction set, not per supplier, so you may be live on 850 while still testing 856.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "IB",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "PALLASHS",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "005010",
+        "note": "005010 only. Pallas Health System does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "846",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BIA",
+      "name": "Beginning Segment for Inventory Inquiry/Advice",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BIA01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIA02",
+          "id": "755",
+          "name": "Report Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIA03",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIA04",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BIA05",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "LIN",
+      "name": "Item Identification",
+      "level": "detail",
+      "loopId": "LIN-INV",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "LIN01",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "LIN02",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "LIN03",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "LIN04",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "LIN05",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "PID",
+      "name": "Product/Item Description",
+      "level": "detail",
+      "loopId": "LIN-INV",
+      "usage": "optional",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "PID01",
+          "id": "349",
+          "name": "Item Description Type",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "F",
+              "description": "Free-form",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "PID05",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "QTY",
+      "name": "Quantity",
+      "level": "detail",
+      "loopId": "LIN-INV",
+      "usage": "required",
+      "maxUse": 100,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "QTY01",
+          "id": "673",
+          "name": "Quantity Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "33",
+              "description": "Available for sale",
+              "note": null
+            },
+            {
+              "code": "20",
+              "description": "On hand",
+              "note": null
+            },
+            {
+              "code": "98",
+              "description": "Allocated",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "QTY02",
+          "id": "380",
+          "name": "Quantity",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "QTY03",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0700",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "detail",
+      "loopId": "LIN-INV",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "QTY01": [
+      {
+        "code": "33",
+        "description": "Available for sale",
+        "note": null
+      },
+      {
+        "code": "20",
+        "description": "On hand",
+        "note": null
+      },
+      {
+        "code": "98",
+        "description": "Allocated",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Report availability by GTIN. Supplier catalogue numbers alone cannot be matched to the Pallas item master.",
+      "rationale": "Availability that cannot be matched to an item is not usable in a shortage.",
+      "appliesTo": "LIN",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "warn",
+      "statement": "Allocated quantity (QTY01 = 98) should be reported for items under allocation, so Pallas can plan rather than discover a shortage at order time.",
+      "rationale": "Allocation visibility is the difference between planning around a shortage and reacting to one.",
+      "appliesTo": "QTY",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "reject",
+      "statement": "Every item must be identified by GTIN. Pallas does not accept supplier catalogue numbers as the sole identifier on any transaction.",
+      "rationale": "Pallas standardised on GS1 in 2024, and recall management depends on a single item identity across every document.",
+      "appliesTo": "item identification",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Lot number and expiry date are required for every item subject to recall or dating, on both the ASN and the invoice.",
+      "rationale": "Recall response time is a patient safety measure and a regulatory obligation, and it depends on lot traceability at receipt.",
+      "appliesTo": "lot traceability",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Pallas returns a 997 within one hour, and an 824 for business validation on 850, 856 and 810.",
+      "rationale": "Two stage validation means an accepted 997 does not confirm the document was usable.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 20
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Daily availability file",
+      "description": "All contracted items.",
+      "requirement": "The baseline.",
+      "citation": {
+        "page": 21
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Item under allocation",
+      "description": "A constrained product.",
+      "requirement": "Report available and allocated separately.",
+      "citation": {
+        "page": 22
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier integration",
+      "name": "Pallas Supply Chain Technology",
+      "email": "supplier-edi@pallashealth.example",
+      "note": "7am to 6pm Central, Monday to Friday."
+    },
+    {
+      "role": "Item master",
+      "name": "Pallas Item Data Team",
+      "email": "itemdata@pallashealth.example",
+      "note": "GTIN, UOM and contract price alignment."
+    }
+  ]
+}

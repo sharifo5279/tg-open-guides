@@ -95,13 +95,35 @@ function buildServer({ baseUrl, userAgent }) {
         const s = !standard || g.standard.toLowerCase() === standard.toLowerCase();
         return h && t && s;
       });
-      if (!rows.length) return textResult('No published guides match that filter.');
-      const lines = rows.map(
+      if (!rows.length) {
+        const hubs = [...new Set(all.map((g) => g.hub_slug))].join(', ');
+        return textResult(`No published guide matches that filter. Hubs available: ${hubs}.`);
+      }
+
+      const LIMIT = 25;
+      if (rows.length > LIMIT && !hub && !transactionSet) {
+        // Unfiltered and large: an index of the catalogue is more useful than a
+        // truncated list, and it tells the caller how to narrow the search.
+        const byHub = new Map();
+        for (const g of rows) {
+          if (!byHub.has(g.hub_slug)) byHub.set(g.hub_slug, { name: g.hub_name, sets: [] });
+          byHub.get(g.hub_slug).sets.push(g.transaction_set);
+        }
+        return textResult(
+          `${rows.length} published guides across ${byHub.size} hubs. Narrow with "hub" or "transactionSet", then call get_guide_summary.\n\n` +
+            [...byHub.entries()]
+              .map(([slug, h]) => `- ${slug} (${h.name}): ${h.sets.sort().join(', ')}`)
+              .join('\n')
+        );
+      }
+
+      const shown = rows.slice(0, LIMIT);
+      const lines = shown.map(
         (g) =>
           `- ${g.hub_slug}/${g.slug}: ${g.hub_name}, ${g.standard} ${g.std_version} ${g.transaction_set}. ${DIRECTIONS[g.direction] || g.direction}. v${g.cur_version}${g.attested_by ? `, attested by ${g.attested_by}` : ', not attested'}. Page: ${baseUrl}/g/${g.hub_slug}/${g.slug}`
       );
       return textResult(
-        `${rows.length} published guide(s). Pass the reference before the colon as the "guide" argument to the other tools.\n\n${lines.join('\n')}`
+        `${rows.length} published guide(s)${rows.length > LIMIT ? `, showing the first ${LIMIT}` : ''}. Pass the reference before the colon as the "guide" argument to the other tools.\n\n${lines.join('\n')}`
       );
     }
   );

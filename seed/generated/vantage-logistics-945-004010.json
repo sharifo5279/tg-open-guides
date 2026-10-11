@@ -1,0 +1,968 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Vantage Logistics Group",
+      "slug": "vantage-logistics",
+      "legalName": "Vantage Logistics Group, Inc.",
+      "industry": "Third party logistics and transportation"
+    },
+    "title": "Warehouse Shipping Advice (945) warehouse requirements",
+    "standard": "X12",
+    "transactionSet": "945",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "The shipping advice closes the loop on a 940 and is what moves inventory in the client system.",
+    "effectiveFrom": "2026-03-02",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Vantage Carrier and Warehouse EDI Specification v9 (PDF, November 2025)",
+    "attestation": {
+      "name": "Ingrid Sollis",
+      "role": "VP, Network Systems",
+      "date": "2026-02-18"
+    },
+    "sourcePages": 61
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "required",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 8
+      }
+    },
+    "LX": {
+      "name": "Assigned number",
+      "usage": "required",
+      "repeat": 9999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 11
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": "Carriers use their SCAC. Warehouse operators use the Vantage site code.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "VANTAGELG",
+        "note": "Vantage Logistics Group identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Vantage Logistics Group returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during onboarding. Vantage certifies per lane for carriers and per site for warehouses.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "SW",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "VANTAGE",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Vantage Logistics Group does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "945",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "W06",
+      "name": "Warehouse Shipment Identification",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "W0601",
+          "id": "662",
+          "name": "Reporting Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "F",
+              "description": "Final shipment",
+              "note": null
+            },
+            {
+              "code": "N",
+              "description": "New shipment against an open order",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "W0602",
+          "id": "285",
+          "name": "Depositor Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "W0603",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "W0604",
+          "id": "127",
+          "name": "Shipment Identification Number",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "G62",
+      "name": "Date/Time",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "G6201",
+          "id": "432",
+          "name": "Date Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "G6202",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "G6203",
+          "id": "176",
+          "name": "Time Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "G6204",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1000",
+      "id": "TD5",
+      "name": "Carrier Details (Routing Sequence)",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "TD501",
+          "id": "133",
+          "name": "Routing Sequence Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "B",
+              "description": "Origin/delivery carrier",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD502",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "2",
+              "description": "Standard Carrier Alpha Code (SCAC)",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD503",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": "Four character SCAC.",
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD504",
+          "id": "91",
+          "name": "Transportation Method/Type Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "LX",
+      "name": "Assigned Number",
+      "level": "detail",
+      "loopId": "LX",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "LX01",
+          "id": "554",
+          "name": "Assigned Number",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "W12",
+      "name": "Line Item Detail (Shipped)",
+      "level": "detail",
+      "loopId": "LX",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "W1201",
+          "id": "668",
+          "name": "Shipment Order Status Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "CL",
+              "description": "Line shipped complete",
+              "note": null
+            },
+            {
+              "code": "PR",
+              "description": "Partial shipment",
+              "note": null
+            },
+            {
+              "code": "BP",
+              "description": "Line backordered",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "W1202",
+          "id": "330",
+          "name": "Quantity Ordered",
+          "type": "R",
+          "min": 1,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "W1203",
+          "id": "358",
+          "name": "Quantity Shipped",
+          "type": "R",
+          "min": 1,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "W1205",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "W1206",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "W1207",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1200",
+      "id": "MAN",
+      "name": "Marks and Numbers",
+      "level": "detail",
+      "loopId": "LX",
+      "usage": "optional",
+      "maxUse": 30,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "MAN01",
+          "id": "88",
+          "name": "Marks and Numbers Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "MAN02",
+          "id": "87",
+          "name": "Marks and Numbers",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "W03",
+      "name": "Total Shipment Information",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "W0301",
+          "id": "382",
+          "name": "Number of Units Shipped",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "W0302",
+          "id": "81",
+          "name": "Weight",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "W0303",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "W0601": [
+      {
+        "code": "F",
+        "description": "Final shipment",
+        "note": null
+      },
+      {
+        "code": "N",
+        "description": "New shipment against an open order",
+        "note": null
+      }
+    ],
+    "W1201": [
+      {
+        "code": "CL",
+        "description": "Line shipped complete",
+        "note": null
+      },
+      {
+        "code": "PR",
+        "description": "Partial shipment",
+        "note": null
+      },
+      {
+        "code": "BP",
+        "description": "Line backordered",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Report every line from the 940, including lines that shipped nothing.",
+      "rationale": "An omitted line leaves the client order open indefinitely with no indication why.",
+      "appliesTo": "W12",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Transmit within two hours of the trailer departing the site.",
+      "rationale": "The client releases the downstream ASN from this document.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "Pallet SSCCs in MAN must match the labels applied in the warehouse.",
+      "rationale": "The receiving site scans those labels, and a mismatch means hand receipt.",
+      "appliesTo": "MAN",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
+      "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
+      "appliesTo": "time zones",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
+      "rationale": "Freight moves overnight, so the interface does not close.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 20
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Complete shipment",
+      "description": "Everything on the order shipped.",
+      "requirement": "All lines CL.",
+      "citation": {
+        "page": 21
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Partial with backorder",
+      "description": "Some lines short.",
+      "requirement": "PR and BP as appropriate, every line reported.",
+      "citation": {
+        "page": 22
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Carrier systems",
+      "name": "Vantage Carrier EDI",
+      "email": "carrier-edi@vantagelogistics.example",
+      "note": "24 hours."
+    },
+    {
+      "role": "Warehouse systems",
+      "name": "Vantage WMS Integration",
+      "email": "wms-edi@vantagelogistics.example",
+      "note": "7am to 9pm Central."
+    }
+  ]
+}

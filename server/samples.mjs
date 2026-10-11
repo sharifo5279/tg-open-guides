@@ -14,13 +14,25 @@
  */
 import { findSegment } from './spec.mjs';
 
+/**
+ * Placeholders are deliberately legible rather than realistic. A reader must be
+ * able to tell at a glance which values came from the guide and which the
+ * generator invented, so an invented one says SAMPLE rather than looking like a
+ * plausible part number somebody might copy into production.
+ */
 const PLACEHOLDER = {
-  AN: (el) => `X${'X'.repeat(Math.max(0, Math.min(Number(el.min) || 2, 8) - 1))}`,
-  ID: () => 'ZZ',
+  AN: (el) => {
+    const min = Number(el.min) || 1;
+    const max = Number(el.max) || 10;
+    const base = 'SAMPLE';
+    if (max < base.length) return 'S'.repeat(Math.max(min, Math.min(max, 3)));
+    return base.padEnd(Math.max(min, Math.min(7, max)), '1');
+  },
+  ID: (el) => (Number(el.max) >= 2 ? 'ZZ' : 'Z'),
   DT: () => '20260415',
   TM: () => '1430',
   N0: () => '1',
-  N2: () => '1.00',
+  N2: () => '100',
   R: () => '1'
 };
 
@@ -160,11 +172,27 @@ function build856(spec, scenario, delims) {
   return lines;
 }
 
+/**
+ * Everything other than the 856 gets a required-segment skeleton. It shows
+ * segment order and which elements must be present, and the envelope values
+ * that the guide does pin down, but it is not a worked business example: the
+ * generator has no way to invent a coherent order or invoice from structure
+ * alone, and inventing one would be worse than admitting it.
+ */
 function buildGeneric(spec, delims) {
   const lines = [];
+  const tsCode = String(spec.guide?.transactionSet || '');
+  const control = '0001';
+
   for (const seg of spec.segments || []) {
     if (seg.usage !== 'required') continue;
-    const line = buildSegment(spec, seg, {}, delims);
+
+    let overrides = {};
+    if (seg.id === 'ST') overrides = { ST01: tsCode, ST02: control };
+    if (seg.id === 'SE') overrides = { SE01: String(lines.length + 1), SE02: control };
+    if (seg.id === 'CTT') overrides = { CTT01: '1' };
+
+    const line = buildSegment(spec, seg, overrides, delims);
     if (line) lines.push(line);
   }
   return lines;
@@ -179,22 +207,39 @@ const SCENARIO_SHAPES = {
 };
 
 export function generateSamples(spec) {
+  const g = spec.guide || {};
   const delims = { element: '*', segment: '~', ...(spec.delimiters || {}) };
-  const is856 = String(spec.guide?.transactionSet) === '856';
+  const is856 = String(g.transactionSet) === '856';
   const out = [];
 
   const scenarios = (spec.scenarios || []).length
     ? spec.scenarios
     : [{ id: 'S-1', name: 'Required segments only', requirement: 'Structure skeleton.' }];
 
+  if (!is856) {
+    // One skeleton, not one per scenario: without business logic every scenario
+    // would render the same bytes, which would imply a difference that is not there.
+    const lines = buildGeneric(spec, delims);
+    if (!lines.length) return out;
+    return [{
+      id: 'skeleton',
+      name: 'Required segment skeleton',
+      requirement: `Shows segment order and the mandatory elements for ${g.standard || 'X12'} ${g.transactionSet}. Values the guide pins down are real; everything else reads SAMPLE or ZZ because the generator has no business data to work from.`,
+      kind: 'skeleton',
+      edi: lines.map((l) => l + delims.segment).join('\n'),
+      segmentCount: lines.length
+    }];
+  }
+
   for (const sc of scenarios) {
     const shape = SCENARIO_SHAPES[sc.id] || { n: out.length + 1, orders: 1, cartonsPerOrder: 1, itemsPerCarton: 1 };
-    const lines = is856 ? build856(spec, shape, delims) : buildGeneric(spec, delims);
+    const lines = build856(spec, shape, delims);
     if (!lines.length) continue;
     out.push({
       id: sc.id,
       name: sc.name,
       requirement: sc.requirement || sc.description || '',
+      kind: 'scenario',
       edi: lines.map((l) => l + delims.segment).join('\n'),
       segmentCount: lines.length
     });

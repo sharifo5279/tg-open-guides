@@ -1,0 +1,1005 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Halverson Motors",
+      "slug": "halverson-motors",
+      "legalName": "Halverson Motor Corporation",
+      "industry": "Automotive manufacturing"
+    },
+    "title": "Remittance Advice (820) specification",
+    "standard": "X12",
+    "transactionSet": "820",
+    "version": "004010",
+    "direction": "partner_receives",
+    "summary": "Halverson sends remittance detail for every payment. This is inbound to the supplier; there is nothing to build on the outbound side.",
+    "effectiveFrom": "2026-01-05",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Halverson Motors Supplier EDI Standard, Revision 11 (PDF, September 2025)",
+    "attestation": {
+      "name": "Priya Raghunathan",
+      "role": "Manager, Supplier Systems Integration",
+      "date": "2025-12-24"
+    },
+    "sourcePages": 86
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ":",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "required",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 11
+      }
+    },
+    "RMR": {
+      "name": "Remittance item",
+      "usage": "required",
+      "repeat": 10000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 12
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "Your DUNS. Halverson does not accept mutually defined (ZZ) qualifiers.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "042118770",
+        "note": "Halverson Motors identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Halverson Motors returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T throughout the test phase. Halverson schedules production cutover per plant, so a supplier may be P for one plant and T for another during a phased launch.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "RA",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "HALVERSON",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Halverson Motors does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "820",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BPR",
+      "name": "Beginning Segment for Payment Order/Remittance Advice",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BPR01",
+          "id": "305",
+          "name": "Transaction Handling Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "I",
+              "description": "Remittance information only",
+              "note": null
+            }
+          ],
+          "note": "Funds move separately by ACH. This document is advice, not payment.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BPR02",
+          "id": "782",
+          "name": "Monetary Amount",
+          "type": "R",
+          "min": 1,
+          "max": 18,
+          "usage": "required",
+          "values": [],
+          "note": "Total payment amount.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BPR03",
+          "id": "478",
+          "name": "Credit/Debit Flag Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "C",
+              "description": "Credit",
+              "note": null
+            },
+            {
+              "code": "D",
+              "description": "Debit",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BPR04",
+          "id": "591",
+          "name": "Payment Method Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BPR16",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Payment effective date.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0350",
+      "id": "TRN",
+      "name": "Trace",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "TRN01",
+          "id": "481",
+          "name": "Trace Type Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "1",
+              "description": "Current transaction trace numbers",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "TRN02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": "Payment or cheque number.",
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0700",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "detail",
+      "loopId": "N1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "RMR",
+      "name": "Remittance Advice Accounts Receivable Open Item Reference",
+      "level": "detail",
+      "loopId": "RMR",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "RMR01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "IV",
+              "description": "Invoice number",
+              "note": null
+            },
+            {
+              "code": "SI",
+              "description": "Shipment identifier",
+              "note": null
+            }
+          ],
+          "note": "Self-billing suppliers are remitted against the shipment identifier, since no invoice exists.",
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "RMR02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "RMR03",
+          "id": "482",
+          "name": "Payment Action Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "RMR04",
+          "id": "782",
+          "name": "Monetary Amount",
+          "type": "R",
+          "min": 1,
+          "max": 18,
+          "usage": "required",
+          "values": [],
+          "note": "Amount paid against this item.",
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "RMR05",
+          "id": "782",
+          "name": "Monetary Amount",
+          "type": "R",
+          "min": 1,
+          "max": 18,
+          "usage": "optional",
+          "values": [],
+          "note": "Original invoice amount.",
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "detail",
+      "loopId": "RMR",
+      "usage": "optional",
+      "maxUse": 30,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "detail",
+      "loopId": "RMR",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "ADX",
+      "name": "Adjustment",
+      "level": "detail",
+      "loopId": "RMR",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "ADX01",
+          "id": "782",
+          "name": "Monetary Amount",
+          "type": "R",
+          "min": 1,
+          "max": 18,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "ADX02",
+          "id": "426",
+          "name": "Adjustment Reason Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 16
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 16
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "BPR01": [
+      {
+        "code": "I",
+        "description": "Remittance information only",
+        "note": null
+      }
+    ],
+    "RMR01": [
+      {
+        "code": "IV",
+        "description": "Invoice number",
+        "note": null
+      },
+      {
+        "code": "SI",
+        "description": "Shipment identifier",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "info",
+      "statement": "Remittance is transmitted on the payment effective date, which may be up to two business days before funds settle.",
+      "rationale": "Matching remittance to a bank statement on the same day will not reconcile.",
+      "appliesTo": "BPR16",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "info",
+      "statement": "Adjustments carry an ADX with the reason code. A short payment with no ADX is a transmission problem, not a deduction.",
+      "rationale": "Unexplained short payments generate avoidable supplier enquiries.",
+      "appliesTo": "ADX",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "reject",
+      "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
+      "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
+      "appliesTo": "REF",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
+      "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
+      "appliesTo": "cumulative accounting",
+      "citation": {
+        "page": 20
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
+      "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 21
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Standard remittance",
+      "description": "One payment covering several invoices.",
+      "requirement": "One RMR per invoice.",
+      "citation": {
+        "page": 22
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Self-billing remittance",
+      "description": "Payment against shipments with no invoice.",
+      "requirement": "RMR01 = SI referencing the ASN shipment identifier.",
+      "citation": {
+        "page": 23
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Payment with a deduction",
+      "description": "A quality debit applied against the payment.",
+      "requirement": "ADX carries the amount and reason code.",
+      "citation": {
+        "page": 24
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier systems",
+      "name": "Halverson EDI Helpdesk",
+      "email": "edi-helpdesk@halverson.example",
+      "note": "24 hours during production, excluding plant shutdown weeks."
+    },
+    {
+      "role": "Materials planning",
+      "name": "Plant Materials Group",
+      "email": "materials@halverson.example",
+      "note": "Release quantity and schedule questions."
+    }
+  ]
+}

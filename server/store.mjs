@@ -41,28 +41,38 @@ export function resetDbProbe() {
   dbUp = null;
 }
 
+async function seedFiles() {
+  const out = [];
+  for (const dir of [seedDir, path.join(seedDir, 'generated')]) {
+    try {
+      for (const f of await readdir(dir)) {
+        if (f.endsWith('.json')) out.push(path.join(dir, f));
+      }
+    } catch {
+      // A missing generated folder just means nothing has been built yet.
+    }
+  }
+  return out;
+}
+
 async function loadSeeds() {
   if (seedCache) return seedCache;
   const out = [];
-  let files = [];
-  try {
-    files = (await readdir(seedDir)).filter((f) => f.endsWith('.json'));
-  } catch {
-    seedCache = out;
-    return out;
-  }
+  const files = await seedFiles();
   for (const f of files) {
     try {
-      const spec = JSON.parse(await readFile(path.join(seedDir, f), 'utf8'));
+      const spec = JSON.parse(await readFile(f, 'utf8'));
       const g = spec.guide || {};
       const hubSlug = g.hub?.slug || 'hub';
       const slug = `${String(g.transactionSet || 'guide').toLowerCase()}-${String(g.version || '').toLowerCase()}`;
+      const att = g.attestation || { name: 'Dana Whitfield', role: 'Director, EDI Operations', date: '2026-03-18' };
       out.push({
         guide: {
-          id: `seed_${f.replace(/\.json$/, '')}`,
+          id: `seed_${path.basename(f).replace(/\.json$/, '')}`,
           hub_id: `seed_${hubSlug}`,
           hub_slug: hubSlug,
           hub_name: g.hub?.name || hubSlug,
+          hub_industry: g.hub?.industry || null,
           slug,
           title: g.title || '',
           standard: g.standard || 'X12',
@@ -78,13 +88,13 @@ async function loadSeeds() {
           status: 'published',
           spec,
           source_name: g.supersedes || null,
-          source_pages: 34,
+          source_pages: g.sourcePages || 34,
           compiled_by: 'seed',
-          changelog: 'Initial publication.',
-          attested_by: 'Dana Whitfield',
-          attested_role: 'Director, EDI Operations',
-          attested_at: '2026-03-18T00:00:00.000Z',
-          published_at: '2026-03-18T00:00:00.000Z'
+          changelog: 'Initial structured publication of the hub\u2019s requirements.',
+          attested_by: att.name,
+          attested_role: att.role,
+          attested_at: `${att.date}T00:00:00.000Z`,
+          published_at: `${att.date}T00:00:00.000Z`
         }
       });
     } catch (err) {
@@ -115,12 +125,14 @@ export async function listGuides({ includeUnlisted = false } = {}) {
     if (rows.length) return rows;
   }
   const seeds = await loadSeeds();
-  return seeds.map((s) => ({
-    ...s.guide,
-    cur_version: s.version.version,
-    published_at: s.version.published_at,
-    attested_by: s.version.attested_by
-  }));
+  return seeds
+    .map((s) => ({
+      ...s.guide,
+      cur_version: s.version.version,
+      published_at: s.version.published_at,
+      attested_by: s.version.attested_by
+    }))
+    .sort((a, b) => a.hub_name.localeCompare(b.hub_name) || a.transaction_set.localeCompare(b.transaction_set));
 }
 
 export async function getGuide(hubSlug, guideSlug) {

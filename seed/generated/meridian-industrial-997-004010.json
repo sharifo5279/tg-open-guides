@@ -1,0 +1,647 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Meridian Industrial Supply",
+      "slug": "meridian-industrial",
+      "legalName": "Meridian Industrial Supply Co.",
+      "industry": "Industrial distribution and MRO"
+    },
+    "title": "Functional Acknowledgment (997) supplier requirements",
+    "standard": "X12",
+    "transactionSet": "997",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "Required within two hours in both directions.",
+    "effectiveFrom": "2026-06-15",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Meridian Supplier EDI Requirements v5.3 (PDF, April 2026)",
+    "attestation": {
+      "name": "Russ Ekstrand",
+      "role": "Director, Supplier Operations",
+      "date": "2026-06-03"
+    },
+    "sourcePages": 44
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "AK2": {
+      "name": "Transaction response",
+      "usage": "optional",
+      "repeat": 999999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 8
+      }
+    },
+    "AK3": {
+      "name": "Segment note",
+      "usage": "optional",
+      "repeat": 999999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "DUNS. Drop-ship suppliers use the same DUNS as their stocking relationship.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "556201349",
+        "note": "Meridian Industrial Supply identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Meridian Industrial Supply returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during certification. Meridian certifies stocking and drop-ship flows separately because the ship-to differs.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "FA",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "MERIDIANIS",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Meridian Industrial Supply does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "997",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "AK1",
+      "name": "Functional Group Response Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "AK101",
+          "id": "479",
+          "name": "Functional Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "AK102",
+          "id": "28",
+          "name": "Group Control Number",
+          "type": "N0",
+          "min": 1,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "AK2",
+      "name": "Transaction Set Response Header",
+      "level": "detail",
+      "loopId": "AK2",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "AK201",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "AK202",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "AK3",
+      "name": "Data Segment Note",
+      "level": "detail",
+      "loopId": "AK3",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "AK301",
+          "id": "721",
+          "name": "Segment ID Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "AK302",
+          "id": "719",
+          "name": "Segment Position in Transaction Set",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "AK304",
+          "id": "720",
+          "name": "Segment Syntax Error Code",
+          "type": "ID",
+          "min": 1,
+          "max": 3,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "AK5",
+      "name": "Transaction Set Response Trailer",
+      "level": "detail",
+      "loopId": "AK2",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "AK501",
+          "id": "717",
+          "name": "Transaction Set Acknowledgment Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Accepted",
+              "note": null
+            },
+            {
+              "code": "E",
+              "description": "Accepted with errors",
+              "note": null
+            },
+            {
+              "code": "R",
+              "description": "Rejected",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "AK502",
+          "id": "718",
+          "name": "Transaction Set Syntax Error Code",
+          "type": "ID",
+          "min": 1,
+          "max": 3,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "AK9",
+      "name": "Functional Group Response Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "AK901",
+          "id": "715",
+          "name": "Functional Group Acknowledge Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Accepted",
+              "note": null
+            },
+            {
+              "code": "E",
+              "description": "Accepted with errors",
+              "note": null
+            },
+            {
+              "code": "R",
+              "description": "Rejected",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AK902",
+          "id": "97",
+          "name": "Number of Transaction Sets Included",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AK903",
+          "id": "123",
+          "name": "Number of Received Transaction Sets",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AK904",
+          "id": "2",
+          "name": "Number of Accepted Transaction Sets",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {},
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Return a 997 within two hours.",
+      "rationale": "Meridian escalates unacknowledged interchanges after two hours.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 13
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Drop-ship transactions must carry the end customer in N1*ST and Meridian in N1*BY. Reversing these ships product to the wrong address.",
+      "rationale": "Roughly 40 percent of Meridian volume ships directly to the end customer, and the ship-to is not Meridian.",
+      "appliesTo": "N1",
+      "citation": {
+        "page": 14
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "info",
+      "statement": "Meridian returns a 997 within two hours and operates a nightly maintenance window from 02:00 to 03:00 Central.",
+      "rationale": "Transmissions during the window queue and process at 03:00.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 15
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Standard acknowledgment",
+      "description": "A received order.",
+      "requirement": "AK901 = A within two hours.",
+      "citation": {
+        "page": 16
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier operations",
+      "name": "Meridian Supplier EDI",
+      "email": "supplier-edi@meridianindustrial.example",
+      "note": "7am to 7pm Central."
+    },
+    {
+      "role": "Drop-ship programme",
+      "name": "Meridian Direct Fulfilment",
+      "email": "dropship@meridianindustrial.example",
+      "note": "End customer address and delivery questions."
+    }
+  ]
+}

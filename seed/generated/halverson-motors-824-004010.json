@@ -1,0 +1,830 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Halverson Motors",
+      "slug": "halverson-motors",
+      "legalName": "Halverson Motor Corporation",
+      "industry": "Automotive manufacturing"
+    },
+    "title": "Application Advice (824) supplier requirements",
+    "standard": "X12",
+    "transactionSet": "824",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "The application advice reports whether a transaction passed Halverson business validation after it passed syntax. A 997 acceptance does not mean the document was usable.",
+    "effectiveFrom": "2026-01-05",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Halverson Motors Supplier EDI Standard, Revision 11 (PDF, September 2025)",
+    "attestation": {
+      "name": "Priya Raghunathan",
+      "role": "Manager, Supplier Systems Integration",
+      "date": "2025-12-24"
+    },
+    "sourcePages": 86
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ":",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "optional",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 8
+      }
+    },
+    "OTI": {
+      "name": "Original transaction",
+      "usage": "required",
+      "repeat": 10000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "Your DUNS. Halverson does not accept mutually defined (ZZ) qualifiers.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "042118770",
+        "note": "Halverson Motors identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Halverson Motors returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T throughout the test phase. Halverson schedules production cutover per plant, so a supplier may be P for one plant and T for another during a phased launch.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "AG",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "HALVERSON",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Halverson Motors does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "824",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BGN",
+      "name": "Beginning Segment",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BGN01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "11",
+              "description": "Response",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BGN02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BGN03",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BGN04",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "detail",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "OTI",
+      "name": "Original Transaction Identification",
+      "level": "detail",
+      "loopId": "OTI",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "OTI01",
+          "id": "110",
+          "name": "Application Acknowledgment Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "TA",
+              "description": "Transaction accepted",
+              "note": null
+            },
+            {
+              "code": "TR",
+              "description": "Transaction rejected",
+              "note": null
+            },
+            {
+              "code": "TE",
+              "description": "Transaction accepted with errors",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "OTI02",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "SI",
+              "description": "Shipment identifier",
+              "note": null
+            },
+            {
+              "code": "IV",
+              "description": "Invoice number",
+              "note": null
+            },
+            {
+              "code": "PO",
+              "description": "Purchase order number",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "OTI03",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "OTI10",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "detail",
+      "loopId": "OTI",
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "detail",
+      "loopId": "OTI",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "TED",
+      "name": "Technical Error Description",
+      "level": "detail",
+      "loopId": "OTI",
+      "usage": "optional",
+      "maxUse": 100,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "TED01",
+          "id": "647",
+          "name": "Application Error Condition Code",
+          "type": "ID",
+          "min": 1,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "TED02",
+          "id": "3",
+          "name": "Free Form Message",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "OTI01": [
+      {
+        "code": "TA",
+        "description": "Transaction accepted",
+        "note": null
+      },
+      {
+        "code": "TR",
+        "description": "Transaction rejected",
+        "note": null
+      },
+      {
+        "code": "TE",
+        "description": "Transaction accepted with errors",
+        "note": null
+      }
+    ],
+    "OTI02": [
+      {
+        "code": "SI",
+        "description": "Shipment identifier",
+        "note": null
+      },
+      {
+        "code": "IV",
+        "description": "Invoice number",
+        "note": null
+      },
+      {
+        "code": "PO",
+        "description": "Purchase order number",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "An 824 reporting TR means the transaction was not processed. Resend a corrected document; do not assume it will be reprocessed.",
+      "rationale": "Rejected transactions are not queued for retry, and suppliers frequently assume they are.",
+      "appliesTo": "OTI01",
+      "citation": {
+        "page": 14
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "warn",
+      "statement": "An 824 may arrive up to four hours after the 997 for the same transaction.",
+      "rationale": "Syntax validation is immediate; business validation runs against plant data on a schedule.",
+      "appliesTo": "timing",
+      "citation": {
+        "page": 15
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "reject",
+      "statement": "Every transaction must carry the Halverson supplier code in REF*ZZ at header level.",
+      "rationale": "The DUNS in the envelope identifies the corporate entity; the supplier code identifies the shipping location, and Halverson routes on the latter.",
+      "appliesTo": "REF",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Cumulative quantities are reset annually on 1 January. A cumulative figure carried across the year boundary will not reconcile.",
+      "rationale": "Halverson closes cumulative accounting at year end, and a carried figure produces a false overship.",
+      "appliesTo": "cumulative accounting",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Halverson returns a 997 within 30 minutes. Transmission windows close at 23:00 plant local time and reopen at 04:00.",
+      "rationale": "The overnight window is reserved for the MRP run, and transmissions during it queue rather than process.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 18
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "ASN rejected for unknown part",
+      "description": "An ASN citing a part not on the current schedule.",
+      "requirement": "TR with a TED identifying the part.",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Invoice accepted with a price warning",
+      "description": "Invoice processed but priced differently.",
+      "requirement": "TE with the variance in TED.",
+      "citation": {
+        "page": 20
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier systems",
+      "name": "Halverson EDI Helpdesk",
+      "email": "edi-helpdesk@halverson.example",
+      "note": "24 hours during production, excluding plant shutdown weeks."
+    },
+    {
+      "role": "Materials planning",
+      "name": "Plant Materials Group",
+      "email": "materials@halverson.example",
+      "note": "Release quantity and schedule questions."
+    }
+  ]
+}

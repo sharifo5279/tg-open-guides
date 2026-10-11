@@ -1,0 +1,908 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Vantage Logistics Group",
+      "slug": "vantage-logistics",
+      "legalName": "Vantage Logistics Group, Inc.",
+      "industry": "Third party logistics and transportation"
+    },
+    "title": "Shipment Status (214) carrier requirements",
+    "standard": "X12",
+    "transactionSet": "214",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "Status messages are how Vantage and its shipper clients see the load. Missing milestones are the most common reason a carrier loses a lane.",
+    "effectiveFrom": "2026-03-02",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Vantage Carrier and Warehouse EDI Specification v9 (PDF, November 2025)",
+    "attestation": {
+      "name": "Ingrid Sollis",
+      "role": "VP, Network Systems",
+      "date": "2026-02-18"
+    },
+    "sourcePages": 61
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "optional",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    },
+    "LX": {
+      "name": "Assigned number",
+      "usage": "required",
+      "repeat": 9999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 10
+      }
+    },
+    "AT7": {
+      "name": "Status event",
+      "usage": "required",
+      "repeat": 100,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 11
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": "Carriers use their SCAC. Warehouse operators use the Vantage site code.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "VANTAGELG",
+        "note": "Vantage Logistics Group identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Vantage Logistics Group returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during onboarding. Vantage certifies per lane for carriers and per site for warehouses.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "QM",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "VANTAGE",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Vantage Logistics Group does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "214",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "B10",
+      "name": "Beginning Segment for Transportation Carrier Shipment Status",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "B1001",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": "Carrier's PRO number.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B1002",
+          "id": "145",
+          "name": "Shipment Identification Number",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B1003",
+          "id": "140",
+          "name": "Standard Carrier Alpha Code",
+          "type": "ID",
+          "min": 2,
+          "max": 4,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "L11",
+      "name": "Business Instructions and Reference Number",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 300,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "L1101",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "L1102",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "detail",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "LX",
+      "name": "Assigned Number",
+      "level": "detail",
+      "loopId": "LX",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "LX01",
+          "id": "554",
+          "name": "Assigned Number",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "AT7",
+      "name": "Shipment Status Details",
+      "level": "detail",
+      "loopId": "AT7",
+      "usage": "required",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "AT701",
+          "id": "1650",
+          "name": "Shipment Status Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "AF",
+              "description": "Carrier departed pickup",
+              "note": null
+            },
+            {
+              "code": "X3",
+              "description": "Arrived at delivery",
+              "note": null
+            },
+            {
+              "code": "CD",
+              "description": "Carrier departed delivery",
+              "note": null
+            },
+            {
+              "code": "X1",
+              "description": "Arrived at pickup",
+              "note": null
+            },
+            {
+              "code": "D1",
+              "description": "Completed delivery",
+              "note": null
+            },
+            {
+              "code": "AG",
+              "description": "Estimated delivery",
+              "note": null
+            },
+            {
+              "code": "SD",
+              "description": "Shipment delayed",
+              "note": null
+            },
+            {
+              "code": "A3",
+              "description": "Shipment returned",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AT702",
+          "id": "1651",
+          "name": "Shipment Status or Appointment Reason Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": "Required whenever AT701 is SD. A delay with no reason generates a call to your dispatch desk.",
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AT705",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AT706",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AT707",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AT708",
+          "id": "623",
+          "name": "Time Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": "Time zone of the event location, not of your dispatch office.",
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "MS1",
+      "name": "Equipment, Shipment or Real Property Location",
+      "level": "detail",
+      "loopId": "AT7",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "MS101",
+          "id": "19",
+          "name": "City Name",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "MS102",
+          "id": "156",
+          "name": "State or Province Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "MS103",
+          "id": "26",
+          "name": "Country Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "L11",
+      "name": "Business Instructions and Reference Number",
+      "level": "detail",
+      "loopId": "AT7",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "L1101",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "L1102",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "AT701": [
+      {
+        "code": "AF",
+        "description": "Carrier departed pickup",
+        "note": null
+      },
+      {
+        "code": "X3",
+        "description": "Arrived at delivery",
+        "note": null
+      },
+      {
+        "code": "CD",
+        "description": "Carrier departed delivery",
+        "note": null
+      },
+      {
+        "code": "X1",
+        "description": "Arrived at pickup",
+        "note": null
+      },
+      {
+        "code": "D1",
+        "description": "Completed delivery",
+        "note": null
+      },
+      {
+        "code": "AG",
+        "description": "Estimated delivery",
+        "note": null
+      },
+      {
+        "code": "SD",
+        "description": "Shipment delayed",
+        "note": null
+      },
+      {
+        "code": "A3",
+        "description": "Shipment returned",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Four milestones are mandatory on every load: arrived at pickup, departed pickup, arrived at delivery, delivery complete.",
+      "rationale": "Vantage clients are billed on proof of these events, and a missing milestone cannot be reconstructed later.",
+      "appliesTo": "AT701",
+      "citation": {
+        "page": 15
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "A status must be transmitted within 15 minutes of the event. Batched end-of-day status files are rejected.",
+      "rationale": "Status is used to manage the load in flight; a status that arrives after the fact has no operational value.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 16
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "reject",
+      "statement": "Every status carries the event time zone in AT708.",
+      "rationale": "Vantage operates across four time zones, and a status without a zone cannot be sequenced against the others.",
+      "appliesTo": "AT708",
+      "citation": {
+        "page": 17
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "warn",
+      "statement": "A delay status (SD) must carry a reason code and a revised estimated delivery within 30 minutes.",
+      "rationale": "A delay with no new estimate forces a manual call to the driver.",
+      "appliesTo": "AT702",
+      "citation": {
+        "page": 18
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "reject",
+      "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
+      "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
+      "appliesTo": "time zones",
+      "citation": {
+        "page": 19
+      }
+    },
+    {
+      "id": "R-006",
+      "severity": "info",
+      "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
+      "rationale": "Freight moves overnight, so the interface does not close.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 20
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Clean run",
+      "description": "The four mandatory milestones on a single-stop load.",
+      "requirement": "Certification baseline.",
+      "citation": {
+        "page": 21
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Multi-stop status",
+      "description": "Arrival and departure at each of three stops.",
+      "requirement": "Stop sequence carried in L11.",
+      "citation": {
+        "page": 22
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Delay with recovery",
+      "description": "A breakdown, then recovery and delivery.",
+      "requirement": "SD with reason, revised estimate, then normal milestones.",
+      "citation": {
+        "page": 23
+      }
+    },
+    {
+      "id": "S-4",
+      "name": "Attempted delivery refused",
+      "description": "Receiver turns the load away.",
+      "requirement": "A3 with the reason, then disposition instructions by telephone.",
+      "citation": {
+        "page": 24
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Carrier systems",
+      "name": "Vantage Carrier EDI",
+      "email": "carrier-edi@vantagelogistics.example",
+      "note": "24 hours."
+    },
+    {
+      "role": "Warehouse systems",
+      "name": "Vantage WMS Integration",
+      "email": "wms-edi@vantagelogistics.example",
+      "note": "7am to 9pm Central."
+    }
+  ]
+}

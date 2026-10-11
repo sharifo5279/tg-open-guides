@@ -1,0 +1,1308 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Vantage Logistics Group",
+      "slug": "vantage-logistics",
+      "legalName": "Vantage Logistics Group, Inc.",
+      "industry": "Third party logistics and transportation"
+    },
+    "title": "Motor Carrier Load Tender (204) specification",
+    "standard": "X12",
+    "transactionSet": "204",
+    "version": "004010",
+    "direction": "partner_receives",
+    "summary": "The load tender offers a specific load at a specific rate. A carrier that does not respond within the response window loses the load automatically.",
+    "effectiveFrom": "2026-03-02",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Vantage Carrier and Warehouse EDI Specification v9 (PDF, November 2025)",
+    "attestation": {
+      "name": "Ingrid Sollis",
+      "role": "VP, Network Systems",
+      "date": "2026-02-18"
+    },
+    "sourcePages": 61
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "optional",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 11
+      }
+    },
+    "S5": {
+      "name": "Stop",
+      "usage": "required",
+      "repeat": 999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 12
+      }
+    },
+    "S5/OID": {
+      "name": "Stop order detail",
+      "usage": "optional",
+      "repeat": 1000,
+      "parent": "S5",
+      "note": null,
+      "citation": {
+        "page": 18
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": "Carriers use their SCAC. Warehouse operators use the Vantage site code.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "VANTAGELG",
+        "note": "Vantage Logistics Group identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Vantage Logistics Group returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during onboarding. Vantage certifies per lane for carriers and per site for warehouses.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "SM",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "VANTAGE",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Vantage Logistics Group does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "204",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "B2",
+      "name": "Beginning Segment for Shipment Information Transaction",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "B201",
+          "id": "375",
+          "name": "Tariff Service Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B202",
+          "id": "145",
+          "name": "Standard Carrier Alpha Code",
+          "type": "ID",
+          "min": 2,
+          "max": 4,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B204",
+          "id": "145",
+          "name": "Shipment Identification Number",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B206",
+          "id": "146",
+          "name": "Shipment Method of Payment",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "PP",
+              "description": "Prepaid",
+              "note": null
+            },
+            {
+              "code": "TP",
+              "description": "Third party",
+              "note": null
+            }
+          ],
+          "note": "Vantage does not tender collect freight.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "B2A",
+      "name": "Set Purpose",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "B2A01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original tender",
+              "note": null
+            },
+            {
+              "code": "01",
+              "description": "Cancellation",
+              "note": null
+            },
+            {
+              "code": "04",
+              "description": "Change to a tendered load",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "B2A02",
+          "id": "346",
+          "name": "Application Type",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "L11",
+      "name": "Business Instructions and Reference Number",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 300,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "L1101",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "L1102",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0800",
+      "id": "G62",
+      "name": "Date/Time",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "G6201",
+          "id": "432",
+          "name": "Date Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "37",
+              "description": "Earliest arrival",
+              "note": null
+            },
+            {
+              "code": "38",
+              "description": "Latest arrival",
+              "note": null
+            },
+            {
+              "code": "02",
+              "description": "Requested delivery",
+              "note": null
+            }
+          ],
+          "note": "The pair 37 and 38 is the appointment window at that stop.",
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "G6202",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "G6203",
+          "id": "176",
+          "name": "Time Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "G6204",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "S5",
+      "name": "Stop Off Details",
+      "level": "detail",
+      "loopId": "S5",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "S501",
+          "id": "165",
+          "name": "Stop Sequence Number",
+          "type": "N0",
+          "min": 1,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "S502",
+          "id": "163",
+          "name": "Stop Reason Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "LD",
+              "description": "Load",
+              "note": null
+            },
+            {
+              "code": "UL",
+              "description": "Unload",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "S503",
+          "id": "382",
+          "name": "Number of Units Shipped",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "S506",
+          "id": "81",
+          "name": "Weight",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "S507",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "L11",
+      "name": "Business Instructions and Reference Number",
+      "level": "detail",
+      "loopId": "S5",
+      "usage": "optional",
+      "maxUse": 50,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "L1101",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "L1102",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "G62",
+      "name": "Date/Time",
+      "level": "detail",
+      "loopId": "S5",
+      "usage": "required",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "G6201",
+          "id": "432",
+          "name": "Date Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "37",
+              "description": "Earliest arrival",
+              "note": null
+            },
+            {
+              "code": "38",
+              "description": "Latest arrival",
+              "note": null
+            },
+            {
+              "code": "02",
+              "description": "Requested delivery",
+              "note": null
+            }
+          ],
+          "note": "The pair 37 and 38 is the appointment window at that stop.",
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "G6202",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "G6203",
+          "id": "176",
+          "name": "Time Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "G6204",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "N1",
+      "name": "Name",
+      "level": "detail",
+      "loopId": "S5",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0800",
+      "id": "N3",
+      "name": "Address Information",
+      "level": "detail",
+      "loopId": "S5",
+      "usage": "optional",
+      "maxUse": 2,
+      "note": null,
+      "citation": {
+        "page": 16
+      },
+      "elements": [
+        {
+          "ref": "N301",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "N302",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0900",
+      "id": "N4",
+      "name": "Geographic Location",
+      "level": "detail",
+      "loopId": "S5",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 17
+      },
+      "elements": [
+        {
+          "ref": "N401",
+          "id": "19",
+          "name": "City Name",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N402",
+          "id": "156",
+          "name": "State or Province Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N403",
+          "id": "116",
+          "name": "Postal Code",
+          "type": "ID",
+          "min": 3,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N404",
+          "id": "26",
+          "name": "Country Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "conditional",
+          "values": [],
+          "note": "Required when the address is outside the United States.",
+          "citation": {
+            "page": 17
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "OID",
+      "name": "Order Identification Detail",
+      "level": "detail",
+      "loopId": "S5/OID",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 18
+      },
+      "elements": [
+        {
+          "ref": "OID01",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "OID02",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "OID05",
+          "id": "380",
+          "name": "Quantity",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "OID07",
+          "id": "81",
+          "name": "Weight",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 19
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 19
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "B206": [
+      {
+        "code": "PP",
+        "description": "Prepaid",
+        "note": null
+      },
+      {
+        "code": "TP",
+        "description": "Third party",
+        "note": null
+      }
+    ],
+    "B2A01": [
+      {
+        "code": "00",
+        "description": "Original tender",
+        "note": null
+      },
+      {
+        "code": "01",
+        "description": "Cancellation",
+        "note": null
+      },
+      {
+        "code": "04",
+        "description": "Change to a tendered load",
+        "note": null
+      }
+    ],
+    "G6201": [
+      {
+        "code": "37",
+        "description": "Earliest arrival",
+        "note": null
+      },
+      {
+        "code": "38",
+        "description": "Latest arrival",
+        "note": null
+      },
+      {
+        "code": "02",
+        "description": "Requested delivery",
+        "note": null
+      }
+    ],
+    "S502": [
+      {
+        "code": "LD",
+        "description": "Load",
+        "note": null
+      },
+      {
+        "code": "UL",
+        "description": "Unload",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Respond with a 990 within 30 minutes of the tender. Vantage re-tenders to the next carrier automatically after 30 minutes.",
+      "rationale": "Loads are tendered in rate order against a departure clock, so an unanswered tender moves on.",
+      "appliesTo": "990 response",
+      "citation": {
+        "page": 20
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Stop sequence numbers must be processed in the order given. Vantage sequences stops by route, not by geography.",
+      "rationale": "Resequencing a multi-stop load breaks appointment times at every stop after the change.",
+      "appliesTo": "S501",
+      "citation": {
+        "page": 21
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "reject",
+      "statement": "A change tender (B2A01 = 04) replaces the original in full. Merge it and you will run the wrong route.",
+      "rationale": "Changes frequently alter stop count, so a merge produces a load that exists nowhere in the plan.",
+      "appliesTo": "B2A01",
+      "citation": {
+        "page": 22
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "warn",
+      "statement": "Appointment windows at a stop are firm. Arriving outside the window may forfeit the stop and the associated pay.",
+      "rationale": "Receiving sites schedule doors, and Vantage is charged for a missed appointment.",
+      "appliesTo": "G62",
+      "citation": {
+        "page": 23
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "reject",
+      "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
+      "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
+      "appliesTo": "time zones",
+      "citation": {
+        "page": 24
+      }
+    },
+    {
+      "id": "R-006",
+      "severity": "info",
+      "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
+      "rationale": "Freight moves overnight, so the interface does not close.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 25
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Single pickup, single delivery",
+      "description": "A straightforward point to point load.",
+      "requirement": "The baseline for carrier certification.",
+      "citation": {
+        "page": 26
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Multi-stop load",
+      "description": "One pickup and three deliveries.",
+      "requirement": "Four stops in Vantage sequence, each with its own window.",
+      "citation": {
+        "page": 27
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Change tender before pickup",
+      "description": "A stop added after the original tender.",
+      "requirement": "Replace the load entirely, do not merge.",
+      "citation": {
+        "page": 28
+      }
+    },
+    {
+      "id": "S-4",
+      "name": "Cancellation",
+      "description": "The load is pulled before pickup.",
+      "requirement": "B2A01 = 01 referencing the original shipment identifier.",
+      "citation": {
+        "page": 29
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Carrier systems",
+      "name": "Vantage Carrier EDI",
+      "email": "carrier-edi@vantagelogistics.example",
+      "note": "24 hours."
+    },
+    {
+      "role": "Warehouse systems",
+      "name": "Vantage WMS Integration",
+      "email": "wms-edi@vantagelogistics.example",
+      "note": "7am to 9pm Central."
+    }
+  ]
+}

@@ -1,0 +1,1545 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Pallas Health System",
+      "slug": "pallas-health",
+      "legalName": "Pallas Health System",
+      "industry": "Healthcare provider supply chain"
+    },
+    "title": "Purchase Order (850) specification",
+    "standard": "X12",
+    "transactionSet": "850",
+    "version": "005010",
+    "direction": "partner_receives",
+    "summary": "Pallas orders against contracted price. An order is also the point where contract and item master misalignment surfaces, so most onboarding failures appear here first.",
+    "effectiveFrom": "2026-05-01",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Pallas Supplier Integration Guide, 2026 Edition (PDF, December 2025)",
+    "attestation": {
+      "name": "Theo Alsager",
+      "role": "Director, Supply Chain Technology",
+      "date": "2026-04-19"
+    },
+    "sourcePages": 71
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "N1": {
+      "name": "Name and address",
+      "usage": "required",
+      "repeat": 200,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 14
+      }
+    },
+    "PO1": {
+      "name": "Line item",
+      "usage": "required",
+      "repeat": 100000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 17
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "DUNS. Pallas also accepts GLN (qualifier UL) for suppliers standardised on GS1.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "113440287",
+        "note": "Pallas Health System identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00501",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Pallas Health System returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T until Pallas confirms production. Pallas certifies per transaction set, not per supplier, so you may be live on 850 while still testing 856.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "PO",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "PALLASHS",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "005010",
+        "note": "005010 only. Pallas Health System does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "850",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BEG",
+      "name": "Beginning Segment for Purchase Order",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BEG01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original",
+              "note": null
+            },
+            {
+              "code": "07",
+              "description": "Duplicate",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BEG02",
+          "id": "92",
+          "name": "Purchase Order Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BEG03",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BEG05",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "Order date, CCYYMMDD.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "CUR",
+      "name": "Currency",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "CUR01",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "BY",
+              "description": "Buying party",
+              "note": null
+            },
+            {
+              "code": "SE",
+              "description": "Selling party",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "CUR02",
+          "id": "100",
+          "name": "Currency Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [
+            {
+              "code": "CT",
+              "description": "Contract number",
+              "note": null
+            },
+            {
+              "code": "PD",
+              "description": "Promotion or deal number",
+              "note": null
+            },
+            {
+              "code": "ZZ",
+              "description": "Pallas requisition number",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "FOB",
+      "name": "F.O.B. Related Instructions",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "FOB01",
+          "id": "146",
+          "name": "Shipment Method of Payment",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "CC",
+              "description": "Collect",
+              "note": null
+            },
+            {
+              "code": "PP",
+              "description": "Prepaid",
+              "note": null
+            },
+            {
+              "code": "PC",
+              "description": "Prepaid and charged to customer",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "FOB02",
+          "id": "309",
+          "name": "Location Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "FOB03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1300",
+      "id": "ITD",
+      "name": "Terms of Sale/Deferred Terms of Sale",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 5,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "ITD01",
+          "id": "336",
+          "name": "Terms Type Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "ITD02",
+          "id": "333",
+          "name": "Terms Basis Date Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "ITD03",
+          "id": "338",
+          "name": "Terms Discount Percent",
+          "type": "R",
+          "min": 1,
+          "max": 6,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "ITD07",
+          "id": "386",
+          "name": "Terms Net Days",
+          "type": "N0",
+          "min": 1,
+          "max": 3,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1500",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "2400",
+      "id": "TD5",
+      "name": "Carrier Details (Routing Sequence)",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "TD501",
+          "id": "133",
+          "name": "Routing Sequence Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "B",
+              "description": "Origin/delivery carrier",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD502",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "2",
+              "description": "Standard Carrier Alpha Code (SCAC)",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD503",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": "Four character SCAC.",
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "TD504",
+          "id": "91",
+          "name": "Transportation Method/Type Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3100",
+      "id": "N1",
+      "name": "Name",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": "Pallas facility code, six characters. Each hospital and clinic has its own, and they are not interchangeable.",
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3300",
+      "id": "N3",
+      "name": "Address Information",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 2,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "N301",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N302",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3400",
+      "id": "N4",
+      "name": "Geographic Location",
+      "level": "header",
+      "loopId": "N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 16
+      },
+      "elements": [
+        {
+          "ref": "N401",
+          "id": "19",
+          "name": "City Name",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "N402",
+          "id": "156",
+          "name": "State or Province Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "N403",
+          "id": "116",
+          "name": "Postal Code",
+          "type": "ID",
+          "min": 3,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "N404",
+          "id": "26",
+          "name": "Country Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "conditional",
+          "values": [],
+          "note": "Required when the address is outside the United States.",
+          "citation": {
+            "page": 16
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "PO1",
+      "name": "Baseline Item Data",
+      "level": "detail",
+      "loopId": "PO1",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 17
+      },
+      "elements": [
+        {
+          "ref": "PO101",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "required",
+          "values": [],
+          "note": "Line number, unique within the order.",
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO102",
+          "id": "330",
+          "name": "Quantity Ordered",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO103",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO104",
+          "id": "212",
+          "name": "Unit Price",
+          "type": "R",
+          "min": 1,
+          "max": 17,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO106",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "UK",
+              "description": "GTIN-14",
+              "note": null
+            },
+            {
+              "code": "UP",
+              "description": "GTIN-12",
+              "note": null
+            },
+            {
+              "code": "N4",
+              "description": "NDC for pharmaceutical items",
+              "note": null
+            }
+          ],
+          "note": "GTIN is required. NDC is additional, not a substitute.",
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO107",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO108",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "PO109",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "PID",
+      "name": "Product/Item Description",
+      "level": "detail",
+      "loopId": "PO1",
+      "usage": "optional",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 18
+      },
+      "elements": [
+        {
+          "ref": "PID01",
+          "id": "349",
+          "name": "Item Description Type",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "F",
+              "description": "Free-form",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "PID05",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0900",
+      "id": "PO4",
+      "name": "Item Physical Details",
+      "level": "detail",
+      "loopId": "PO1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 19
+      },
+      "elements": [
+        {
+          "ref": "PO401",
+          "id": "356",
+          "name": "Pack",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "PO402",
+          "id": "357",
+          "name": "Size",
+          "type": "R",
+          "min": 1,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "PO403",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "PO404",
+          "id": "103",
+          "name": "Packaging Code",
+          "type": "AN",
+          "min": 3,
+          "max": 5,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1300",
+      "id": "SAC",
+      "name": "Service, Promotion, Allowance or Charge Information",
+      "level": "detail",
+      "loopId": "PO1",
+      "usage": "optional",
+      "maxUse": 25,
+      "note": null,
+      "citation": {
+        "page": 20
+      },
+      "elements": [
+        {
+          "ref": "SAC01",
+          "id": "248",
+          "name": "Allowance or Charge Indicator",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Allowance",
+              "note": null
+            },
+            {
+              "code": "C",
+              "description": "Charge",
+              "note": null
+            },
+            {
+              "code": "N",
+              "description": "No allowance or charge",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "SAC02",
+          "id": "1300",
+          "name": "Service, Promotion, Allowance or Charge Code",
+          "type": "ID",
+          "min": 4,
+          "max": 4,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "SAC05",
+          "id": "610",
+          "name": "Amount",
+          "type": "N2",
+          "min": 1,
+          "max": 15,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        }
+      ]
+    },
+    {
+      "pos": "2100",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "detail",
+      "loopId": "PO1",
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 21
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 22
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 22
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 22
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 23
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 23
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "REF01": [
+      {
+        "code": "CT",
+        "description": "Contract number",
+        "note": null
+      },
+      {
+        "code": "PD",
+        "description": "Promotion or deal number",
+        "note": null
+      },
+      {
+        "code": "ZZ",
+        "description": "Pallas requisition number",
+        "note": null
+      }
+    ],
+    "PO106": [
+      {
+        "code": "UK",
+        "description": "GTIN-14",
+        "note": null
+      },
+      {
+        "code": "UP",
+        "description": "GTIN-12",
+        "note": null
+      },
+      {
+        "code": "N4",
+        "description": "NDC for pharmaceutical items",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Unit price must match the active contract price for the order date. A price mismatch is rejected rather than queried.",
+      "rationale": "Pallas purchases under GPO contracts, and off-contract pricing breaks the rebate reconciliation.",
+      "appliesTo": "PO104",
+      "citation": {
+        "page": 24
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Unit of measure must match the contracted unit. Shipping an each against a contracted case is a receipt discrepancy on every line.",
+      "rationale": "UOM mismatch is the most common cause of an unmatched receipt in healthcare supply.",
+      "appliesTo": "PO103",
+      "citation": {
+        "page": 25
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "Orders flagged for a clinical hold carry REF*ZZ with the requisition number and must not be shipped before confirmation.",
+      "rationale": "Clinical holds exist where an item substitution needs clinician approval.",
+      "appliesTo": "REF",
+      "citation": {
+        "page": 26
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Every item must be identified by GTIN. Pallas does not accept supplier catalogue numbers as the sole identifier on any transaction.",
+      "rationale": "Pallas standardised on GS1 in 2024, and recall management depends on a single item identity across every document.",
+      "appliesTo": "item identification",
+      "citation": {
+        "page": 27
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "reject",
+      "statement": "Lot number and expiry date are required for every item subject to recall or dating, on both the ASN and the invoice.",
+      "rationale": "Recall response time is a patient safety measure and a regulatory obligation, and it depends on lot traceability at receipt.",
+      "appliesTo": "lot traceability",
+      "citation": {
+        "page": 28
+      }
+    },
+    {
+      "id": "R-006",
+      "severity": "info",
+      "statement": "Pallas returns a 997 within one hour, and an 824 for business validation on 850, 856 and 810.",
+      "rationale": "Two stage validation means an accepted 997 does not confirm the document was usable.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 29
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Standard contract order",
+      "description": "Items on an active GPO contract to one facility.",
+      "requirement": "The baseline.",
+      "citation": {
+        "page": 30
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Multi-facility order",
+      "description": "One order with lines for three facilities.",
+      "requirement": "Per-line facility, carried in the line level N1.",
+      "citation": {
+        "page": 31
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Pharmaceutical order",
+      "description": "Items identified by both GTIN and NDC.",
+      "requirement": "Both identifiers on the line.",
+      "citation": {
+        "page": 32
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supplier integration",
+      "name": "Pallas Supply Chain Technology",
+      "email": "supplier-edi@pallashealth.example",
+      "note": "7am to 6pm Central, Monday to Friday."
+    },
+    {
+      "role": "Item master",
+      "name": "Pallas Item Data Team",
+      "email": "itemdata@pallashealth.example",
+      "note": "GTIN, UOM and contract price alignment."
+    }
+  ]
+}

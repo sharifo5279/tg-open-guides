@@ -1,0 +1,637 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Cobalt Energy Services",
+      "slug": "cobalt-energy",
+      "legalName": "Cobalt Energy Services LP",
+      "industry": "Energy and field services"
+    },
+    "title": "Functional Acknowledgment (997) supplier requirements",
+    "standard": "X12",
+    "transactionSet": "997",
+    "version": "005010",
+    "direction": "partner_sends",
+    "summary": "Required within four hours in both directions.",
+    "effectiveFrom": "2026-08-01",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Cobalt Energy Supplier EDI and Invoicing Standard v3 (PDF, June 2026)",
+    "attestation": {
+      "name": "Wes Darnell",
+      "role": "Manager, Supply Chain Systems",
+      "date": "2026-07-20"
+    },
+    "sourcePages": 39
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "AK2": {
+      "name": "Transaction response",
+      "usage": "optional",
+      "repeat": 999999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 8
+      }
+    },
+    "AK3": {
+      "name": "Segment note",
+      "usage": "optional",
+      "repeat": 999999,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "01",
+        "note": "DUNS at the legal entity that holds the master service agreement.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "01",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "829330154",
+        "note": "Cobalt Energy Services identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00501",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Cobalt Energy Services returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T until Cobalt confirms production per transaction set.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "FA",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "COBALTES",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "005010",
+        "note": "005010 only. Cobalt Energy Services does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "997",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "AK1",
+      "name": "Functional Group Response Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "AK101",
+          "id": "479",
+          "name": "Functional Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "AK102",
+          "id": "28",
+          "name": "Group Control Number",
+          "type": "N0",
+          "min": 1,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "AK2",
+      "name": "Transaction Set Response Header",
+      "level": "detail",
+      "loopId": "AK2",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "AK201",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "AK202",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "AK3",
+      "name": "Data Segment Note",
+      "level": "detail",
+      "loopId": "AK3",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "AK301",
+          "id": "721",
+          "name": "Segment ID Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "AK302",
+          "id": "719",
+          "name": "Segment Position in Transaction Set",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "AK304",
+          "id": "720",
+          "name": "Segment Syntax Error Code",
+          "type": "ID",
+          "min": 1,
+          "max": 3,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "AK5",
+      "name": "Transaction Set Response Trailer",
+      "level": "detail",
+      "loopId": "AK2",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "AK501",
+          "id": "717",
+          "name": "Transaction Set Acknowledgment Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Accepted",
+              "note": null
+            },
+            {
+              "code": "E",
+              "description": "Accepted with errors",
+              "note": null
+            },
+            {
+              "code": "R",
+              "description": "Rejected",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "AK502",
+          "id": "718",
+          "name": "Transaction Set Syntax Error Code",
+          "type": "ID",
+          "min": 1,
+          "max": 3,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "AK9",
+      "name": "Functional Group Response Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "AK901",
+          "id": "715",
+          "name": "Functional Group Acknowledge Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Accepted",
+              "note": null
+            },
+            {
+              "code": "E",
+              "description": "Accepted with errors",
+              "note": null
+            },
+            {
+              "code": "R",
+              "description": "Rejected",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AK902",
+          "id": "97",
+          "name": "Number of Transaction Sets Included",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AK903",
+          "id": "123",
+          "name": "Number of Received Transaction Sets",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "AK904",
+          "id": "2",
+          "name": "Number of Accepted Transaction Sets",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {},
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Return a 997 within four hours.",
+      "rationale": "Cobalt escalates unacknowledged interchanges to the supplier contact.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 13
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "Every transaction must carry the authorisation for expenditure number in REF*AH and the cost centre in REF*CC.",
+      "rationale": "Cobalt allocates all spend to a well or facility, and a transaction with no AFE cannot be coded or approved.",
+      "appliesTo": "cost allocation",
+      "citation": {
+        "page": 14
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "info",
+      "statement": "Cobalt returns a 997 within four hours, and an 824 on invoices that fail business validation.",
+      "rationale": "Invoice validation runs against the field ticket and the AFE, and takes longer than syntax checking.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 15
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Standard acknowledgment",
+      "description": "A received order.",
+      "requirement": "AK901 = A within four hours.",
+      "citation": {
+        "page": 16
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Supply chain systems",
+      "name": "Cobalt EDI Support",
+      "email": "edi@cobaltenergy.example",
+      "note": "7am to 6pm Central, Monday to Friday."
+    },
+    {
+      "role": "Accounts payable",
+      "name": "Cobalt AP Shared Services",
+      "email": "ap@cobaltenergy.example",
+      "note": "Invoice status and payment enquiries."
+    }
+  ]
+}

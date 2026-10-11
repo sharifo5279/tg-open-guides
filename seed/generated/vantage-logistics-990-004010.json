@@ -1,0 +1,504 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Vantage Logistics Group",
+      "slug": "vantage-logistics",
+      "legalName": "Vantage Logistics Group, Inc.",
+      "industry": "Third party logistics and transportation"
+    },
+    "title": "Response to a Load Tender (990) carrier requirements",
+    "standard": "X12",
+    "transactionSet": "990",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "Accept or decline. A 990 that neither accepts nor declines cleanly is treated as a decline.",
+    "effectiveFrom": "2026-03-02",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Vantage Carrier and Warehouse EDI Specification v9 (PDF, November 2025)",
+    "attestation": {
+      "name": "Ingrid Sollis",
+      "role": "VP, Network Systems",
+      "date": "2026-02-18"
+    },
+    "sourcePages": 61
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {},
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": "Carriers use their SCAC. Warehouse operators use the Vantage site code.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "ZZ",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "VANTAGELG",
+        "note": "Vantage Logistics Group identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Vantage Logistics Group returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during onboarding. Vantage certifies per lane for carriers and per site for warehouses.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "GF",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "VANTAGE",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Vantage Logistics Group does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "990",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "B1",
+      "name": "Beginning Segment for Booking or Pick-up/Delivery",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "B101",
+          "id": "140",
+          "name": "Standard Carrier Alpha Code",
+          "type": "ID",
+          "min": 2,
+          "max": 4,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B102",
+          "id": "145",
+          "name": "Shipment Identification Number",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": "The shipment identifier from the 204 being answered.",
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B103",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "B104",
+          "id": "558",
+          "name": "Reservation Action Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "required",
+          "values": [
+            {
+              "code": "A",
+              "description": "Accept",
+              "note": null
+            },
+            {
+              "code": "D",
+              "description": "Decline",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0400",
+      "id": "L11",
+      "name": "Business Instructions and Reference Number",
+      "level": "header",
+      "loopId": null,
+      "usage": "optional",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "L1101",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "L1102",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "B104": [
+      {
+        "code": "A",
+        "description": "Accept",
+        "note": null
+      },
+      {
+        "code": "D",
+        "description": "Decline",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Respond within 30 minutes of the tender.",
+      "rationale": "After 30 minutes the load is re-tendered and your acceptance will be rejected as stale.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 10
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "B102 must carry the shipment identifier from the 204 exactly.",
+      "rationale": "A response that cannot be matched to a tender is discarded without notice.",
+      "appliesTo": "B102",
+      "citation": {
+        "page": 11
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "warn",
+      "statement": "Accepting a load you cannot cover is worse than declining. Vantage tracks acceptance-then-fallthrough separately from decline rate, and it affects lane awards.",
+      "rationale": "A fallthrough leaves no time to re-tender.",
+      "appliesTo": "B104",
+      "citation": {
+        "page": 12
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "reject",
+      "statement": "Times are local to the event location and must carry the time zone in the time code element where the segment provides one.",
+      "rationale": "A status without a zone cannot be ordered against other events, and Vantage operates across four zones.",
+      "appliesTo": "time zones",
+      "citation": {
+        "page": 13
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "info",
+      "statement": "Vantage returns a 997 within 15 minutes. Transmissions are accepted 24 hours a day with no maintenance window.",
+      "rationale": "Freight moves overnight, so the interface does not close.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 14
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Accept a tender",
+      "description": "Carrier takes the load.",
+      "requirement": "A with the shipment identifier.",
+      "citation": {
+        "page": 15
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Decline a tender",
+      "description": "Carrier passes.",
+      "requirement": "D, sent immediately rather than at the deadline.",
+      "citation": {
+        "page": 16
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Carrier systems",
+      "name": "Vantage Carrier EDI",
+      "email": "carrier-edi@vantagelogistics.example",
+      "note": "24 hours."
+    },
+    {
+      "role": "Warehouse systems",
+      "name": "Vantage WMS Integration",
+      "email": "wms-edi@vantagelogistics.example",
+      "note": "7am to 9pm Central."
+    }
+  ]
+}

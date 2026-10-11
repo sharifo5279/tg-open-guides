@@ -1,0 +1,1932 @@
+{
+  "specVersion": "og/1",
+  "guide": {
+    "hub": {
+      "name": "Brightline Apparel",
+      "slug": "brightline-apparel",
+      "legalName": "Brightline Apparel Group",
+      "industry": "Apparel and footwear retail"
+    },
+    "title": "Advance Ship Notice (856) vendor requirements",
+    "standard": "X12",
+    "transactionSet": "856",
+    "version": "004010",
+    "direction": "partner_sends",
+    "summary": "Brightline receives by carton and cross-docks to stores. The carton is the unit of allocation, so the pack level has to reflect exactly what is in each box.",
+    "effectiveFrom": "2026-07-01",
+    "authoredBy": "OpenText Professional Services on behalf of the hub",
+    "supersedes": "Brightline Vendor Routing and EDI Manual, 2026 (PDF, May 2026)",
+    "attestation": {
+      "name": "Celia Marchetti",
+      "role": "Head of Vendor Compliance",
+      "date": "2026-06-19"
+    },
+    "sourcePages": 58
+  },
+  "delimiters": {
+    "segment": "~",
+    "element": "*",
+    "component": ">",
+    "repetition": "^"
+  },
+  "loops": {
+    "HL-S": {
+      "name": "Shipment level",
+      "usage": "required",
+      "repeat": 1,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 9
+      }
+    },
+    "HL-S/N1": {
+      "name": "Shipment names",
+      "usage": "required",
+      "repeat": 200,
+      "parent": "HL-S",
+      "note": null,
+      "citation": {
+        "page": 15
+      }
+    },
+    "HL-O": {
+      "name": "Order level",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 18
+      }
+    },
+    "HL-P": {
+      "name": "Pack level",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 21
+      }
+    },
+    "HL-I": {
+      "name": "Item level",
+      "usage": "required",
+      "repeat": 200000,
+      "parent": null,
+      "note": null,
+      "citation": {
+        "page": 24
+      }
+    }
+  },
+  "envelope": {
+    "isa": [
+      {
+        "ref": "ISA05",
+        "name": "Interchange ID Qualifier (sender)",
+        "usage": "required",
+        "value": "12",
+        "note": "Brightline uses phone-number qualifier 12 for historical reasons. Your assigned ID is on your vendor setup sheet, not your DUNS.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA06",
+        "name": "Interchange Sender ID",
+        "usage": "required",
+        "value": null,
+        "note": "Left justified, space filled to 15 characters.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA07",
+        "name": "Interchange ID Qualifier (receiver)",
+        "usage": "required",
+        "value": "12",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA08",
+        "name": "Interchange Receiver ID",
+        "usage": "required",
+        "value": "2125550180",
+        "note": "Brightline Apparel identifier. The same value for all locations; the destination is identified inside the transaction.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA11",
+        "name": "Interchange Control Standards Identifier",
+        "usage": "required",
+        "value": "U",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA12",
+        "name": "Interchange Control Version Number",
+        "usage": "required",
+        "value": "00401",
+        "note": null,
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA14",
+        "name": "Acknowledgment Requested",
+        "usage": "required",
+        "value": "1",
+        "note": "Brightline Apparel returns a 997 for every interchange.",
+        "citation": {
+          "page": 4
+        }
+      },
+      {
+        "ref": "ISA15",
+        "name": "Usage Indicator",
+        "usage": "required",
+        "value": null,
+        "note": "T during testing. Brightline requires a successful parallel of all five transaction sets before any goes to production.",
+        "citation": {
+          "page": 4
+        }
+      }
+    ],
+    "gs": [
+      {
+        "ref": "GS01",
+        "name": "Functional Identifier Code",
+        "usage": "required",
+        "value": "SH",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS02",
+        "name": "Application Sender's Code",
+        "usage": "required",
+        "value": null,
+        "note": "Same identifier as ISA06.",
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS03",
+        "name": "Application Receiver's Code",
+        "usage": "required",
+        "value": "BRIGHTLINE",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS07",
+        "name": "Responsible Agency Code",
+        "usage": "required",
+        "value": "X",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "GS08",
+        "name": "Version / Release / Industry Identifier Code",
+        "usage": "required",
+        "value": "004010",
+        "note": "004010 only. Brightline Apparel does not translate other versions on this transaction.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ],
+    "st": [
+      {
+        "ref": "ST01",
+        "name": "Transaction Set Identifier Code",
+        "usage": "required",
+        "value": "856",
+        "note": null,
+        "citation": {
+          "page": 5
+        }
+      },
+      {
+        "ref": "ST02",
+        "name": "Transaction Set Control Number",
+        "usage": "required",
+        "value": null,
+        "note": "Unique within the functional group, and must equal SE02.",
+        "citation": {
+          "page": 5
+        }
+      }
+    ]
+  },
+  "segments": [
+    {
+      "pos": "0100",
+      "id": "ST",
+      "name": "Transaction Set Header",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 6
+      },
+      "elements": [
+        {
+          "ref": "ST01",
+          "id": "143",
+          "name": "Transaction Set Identifier Code",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 6
+          }
+        },
+        {
+          "ref": "ST02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Unique within the functional group, and must equal SE02.",
+          "citation": {
+            "page": 6
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "BSN",
+      "name": "Beginning Segment for Ship Notice",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 7
+      },
+      "elements": [
+        {
+          "ref": "BSN01",
+          "id": "353",
+          "name": "Transaction Set Purpose Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "00",
+              "description": "Original",
+              "note": null
+            },
+            {
+              "code": "01",
+              "description": "Cancellation",
+              "note": null
+            },
+            {
+              "code": "07",
+              "description": "Duplicate",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSN02",
+          "id": "396",
+          "name": "Shipment Identification",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSN03",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSN04",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 7
+          }
+        },
+        {
+          "ref": "BSN05",
+          "id": "1005",
+          "name": "Hierarchical Structure Code",
+          "type": "ID",
+          "min": 4,
+          "max": 4,
+          "usage": "required",
+          "values": [
+            {
+              "code": "0001",
+              "description": "Shipment, Order, Packaging, Item",
+              "note": null
+            }
+          ],
+          "note": "0001 only. Brightline cross-docks by carton and cannot receive without a pack level.",
+          "citation": {
+            "page": 7
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "DTM",
+      "name": "Date/Time Reference",
+      "level": "header",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 2,
+      "note": null,
+      "citation": {
+        "page": 8
+      },
+      "elements": [
+        {
+          "ref": "DTM01",
+          "id": "374",
+          "name": "Date/Time Qualifier",
+          "type": "ID",
+          "min": 3,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "DTM02",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "required",
+          "values": [],
+          "note": "CCYYMMDD.",
+          "citation": {
+            "page": 8
+          }
+        },
+        {
+          "ref": "DTM03",
+          "id": "337",
+          "name": "Time",
+          "type": "TM",
+          "min": 4,
+          "max": 8,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 8
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "HL",
+      "name": "Hierarchical Level",
+      "level": "detail",
+      "loopId": "HL-S",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 9
+      },
+      "elements": [
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 9
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1100",
+      "id": "TD1",
+      "name": "Carrier Details (Quantity and Weight)",
+      "level": "detail",
+      "loopId": "HL-S",
+      "usage": "required",
+      "maxUse": 20,
+      "note": null,
+      "citation": {
+        "page": 10
+      },
+      "elements": [
+        {
+          "ref": "TD101",
+          "id": "103",
+          "name": "Packaging Code",
+          "type": "AN",
+          "min": 3,
+          "max": 5,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD102",
+          "id": "80",
+          "name": "Lading Quantity",
+          "type": "N0",
+          "min": 1,
+          "max": 7,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD106",
+          "id": "187",
+          "name": "Weight Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "G",
+              "description": "Gross weight",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD107",
+          "id": "81",
+          "name": "Weight",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        },
+        {
+          "ref": "TD108",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "LB",
+              "description": "Pounds",
+              "note": null
+            },
+            {
+              "code": "KG",
+              "description": "Kilograms",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 10
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1200",
+      "id": "TD5",
+      "name": "Carrier Details (Routing Sequence)",
+      "level": "detail",
+      "loopId": "HL-S",
+      "usage": "required",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 11
+      },
+      "elements": [
+        {
+          "ref": "TD501",
+          "id": "133",
+          "name": "Routing Sequence Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "B",
+              "description": "Origin/delivery carrier",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "TD502",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "2",
+              "description": "Standard Carrier Alpha Code (SCAC)",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "TD503",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": "Four character SCAC.",
+          "citation": {
+            "page": 11
+          }
+        },
+        {
+          "ref": "TD504",
+          "id": "91",
+          "name": "Transportation Method/Type Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 11
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1300",
+      "id": "TD3",
+      "name": "Carrier Details (Equipment)",
+      "level": "detail",
+      "loopId": "HL-S",
+      "usage": "conditional",
+      "maxUse": 12,
+      "note": null,
+      "citation": {
+        "page": 12
+      },
+      "elements": [
+        {
+          "ref": "TD301",
+          "id": "40",
+          "name": "Equipment Description Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "TL",
+              "description": "Trailer",
+              "note": null
+            },
+            {
+              "code": "CN",
+              "description": "Container",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "TD302",
+          "id": "206",
+          "name": "Equipment Initial",
+          "type": "AN",
+          "min": 1,
+          "max": 4,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        },
+        {
+          "ref": "TD303",
+          "id": "207",
+          "name": "Equipment Number",
+          "type": "AN",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 12
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "detail",
+      "loopId": "HL-S",
+      "usage": "required",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 13
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 13
+          }
+        }
+      ]
+    },
+    {
+      "pos": "2200",
+      "id": "FOB",
+      "name": "F.O.B. Related Instructions",
+      "level": "detail",
+      "loopId": "HL-S",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 14
+      },
+      "elements": [
+        {
+          "ref": "FOB01",
+          "id": "146",
+          "name": "Shipment Method of Payment",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "CC",
+              "description": "Collect",
+              "note": null
+            },
+            {
+              "code": "PP",
+              "description": "Prepaid",
+              "note": null
+            },
+            {
+              "code": "PC",
+              "description": "Prepaid and charged to customer",
+              "note": null
+            }
+          ],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "FOB02",
+          "id": "309",
+          "name": "Location Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        },
+        {
+          "ref": "FOB03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 14
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3100",
+      "id": "N1",
+      "name": "Name",
+      "level": "detail",
+      "loopId": "HL-S/N1",
+      "usage": "required",
+      "maxUse": 2,
+      "note": null,
+      "citation": {
+        "page": 15
+      },
+      "elements": [
+        {
+          "ref": "N101",
+          "id": "98",
+          "name": "Entity Identifier Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N102",
+          "id": "93",
+          "name": "Name",
+          "type": "AN",
+          "min": 1,
+          "max": 60,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N103",
+          "id": "66",
+          "name": "Identification Code Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        },
+        {
+          "ref": "N104",
+          "id": "67",
+          "name": "Identification Code",
+          "type": "AN",
+          "min": 2,
+          "max": 80,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 15
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3300",
+      "id": "N3",
+      "name": "Address Information",
+      "level": "detail",
+      "loopId": "HL-S/N1",
+      "usage": "optional",
+      "maxUse": 2,
+      "note": null,
+      "citation": {
+        "page": 16
+      },
+      "elements": [
+        {
+          "ref": "N301",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        },
+        {
+          "ref": "N302",
+          "id": "166",
+          "name": "Address Information",
+          "type": "AN",
+          "min": 1,
+          "max": 55,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 16
+          }
+        }
+      ]
+    },
+    {
+      "pos": "3400",
+      "id": "N4",
+      "name": "Geographic Location",
+      "level": "detail",
+      "loopId": "HL-S/N1",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 17
+      },
+      "elements": [
+        {
+          "ref": "N401",
+          "id": "19",
+          "name": "City Name",
+          "type": "AN",
+          "min": 2,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N402",
+          "id": "156",
+          "name": "State or Province Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N403",
+          "id": "116",
+          "name": "Postal Code",
+          "type": "ID",
+          "min": 3,
+          "max": 15,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 17
+          }
+        },
+        {
+          "ref": "N404",
+          "id": "26",
+          "name": "Country Code",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "conditional",
+          "values": [],
+          "note": "Required when the address is outside the United States.",
+          "citation": {
+            "page": 17
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "HL",
+      "name": "Hierarchical Level",
+      "level": "detail",
+      "loopId": "HL-O",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 18
+      },
+      "elements": [
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 18
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0500",
+      "id": "PRF",
+      "name": "Purchase Order Reference",
+      "level": "detail",
+      "loopId": "HL-O",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 19
+      },
+      "elements": [
+        {
+          "ref": "PRF01",
+          "id": "324",
+          "name": "Purchase Order Number",
+          "type": "AN",
+          "min": 1,
+          "max": 22,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "PRF02",
+          "id": "328",
+          "name": "Release Number",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        },
+        {
+          "ref": "PRF04",
+          "id": "373",
+          "name": "Date",
+          "type": "DT",
+          "min": 8,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 19
+          }
+        }
+      ]
+    },
+    {
+      "pos": "1500",
+      "id": "REF",
+      "name": "Reference Identification",
+      "level": "detail",
+      "loopId": "HL-O",
+      "usage": "optional",
+      "maxUse": 200,
+      "note": null,
+      "citation": {
+        "page": 20
+      },
+      "elements": [
+        {
+          "ref": "REF01",
+          "id": "128",
+          "name": "Reference Identification Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 3,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "REF02",
+          "id": "127",
+          "name": "Reference Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 30,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        },
+        {
+          "ref": "REF03",
+          "id": "352",
+          "name": "Description",
+          "type": "AN",
+          "min": 1,
+          "max": 80,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 20
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "HL",
+      "name": "Hierarchical Level",
+      "level": "detail",
+      "loopId": "HL-P",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 21
+      },
+      "elements": [
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 21
+          }
+        }
+      ]
+    },
+    {
+      "pos": "2900",
+      "id": "MAN",
+      "name": "Marks and Numbers",
+      "level": "detail",
+      "loopId": "HL-P",
+      "usage": "required",
+      "maxUse": 10,
+      "note": null,
+      "citation": {
+        "page": 22
+      },
+      "elements": [
+        {
+          "ref": "MAN01",
+          "id": "88",
+          "name": "Marks and Numbers Qualifier",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "GM",
+              "description": "SSCC-18",
+              "note": null
+            }
+          ],
+          "note": "The GS1-128 carton label applied per the routing manual.",
+          "citation": {
+            "page": 22
+          }
+        },
+        {
+          "ref": "MAN02",
+          "id": "87",
+          "name": "Marks and Numbers",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 22
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0600",
+      "id": "PO4",
+      "name": "Item Physical Details",
+      "level": "detail",
+      "loopId": "HL-P",
+      "usage": "optional",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 23
+      },
+      "elements": [
+        {
+          "ref": "PO401",
+          "id": "356",
+          "name": "Pack",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "PO402",
+          "id": "357",
+          "name": "Size",
+          "type": "R",
+          "min": 1,
+          "max": 8,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "PO403",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 23
+          }
+        },
+        {
+          "ref": "PO404",
+          "id": "103",
+          "name": "Packaging Code",
+          "type": "AN",
+          "min": 3,
+          "max": 5,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 23
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "HL",
+      "name": "Hierarchical Level",
+      "level": "detail",
+      "loopId": "HL-I",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 24
+      },
+      "elements": [
+        {
+          "ref": "HL01",
+          "id": "628",
+          "name": "Hierarchical ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "HL02",
+          "id": "734",
+          "name": "Hierarchical Parent ID Number",
+          "type": "AN",
+          "min": 1,
+          "max": 12,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "HL03",
+          "id": "735",
+          "name": "Hierarchical Level Code",
+          "type": "ID",
+          "min": 1,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 24
+          }
+        },
+        {
+          "ref": "HL04",
+          "id": "736",
+          "name": "Hierarchical Child Code",
+          "type": "ID",
+          "min": 1,
+          "max": 1,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 24
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "LIN",
+      "name": "Item Identification",
+      "level": "detail",
+      "loopId": "HL-I",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 25
+      },
+      "elements": [
+        {
+          "ref": "LIN01",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 25
+          }
+        },
+        {
+          "ref": "LIN02",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [
+            {
+              "code": "UP",
+              "description": "GTIN-12",
+              "note": null
+            }
+          ],
+          "note": "At the size and colour level, matching the order line.",
+          "citation": {
+            "page": 25
+          }
+        },
+        {
+          "ref": "LIN03",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 25
+          }
+        },
+        {
+          "ref": "LIN04",
+          "id": "235",
+          "name": "Product/Service ID Qualifier",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 25
+          }
+        },
+        {
+          "ref": "LIN05",
+          "id": "234",
+          "name": "Product/Service ID",
+          "type": "AN",
+          "min": 1,
+          "max": 48,
+          "usage": "conditional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 25
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0300",
+      "id": "SN1",
+      "name": "Item Detail (Shipment)",
+      "level": "detail",
+      "loopId": "HL-I",
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 26
+      },
+      "elements": [
+        {
+          "ref": "SN101",
+          "id": "350",
+          "name": "Assigned Identification",
+          "type": "AN",
+          "min": 1,
+          "max": 20,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 26
+          }
+        },
+        {
+          "ref": "SN102",
+          "id": "382",
+          "name": "Number of Units Shipped",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 26
+          }
+        },
+        {
+          "ref": "SN103",
+          "id": "355",
+          "name": "Unit or Basis for Measurement Code",
+          "type": "ID",
+          "min": 2,
+          "max": 2,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 26
+          }
+        },
+        {
+          "ref": "SN105",
+          "id": "330",
+          "name": "Quantity Ordered",
+          "type": "R",
+          "min": 1,
+          "max": 15,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 26
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0100",
+      "id": "CTT",
+      "name": "Transaction Totals",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 27
+      },
+      "elements": [
+        {
+          "ref": "CTT01",
+          "id": "354",
+          "name": "Number of Line Items",
+          "type": "N0",
+          "min": 1,
+          "max": 6,
+          "usage": "required",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 27
+          }
+        },
+        {
+          "ref": "CTT02",
+          "id": "347",
+          "name": "Hash Total",
+          "type": "R",
+          "min": 1,
+          "max": 10,
+          "usage": "optional",
+          "values": [],
+          "note": null,
+          "citation": {
+            "page": 27
+          }
+        }
+      ]
+    },
+    {
+      "pos": "0200",
+      "id": "SE",
+      "name": "Transaction Set Trailer",
+      "level": "summary",
+      "loopId": null,
+      "usage": "required",
+      "maxUse": 1,
+      "note": null,
+      "citation": {
+        "page": 28
+      },
+      "elements": [
+        {
+          "ref": "SE01",
+          "id": "96",
+          "name": "Number of Included Segments",
+          "type": "N0",
+          "min": 1,
+          "max": 10,
+          "usage": "required",
+          "values": [],
+          "note": "Inclusive of ST and SE.",
+          "citation": {
+            "page": 28
+          }
+        },
+        {
+          "ref": "SE02",
+          "id": "329",
+          "name": "Transaction Set Control Number",
+          "type": "AN",
+          "min": 4,
+          "max": 9,
+          "usage": "required",
+          "values": [],
+          "note": "Must equal ST02.",
+          "citation": {
+            "page": 28
+          }
+        }
+      ]
+    }
+  ],
+  "codeLists": {
+    "BSN05": [
+      {
+        "code": "0001",
+        "description": "Shipment, Order, Packaging, Item",
+        "note": null
+      }
+    ],
+    "MAN01": [
+      {
+        "code": "GM",
+        "description": "SSCC-18",
+        "note": null
+      }
+    ],
+    "LIN02": [
+      {
+        "code": "UP",
+        "description": "GTIN-12",
+        "note": null
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "severity": "reject",
+      "statement": "Carton contents in the ASN must match the physical carton exactly. A content mismatch found at audit is charged back per carton.",
+      "rationale": "Brightline cross-docks cartons to stores without opening them, so a wrong carton reaches a store and the error is discovered at retail.",
+      "appliesTo": "HL-P",
+      "citation": {
+        "page": 29
+      }
+    },
+    {
+      "id": "R-002",
+      "severity": "reject",
+      "statement": "One SSCC per carton, unique for 24 months, matching the GS1-128 label.",
+      "rationale": "The label is scanned at the cross-dock and again at the store.",
+      "appliesTo": "MAN02",
+      "citation": {
+        "page": 30
+      }
+    },
+    {
+      "id": "R-003",
+      "severity": "reject",
+      "statement": "Store-ready cartons must carry the destination store number in the pack level REF.",
+      "rationale": "A carton with no store cannot be cross-docked and is diverted to manual sortation.",
+      "appliesTo": "HL-P/REF",
+      "citation": {
+        "page": 31
+      }
+    },
+    {
+      "id": "R-004",
+      "severity": "warn",
+      "statement": "Transmit the ASN at least 24 hours before arrival for import shipments, and at despatch for domestic.",
+      "rationale": "Import containers are scheduled against a deconsolidation plan built from the ASN.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 32
+      }
+    },
+    {
+      "id": "R-005",
+      "severity": "reject",
+      "statement": "Every style must be identified by the Brightline style, colour and size combination. A style number alone is not sufficient on any transaction.",
+      "rationale": "Apparel is bought and sold at the size and colour level, and a style-level transaction cannot be allocated to a store.",
+      "appliesTo": "item identification",
+      "citation": {
+        "page": 33
+      }
+    },
+    {
+      "id": "R-006",
+      "severity": "warn",
+      "statement": "Vendor compliance chargebacks are applied monthly against the standards in the routing manual, not against this guide alone.",
+      "rationale": "The routing manual covers physical packing and labelling, which EDI cannot express.",
+      "appliesTo": "compliance",
+      "citation": {
+        "page": 34
+      }
+    },
+    {
+      "id": "R-007",
+      "severity": "info",
+      "statement": "Brightline returns a 997 within four hours. The EDI interface is unavailable Sunday 02:00 to 06:00 Eastern for maintenance.",
+      "rationale": "The weekly window is used for item master and allocation processing.",
+      "appliesTo": "transmission",
+      "citation": {
+        "page": 35
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-1",
+      "name": "Bulk carton shipment",
+      "description": "Cartons of one style and size to the DC for allocation.",
+      "requirement": "The baseline.",
+      "citation": {
+        "page": 36
+      }
+    },
+    {
+      "id": "S-2",
+      "name": "Store-ready prepack",
+      "description": "Cartons pre-allocated to named stores.",
+      "requirement": "Store number in the pack level REF.",
+      "citation": {
+        "page": 37
+      }
+    },
+    {
+      "id": "S-3",
+      "name": "Import container",
+      "description": "A full container from an overseas vendor.",
+      "requirement": "ASN 24 hours ahead with container number in TD3.",
+      "citation": {
+        "page": 38
+      }
+    },
+    {
+      "id": "S-4",
+      "name": "Mixed carton",
+      "description": "Several sizes of one style in one carton.",
+      "requirement": "One pack level, an item level per size.",
+      "citation": {
+        "page": 39
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "role": "Vendor compliance",
+      "name": "Brightline Vendor Compliance",
+      "email": "vendorcompliance@brightlineapparel.example",
+      "note": "Chargeback disputes and routing questions."
+    },
+    {
+      "role": "EDI support",
+      "name": "Brightline EDI",
+      "email": "edi@brightlineapparel.example",
+      "note": "9am to 6pm Eastern, Monday to Friday."
+    }
+  ]
+}
