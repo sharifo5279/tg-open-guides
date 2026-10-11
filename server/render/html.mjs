@@ -90,7 +90,7 @@ ${head}
 <main>${body}</main>
 <footer class="foot">
   <div class="shell">
-    <p class="foot-note">Trading Grid Open Guides is an OpenText Business Network incubation prototype. Guides are published as attested by the hub that owns them; OpenText publishes and does not independently verify a hub's requirements. Sample hubs and guide content on this site are fictional.</p>
+    <p class="foot-note">Incubation prototype. Hubs attest their own requirements; OpenText publishes and does not verify them. All hubs and guide content here are fictional.</p>
   </div>
 </footer>
 </body>

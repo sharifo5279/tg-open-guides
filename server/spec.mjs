@@ -418,12 +418,12 @@ export function specToMarkdown(spec, { baseUrl = '', guidePath = '', version = n
  * not issue purchase orders, it releases against a schedule.
  */
 export const FLOW_STAGES = [
-  { key: 'plan', label: 'Plan', what: 'The hub publishes requirements over a horizon.', sets: ['830', '862'] },
-  { key: 'order', label: 'Order', what: 'The hub commits to buy, or tenders work.', sets: ['850', '860', '204', '940'] },
-  { key: 'commit', label: 'Commit', what: 'The partner says what they will actually do.', sets: ['855', '990'] },
-  { key: 'ship', label: 'Ship', what: 'Goods move, and the hub is told before they arrive.', sets: ['856', '945', '214'] },
-  { key: 'invoice', label: 'Invoice', what: 'The partner bills for what was delivered.', sets: ['810'] },
-  { key: 'settle', label: 'Settle', what: 'The hub pays, or reports why it will not.', sets: ['820', '824'] }
+  { key: 'plan', label: 'Plan', what: 'Requirements issued over a forecast horizon.', sets: ['830', '862'] },
+  { key: 'order', label: 'Order', what: 'Purchase commitment or work tender issued.', sets: ['850', '860', '204', '940'] },
+  { key: 'commit', label: 'Commit', what: 'Partner confirms what will be supplied.', sets: ['855', '990'] },
+  { key: 'ship', label: 'Ship', what: 'Shipment dispatched and notified in advance.', sets: ['856', '945', '214'] },
+  { key: 'invoice', label: 'Invoice', what: 'Partner bills for delivered goods or services.', sets: ['810'] },
+  { key: 'settle', label: 'Settle', what: 'Payment remitted or validation failure reported.', sets: ['820', '824'] }
 ];
 
 /** Standing cadences. Numbering an inventory file as a step misstates when it happens. */
@@ -460,7 +460,7 @@ export function flowAbsences(guides, hubName) {
   const have = new Set(guides.map((g) => g.transaction_set));
   const notes = [];
   if (!have.has('850') && (have.has('830') || have.has('862'))) {
-    notes.push(`${hubName} does not issue purchase orders. Requirements are released against a schedule, so there is no 850 to wait for.`);
+    notes.push(`${hubName} does not issue purchase orders. Requirements are released against a schedule.`);
   }
   if (!have.has('855') && have.has('850')) {
     notes.push(`${hubName} does not require a purchase order acknowledgment.`);
@@ -469,10 +469,10 @@ export function flowAbsences(guides, hubName) {
     notes.push(`${hubName} does not require an advance ship notice.`);
   }
   if (!have.has('810') && !have.has('820')) {
-    notes.push(`No invoicing document is published here. Settlement is handled outside EDI.`);
+    notes.push(`No invoicing document is published. Settlement is handled outside EDI.`);
   }
   if (have.has('824')) {
-    notes.push(`${hubName} returns an 824 as well as a 997, so an accepted acknowledgment does not mean a document was usable.`);
+    notes.push(`${hubName} returns an 824 in addition to a 997. Syntax acceptance does not confirm business acceptance.`);
   }
   return notes;
 }

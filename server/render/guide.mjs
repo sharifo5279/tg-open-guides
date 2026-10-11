@@ -244,11 +244,11 @@ export function renderGuidePage({
   const attested = version?.attested_by
     ? `<div class="attested">
 <span class="att-label">Attested by ${esc(version.attested_by)}${version.attested_role ? `, ${esc(version.attested_role)}` : ''} at ${esc(g.hub?.name)}</span>
-<span class="att-meta">on ${esc(new Date(version.attested_at).toISOString().slice(0, 10))}, as the requirements in force for version ${esc(version.version)}. OpenText publishes this guide as attested and does not independently verify it.</span>
+<span class="att-meta">on ${esc(new Date(version.attested_at).toISOString().slice(0, 10))}, as the requirements in force for version ${esc(version.version)}.</span>
 </div>`
     : `<div class="attested unattested">
-<span class="att-label">Not yet attested.</span>
-<span class="att-meta">Compiled from ${esc(version?.source_name || 'a source guide')} and not yet signed off by ${esc(g.hub?.name)}. Do not build against it.</span>
+<span class="att-label">Not attested.</span>
+<span class="att-meta">Compiled from ${esc(version?.source_name || 'a source guide')}, not yet signed by ${esc(g.hub?.name)}. Do not build against it.</span>
 </div>`;
 
   const body = `
@@ -280,32 +280,32 @@ ${sidebar(spec, areas)}
 <div class="doc">
 
   <section class="dsec" id="requirements">
-    <h2>What you must send</h2>
-    <p class="section-sub">${stats.requiredSegments} mandatory segments, ${stats.requiredElements} mandatory elements, ${stats.rejectRules} rules that cause a rejection. The full structure is indexed below.</p>
+    <h2>Required segments</h2>
+    <p class="section-sub">${stats.requiredSegments} mandatory segments, ${stats.requiredElements} mandatory elements, ${stats.rejectRules} rejection rules.</p>
     <ul class="reqgrid">${requiredSummary(spec)}</ul>
   </section>
 
   <section class="dsec" id="rejects">
-    <h2>What gets you rejected</h2>
-    <p class="section-sub">${esc(g.hub?.name)} enforces these. Most of what breaks a first submission is here rather than in the segment tables, so read this before writing any code.</p>
+    <h2>Rejection rules</h2>
+    <p class="section-sub">Enforced by ${esc(g.hub?.name)}. A transaction breaking any of these is refused.</p>
     <ul class="rules">${rejects.map(ruleItem).join('\n')}</ul>
-    ${others.length ? `<h3>Also worth knowing</h3><ul class="rules">${others.map(ruleItem).join('\n')}</ul>` : ''}
+    ${others.length ? `<h3>Other rules</h3><ul class="rules">${others.map(ruleItem).join('\n')}</ul>` : ''}
   </section>
 
   <section class="dsec" id="agents">
     <div class="agentbox">
-      <h3>For your agent</h3>
-      <p>This guide is published as structured data, so an agent can read ${esc(g.hub?.name)}'s own requirements instead of guessing from the ${esc(g.standard)} standard. It publishes requirements only: nothing here validates or certifies a file you have built.</p>
-      <p class="rc-note">A plain fetch works with no setup: <code>curl -H "Accept: text/markdown" ${esc(baseUrl + guidePath)}</code></p>
-      <p style="margin:14px 0 6px"><b>Or connect once and reach every guide in the catalogue:</b></p>
+      <h3>Agent access</h3>
+      <p>This guide is served as JSON, Markdown and MCP from the version rendered here.</p>
+      <p class="rc-note">Markdown is returned to any client that requests it: <code>curl -H "Accept: text/markdown" ${esc(baseUrl + guidePath)}</code></p>
+      <p style="margin:14px 0 6px"><b>MCP configuration, all hubs:</b></p>
       <pre id="mcp-config"><code>${esc(mcpConfig)}</code></pre>
-      <p class="rc-note" style="margin:0">Tools: <code>search_guides</code>, <code>get_guide_summary</code>, <code>get_rules</code>, <code>get_segment</code>, <code>get_code_list</code>, <code>get_sample</code>, <code>get_guide_markdown</code>.</p>
+      <p class="rc-note" style="margin:0">Endpoints provide integration requirements. File validation and hub certification are not supported.</p>
     </div>
   </section>
 
   ${(spec.scenarios || []).length ? `<section class="dsec" id="scenarios">
-    <h2>Scenarios you must handle</h2>
-    <p class="section-sub">A build that passes the first and fails the rest will not survive certification. These are the cases ${esc(g.hub?.name)} has seen go wrong.</p>
+    <h2>Test scenarios</h2>
+    <p class="section-sub">Cases ${esc(g.hub?.name)} expects a partner to support before cutover.</p>
     ${spec.scenarios.map((s) => `<div class="scenario">
 <h4>${esc(s.id)} &middot; ${esc(s.name)}</h4>
 ${s.description ? `<p class="rc-note">${inlineProse(s.description)}</p>` : ''}
@@ -323,13 +323,13 @@ ${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.require
 
   <section class="dsec" id="structure">
     <h2>Structure index</h2>
-    <p class="section-sub">The whole transaction set at a glance, in ${esc(g.standard)} area order. Loops show their repeat ceiling; segments link to their element detail.</p>
+    <p class="section-sub">Full transaction set in ${esc(g.standard)} area order, with loop repeat limits.</p>
     ${structureIndex(spec, areas)}
   </section>
 
   <section class="dsec" id="reference">
     <h2>Segment reference</h2>
-    <p class="section-sub">${stats.segments} segments, ${stats.elements} elements. Every row cites the page of ${esc(g.hub?.name)}'s source document it was compiled from, so any claim here can be checked against their own guide.</p>
+    <p class="section-sub">${stats.segments} segments, ${stats.elements} elements. Each row cites its source document page.</p>
     ${areas.map((area) => `<div class="areablock" id="area-${esc(area.key)}">
       <h3 class="area-h">${esc(area.label)}</h3>
       ${area.rows.map((row) => {
@@ -353,7 +353,7 @@ ${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.require
 
   ${Object.keys(spec.codeLists || {}).length ? `<section class="dsec" id="codes">
     <h2>Code lists</h2>
-    <p class="section-sub">Only these values are accepted. A code valid in ${esc(g.standard)} but absent here is not accepted by ${esc(g.hub?.name)}, which is the most common silent cause of a rejected transaction.</p>
+    <p class="section-sub">Only these values are accepted. Codes valid in ${esc(g.standard)} but absent here are rejected.</p>
     ${Object.entries(spec.codeLists).map(([ref, codes]) => `<div class="cl">
       <h4 class="cl-h mono">${esc(ref)}</h4>
       <div class="tbl-wrap"><table class="tbl">
@@ -364,10 +364,10 @@ ${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.require
   </section>` : ''}
 
   <section class="dsec" id="about">
-    <h2>Versions and provenance</h2>
+    <h2>Version history</h2>
     <div class="twocol">
       <div>
-        <p class="section-sub">A published version is immutable. A change to ${esc(g.hub?.name)}'s requirements creates a new version, and the previous one stays readable so a partner mid-build can see what they were working from.</p>
+        <p class="section-sub">Published versions remain accessible and unchanged.</p>
         <ul class="verlist">
           ${versions.length ? versions.map((v) => `<li>
 <span class="ver ${v.version === version?.version ? 'v-cur' : ''}">v${esc(v.version)}</span>
@@ -377,12 +377,12 @@ ${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.require
         </ul>
       </div>
       <div class="tint">
-        <h3>Provenance</h3>
+        <h3>Source</h3>
         <dl class="kv">
           ${g.authoredBy ? `<dt>Authored by</dt><dd>${esc(g.authoredBy)}</dd>` : ''}
           ${version?.source_name ? `<dt>Compiled from</dt><dd>${esc(version.source_name)}${version.source_pages ? `, ${esc(version.source_pages)} pages` : ''}</dd>` : ''}
           ${g.supersedes ? `<dt>Supersedes</dt><dd>${esc(g.supersedes)}</dd>` : ''}
-          <dt>Citation coverage</dt><dd>${Math.round(stats.citedFraction * 100)}% of segments, elements and rules cite a source page</dd>
+          <dt>Citation coverage</dt><dd>${Math.round(stats.citedFraction * 100)}% of items cite a source page</dd>
         </dl>
         ${(spec.contacts || []).length ? `<h3 style="margin-top:18px">Contacts</h3>
         <dl class="kv">${spec.contacts.map((c) => `<dt>${esc(c.role || c.name)}</dt><dd>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ''}${c.note ? `<br>${esc(c.note)}` : ''}</dd>`).join('')}</dl>` : ''}

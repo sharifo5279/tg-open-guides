@@ -42,16 +42,16 @@ function builderHome({ imports, dbUp, baseUrl }) {
   const body = `
 <div class="phead"><div class="shell">
   <p class="eyebrow">Guide Builder</p>
-  <h1>Turn an implementation guide into a published contract</h1>
-  <p class="lede">Upload the hub's existing PDF. The compiler produces a structured draft with every item cited back to its source page, you correct what it got wrong, the hub attests it, and it publishes as a versioned guide that people and agents can both read.</p>
+  <h1>Import a guide</h1>
+  <p class="lede">Upload the hub's PDF. The compiler drafts a structured guide with every item cited to its source page. You correct it, the hub attests it, it publishes.</p>
 </div></div>
 
-${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The database is not connected, so importing and publishing are disabled. The catalogue is serving seeded sample guides.</div></div></section>` : ''}
+${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The database is not connected, so importing and publishing are disabled.</div></div></section>` : ''}
 
 <section class="section"><div class="shell"><div class="twocol">
   <div>
-    <h2>Import a guide</h2>
-    <p class="section-sub">A text PDF of one transaction set. Scanned documents will not compile; the importer says so rather than producing nonsense.</p>
+    <h2>Source document</h2>
+    <p class="section-sub">A text PDF of one transaction set. Scanned documents will not compile.</p>
     <form method="post" action="/builder/import" enctype="multipart/form-data" class="form">
       <label>Hub name
         <input name="hubName" required placeholder="Crestfield Consumer Brands" ${dbUp ? '' : 'disabled'}>
@@ -82,7 +82,7 @@ ${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The d
       <label>Source PDF
         <input type="file" name="pdf" accept="application/pdf" required ${dbUp ? '' : 'disabled'}>
       </label>
-      <p class="rc-note">Leave transaction set, standard or version blank and the importer will try to detect them.</p>
+      <p class="rc-note">Leave transaction set, standard or version blank to detect them from the document.</p>
       <button class="btn" type="submit" ${dbUp ? '' : 'disabled'}>Compile draft</button>
     </form>
   </div>
@@ -91,8 +91,8 @@ ${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The d
     <p class="rc-note">${modelAvailable()
       ? `Model configured: <code>${esc(modelName())}</code>. The compiler reads the document in overlapping windows and cites every item it emits.`
       : 'No model key is set, so the importer falls back to a structural compiler: it recognises segments and elements by shape and pulls candidate rules from obligation sentences. Usable, noticeably cruder. Set <code>ANTHROPIC_API_KEY</code> or <code>GEMINI_API_KEY</code> to improve it.'}</p>
-    <h3 style="margin-top:16px">What it will not do</h3>
-    <p class="rc-note">It never invents a requirement to fill a gap, and it never cites a page it was not shown. Anything it could not attribute is dropped and reported as a gap instead.</p>
+    <h3 style="margin-top:16px">Compiler limitations</h3>
+    <p class="rc-note">It never invents a requirement or cites a page it was not shown. Anything it cannot attribute is dropped and reported as a gap.</p>
   </div>
 </div></div></section>
 
@@ -203,7 +203,7 @@ function reviewScreen({ imp, spec, baseUrl }) {
 <div class="phead"><div class="shell">
   <p class="eyebrow">Guide Builder &middot; review</p>
   <h1>${esc(g.title || imp.source_name)}</h1>
-  <p class="lede">Compiled from ${esc(imp.source_name)}${imp.pages ? `, ${esc(imp.pages)} pages` : ''} by <code>${esc(t.compiledBy)}</code>. Review the ${t.needsReview.length} uncertain items below, not all ${t.needsReview.length + t.confirmed.length}. Everything carries a page citation so you can check it against the source in seconds.</p>
+  <p class="lede">Compiled from ${esc(imp.source_name)}${imp.pages ? `, ${esc(imp.pages)} pages` : ''} by <code>${esc(t.compiledBy)}</code>. ${t.needsReview.length} of ${t.needsReview.length + t.confirmed.length} items need review.</p>
   <ul class="specline">
     <li>${esc(g.standard)} ${esc(g.version || '?')}</li>
     <li>Set <b>${esc(g.transactionSet || '?')}</b></li>
@@ -217,17 +217,17 @@ function reviewScreen({ imp, spec, baseUrl }) {
 ${t.note ? `<section class="section"><div class="shell"><div class="notice">${esc(t.note)}</div></div></section>` : ''}
 
 <section class="section"><div class="shell">
-  <h2>What the compiler could not find</h2>
-  <p class="section-sub">Read this first. A gap here is usually a gap in the source document, which means your partners have been guessing about it. This list is often more useful than the draft.</p>
+  <h2>Gaps</h2>
+  <p class="section-sub">A gap here is usually a gap in the source document, which means partners have been guessing about it.</p>
   ${t.gaps.length
     ? `<ul class="inline-list">${t.gaps.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`
     : '<p class="rc-note">Nothing obvious missing.</p>'}
-  ${check.errors.length ? `<h3 style="margin-top:18px">Blocking problems</h3><ul class="inline-list">${check.errors.slice(0, 20).map((e) => `<li>${esc(e)}</li>`).join('')}</ul>` : ''}
+  ${check.errors.length ? `<h3 style="margin-top:18px">Blocking errors</h3><ul class="inline-list">${check.errors.slice(0, 20).map((e) => `<li>${esc(e)}</li>`).join('')}</ul>` : ''}
 </div></section>
 
 <section class="section"><div class="shell">
-  <h2>Needs your eyes (${t.needsReview.length})</h2>
-  <p class="section-sub">Items the compiler was unsure about, or could not attribute to a page. Correct, or drop what is not a real requirement.</p>
+  <h2>Needs review (${t.needsReview.length})</h2>
+  <p class="section-sub">Items the compiler was unsure about or could not attribute to a page. Correct them, or drop what is not a requirement.</p>
   <form id="reviewform">
     ${t.needsReview.length ? t.needsReview.map((e, i) => reviewItemRow(e, i)).join('\n') : '<p class="rc-note">Nothing uncertain. Unusual, so spot-check the confirmed list below.</p>'}
   </form>
@@ -239,7 +239,7 @@ ${t.note ? `<section class="section"><div class="shell"><div class="notice">${es
 
 <section class="section"><div class="shell">
   <details>
-    <summary><b>Confirmed by the compiler (${t.confirmed.length})</b>, stated plainly on a cited page</summary>
+    <summary><b>Confirmed (${t.confirmed.length})</b>, stated on a cited page</summary>
     <div class="tbl-wrap" style="margin-top:12px"><table class="tbl">
       <thead><tr><th>Kind</th><th>Ref</th><th>Detail</th><th>Page</th></tr></thead>
       <tbody>${t.confirmed.slice(0, 400).map((e) => `<tr>
@@ -254,7 +254,7 @@ ${t.note ? `<section class="section"><div class="shell"><div class="notice">${es
 <section class="section"><div class="shell"><div class="twocol">
   <div>
     <h2>Publish</h2>
-    <p class="section-sub">Publishing creates version 1 as an unattested draft and gives you a link to send to the hub for signature. Nothing is public until the hub attests it and you set visibility to public.</p>
+    <p class="section-sub">Publishing creates an unattested draft and a link to send the hub for signature. Nothing is public until it is attested and set to public.</p>
     <form method="post" action="/builder/i/${esc(imp.id)}/publish" class="form">
       <div class="formrow">
         <label>Hub name <input name="hubName" value="${esc(g.hub?.name || imp.hub_name || '')}" required></label>
@@ -270,14 +270,14 @@ ${t.note ? `<section class="section"><div class="shell"><div class="notice">${es
         </select>
       </label>
       <label>Changelog <input name="changelog" placeholder="First structured publication, compiled from the v4.2 PDF"></label>
-      <button class="btn" type="submit">Publish as draft</button>
+      <button class="btn" type="submit">Publish draft</button>
     </form>
   </div>
   <div class="tint">
-    <h3>Unlisted is the default</h3>
-    <p class="rc-note">Most hubs want their requirements reachable by their own partners before they are reachable by everyone. Unlisted guides are served to anyone with the link, including agents, but are not listed in the catalogue.</p>
+    <h3>Visibility</h3>
+    <p class="rc-note">An unlisted guide is served to anyone with the link, including agents, but is not listed publicly. Most hubs start here.</p>
     <h3 style="margin-top:16px">Citation coverage</h3>
-    <p class="rc-note">${Math.round(stats.citedFraction * 100)}% of items cite a source page. Uncited items are the ones in the review queue above.</p>
+    <p class="rc-note">${Math.round(stats.citedFraction * 100)}% of items cite a source page.</p>
   </div>
 </div></div></section>
 
@@ -336,24 +336,24 @@ function attestScreen({ guide, version, baseUrl, done = false }) {
   <p class="eyebrow">${esc(guide.hub_name)}</p>
   <h1>${done ? 'Attested' : 'Attest these requirements'}</h1>
   <p class="lede">${done
-    ? `Version ${esc(version.version)} is attested and published. Partners and their agents can read it now.`
-    : `You are confirming that this document states what ${esc(guide.hub_name)} requires of its trading partners for ${esc(spec.guide.standard)} ${esc(spec.guide.transactionSet)}, as of today. OpenText publishes it as attested by you and does not independently verify it.`}</p>
+    ? `Version ${esc(version.version)} is attested and published.`
+    : `Confirm that this document states ${esc(guide.hub_name)} requirements for ${esc(spec.guide.standard)} ${esc(spec.guide.transactionSet)} as of today.`}</p>
 </div></div>
 
 <section class="section"><div class="shell">
-  <h2>What you are signing</h2>
+  <h2>Attestation scope</h2>
   <ul class="stats">
     <li><span class="s-num">${stats.requiredSegments}</span><span class="s-lab">required segments</span></li>
     <li><span class="s-num">${stats.requiredElements}</span><span class="s-lab">required elements</span></li>
     <li><span class="s-num">${stats.rejectRules}</span><span class="s-lab">rules that reject a transaction</span></li>
     <li><span class="s-num">${Math.round(stats.citedFraction * 100)}%</span><span class="s-lab">items cite a source page</span></li>
   </ul>
-  <h3 style="margin-top:22px">The rules you are confirming you enforce</h3>
+  <h3 style="margin-top:22px">Rules you are attesting</h3>
   <ul class="rules">${rejects.map((r) => `<li class="rule rule-reject">
     <div class="rule-head">${severityPill(r.severity)}<span class="rule-id">${esc(r.id)}</span>${citeTag(r.citation)}</div>
     <p class="rule-stmt">${esc(r.statement)}</p>
   </li>`).join('')}</ul>
-  <p class="section-sub">Full document: <a href="/g/${esc(guide.hub_slug)}/${esc(guide.slug)}/v/${esc(version.version)}">read version ${esc(version.version)}</a></p>
+  <p class="section-sub"><a href="/g/${esc(guide.hub_slug)}/${esc(guide.slug)}/v/${esc(version.version)}">View full version ${esc(version.version)}</a></p>
 </div></section>
 
 ${done ? `<section class="section"><div class="shell">
@@ -371,14 +371,14 @@ ${done ? `<section class="section"><div class="shell">
       <label>Your role at ${esc(guide.hub_name)} <input name="role" required placeholder="Director, EDI Operations"></label>
       <label style="font-weight:400;font-size:14px">
         <input type="checkbox" name="confirm" value="yes" required style="width:auto;display:inline-block;margin-right:8px">
-        I confirm these are ${esc(guide.hub_name)}'s requirements for this transaction set as of today, and that OpenText may publish them as attested by me.
+        I confirm these are ${esc(guide.hub_name)} requirements for this transaction set as of today, and that OpenText may publish them as attested by me.
       </label>
       <button class="btn" type="submit">Attest and publish</button>
     </form>
   </div>
   <div class="tint">
-    <h3>What attestation means</h3>
-    <p class="rc-note">The published page names you and the date. It does not make OpenText a guarantor of your requirements, and it does not certify any partner. If your requirements change, a new version is published and this one stays readable for partners mid-build.</p>
+    <h3>Attestation terms</h3>
+    <p class="rc-note">The published page names you and the date. It does not make OpenText a guarantor, and it certifies no partner. A requirements change publishes a new version; this one stays readable mid-build.</p>
   </div>
 </div></div></section>`}
 
@@ -421,7 +421,7 @@ export function mountBuilder(app, { baseUrlOf }) {
     try {
       if (!(await dbAvailable())) {
         return res.status(503).type('html').send(
-          message({ title: 'Database not connected', lede: 'Importing needs the database. The catalogue is running on seeded guides.', links: [{ href: '/builder', label: 'Back' }] })
+          message({ title: 'Database not connected', lede: 'Importing needs the database. The site is running on seeded guides.', links: [{ href: '/builder', label: 'Back' }] })
         );
       }
       if (!req.file?.buffer?.length) {
@@ -456,7 +456,7 @@ export function mountBuilder(app, { baseUrlOf }) {
         return res.status(422).type('html').send(
           message({
             title: 'That looks like a scanned PDF',
-            lede: 'There is almost no extractable text in it, so the compiler would invent structure rather than read it. Send a text PDF, or run OCR over this one first.',
+            lede: 'Almost no extractable text, so the compiler would invent structure rather than read it. Send a text PDF, or run OCR over this one first.',
             links: [{ href: '/builder', label: 'Back' }]
           })
         );

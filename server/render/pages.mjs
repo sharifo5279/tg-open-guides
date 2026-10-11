@@ -21,7 +21,7 @@ export function renderHome({ hubs, guides, baseUrl = '', dbUp = true }) {
 <div class="phead"><div class="shell">
   <p class="eyebrow">OpenText Business Network</p>
   <h1>Trading Grid Open Guides</h1>
-  <p class="lede">A buyer hub's EDI requirements, published by the hub that owns them. Versioned, attested by a named person at the hub, and readable by your developers and by the agents working on their behalf.</p>
+  <p class="lede">EDI integration requirements published and attested by each trading hub.</p>
   <div class="copyrow">
     <a class="btn btn-outline" href="/for-agents">Connect an agent</a>
     <a class="btn btn-quiet" href="/builder">Publish a guide</a>
@@ -30,17 +30,17 @@ export function renderHome({ hubs, guides, baseUrl = '', dbUp = true }) {
 
 <section class="section tight"><div class="shell">
   <ol class="how">
-    <li><span class="hw-n">01</span><h3>Published by the hub</h3><p>The hub publishes its own requirements.</p></li>
-    <li><span class="hw-n">02</span><h3>Signed by a person</h3><p>A named person at the hub attests the version.</p></li>
-    <li><span class="hw-n">03</span><h3>Read by both</h3><p>The same attested source serves a person and an agent.</p></li>
+    <li><span class="hw-n">01</span><h3>Hub-published</h3><p>Each hub maintains its own requirements.</p></li>
+    <li><span class="hw-n">02</span><h3>Attested</h3><p>Authorized representative and approval date recorded.</p></li>
+    <li><span class="hw-n">03</span><h3>Machine-readable</h3><p>Page, JSON, Markdown and MCP from one source.</p></li>
   </ol>
 </div></section>
 
 ${!dbUp ? `<section class="section tight"><div class="shell"><div class="notice">Running on seeded sample guides. The database is not connected, so publishing is disabled.</div></div></section>` : ''}
 
 <section class="section"><div class="shell">
-  <h2>Hubs publishing here</h2>
-  <p class="section-sub">Open the hub that asked you to trade with it. Guides are grouped by direction, so you can see what you have to build before you read a line of it.</p>
+  <h2>Trading hubs</h2>
+  <p class="section-sub">Open the hub that asked you to trade with it.</p>
   <ul class="hublist">
     ${hubs.map((h) => `<li class="hubrow"><a href="/h/${esc(h.slug)}">
       <span class="hr-name">${esc(h.name)}</span>
@@ -48,20 +48,20 @@ ${!dbUp ? `<section class="section tight"><div class="shell"><div class="notice"
       <span class="hr-ind">${esc(h.industry || '')}</span>
     </a></li>`).join('')}
   </ul>
-  <p class="rc-note" style="margin-top:14px">Hub not listed: ask that hub's EDI contact. OpenText cannot answer for requirements a hub has not published here.</p>
+  <p class="rc-note" style="margin-top:14px">Hub not listed: contact that hub's EDI team.</p>
 </div></section>
 
 <section class="section"><div class="shell"><div class="twocol">
   <div>
-    <h2>What this replaces</h2>
-    <p>A hub's implementation guide is usually a PDF behind a portal login. A supplier's developer reads it by hand and turns it into code. A supplier's agent cannot read it at all: it knows X12, it does not know this hub.</p>
-    <p>Here the same requirements are structured and cited back to the hub's source document, page by page. The page is for the developer. The JSON, Markdown and MCP endpoint are for the agent.</p>
+    <h2>Guide content</h2>
+    <p>Each guide states one hub's requirements for one transaction set: segments, elements, code values and enforced rules.</p>
+    <p>Every item cites the page of the hub's source document it was compiled from.</p>
   </div>
   <div class="tint">
-    <h3>What this is not</h3>
-    <p class="rc-note">Open Guides publishes requirements. It does not accept your test files, check them, certify you with a hub, generate maps or provision connectivity. Those are separate products.</p>
+    <h3>Limitations</h3>
+    <p class="rc-note">Open Guides provides integration requirements. File validation, partner certification, mapping and connectivity are not supported.</p>
     <h3 style="margin-top:16px">Sample data</h3>
-    <p class="rc-note">Prototype. Every hub, guide, contact and identifier on this site is fictional, written to exercise the product across industries. None of it is a live trading requirement.</p>
+    <p class="rc-note">All hubs, guides, contacts and identifiers here are fictional.</p>
   </div>
 </div></div></section>`;
 
@@ -120,7 +120,7 @@ function flowSection(hub, guides, roleLabel = null) {
   if (!flow.stages.length && !flow.feeds.length && !flow.other.length) return '';
 
   return `
-  ${roleLabel ? `<h3 class="roleh">If you are a ${esc(ROLE_LABELS[roleLabel] || roleLabel)}</h3>` : ''}
+  ${roleLabel ? `<h3 class="roleh">${esc((ROLE_LABELS[roleLabel] || roleLabel).replace(/^./, (ch) => ch.toUpperCase()))} documents</h3>` : ''}
   <ol class="flow">
     ${flow.stages.map((st, i) => `<li class="flowstep">
       <span class="fs-n">Step ${i + 1}</span>
@@ -137,12 +137,12 @@ function flowSection(hub, guides, roleLabel = null) {
   </ol>
   ${absences.length ? `<p class="flow-note">${absences.map((a) => esc(a)).join(' ')}</p>` : ''}
   ${(flow.feeds.length || flow.always.length) ? `<div class="feeds">
-    <h3>Outside the sequence</h3>
+    <h3>Standing feeds</h3>
     <ul class="feedlist">
       ${flow.feeds.map((g) => `<li>
         <a class="fs-set" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.transaction_set)}</a>
         <span class="fs-title">${esc(FEED_SETS[g.transaction_set] || shortTitle(g.title))}</span>
-        <span class="rc-note">Standing feed, not a step. ${dirmark(g.direction)}</span>
+        <span class="rc-note">${dirmark(g.direction)}</span>
       </li>`).join('')}
       ${flow.always.map((g) => `<li>
         <a class="fs-set" href="/g/${esc(g.hub_slug)}/${esc(g.slug)}">${esc(g.transaction_set)}</a>
@@ -206,23 +206,23 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
   ${hub.about ? `<p class="lede">${esc(hub.about)}</p>` : ''}
   <div class="attested${attestedCount === guides.length && guides.length ? '' : ' unattested'}">
     <span class="att-label">${esc(attestedCount)} of ${esc(guides.length)} guides carry an attested version${latest ? `, most recently ${esc(String(latest).slice(0, 10))}` : ''}.</span>
-    <span class="att-meta">A hub does not attest as a hub: a named owner signs each guide version. ${hub.attestor ? `Here that is ${esc(hub.attestor.name)}, ${esc(hub.attestor.role)}. ` : ''}OpenText publishes these guides and does not verify them.</span>
+    <span class="att-meta">${hub.attestor ? `Signed by ${esc(hub.attestor.name)}, ${esc(hub.attestor.role)}. ` : ''}A hub does not attest as a hub: a named owner signs each version.</span>
   </div>
-  <p class="lede" style="font-size:15px;margin-top:14px">What ${esc(hub.name)} requires of ${multiRole
-    ? `its ${roles.map((r) => (ROLE_LABELS[r] || r) + 's').join(' and ')}`
-    : `a ${esc(ROLE_LABELS[term] || term)}`} trading EDI with it. Hub-wide rules once, then one guide per document.</p>
+  <p class="lede" style="font-size:15px;margin-top:14px">EDI requirements for ${multiRole
+    ? `${esc(hub.name)} ${roles.map((r) => (ROLE_LABELS[r] || r) + 's').join(' and ')}`
+    : `${esc(hub.name)} ${esc((ROLE_LABELS[term] || term) + 's')}`}.</p>
 </div></div>
 
 <section class="section"><div class="shell">
-  <h2>The sequence carries requirements</h2>
-  <p class="section-sub">${esc(hub.name)} measures its acknowledgment window from the moment a document lands, not from when you get to it. Identifiers set early are quoted verbatim downstream: a purchase order number stripped of leading zeros in your acknowledgment breaks the match at invoice, two documents later. Read the chain before you build a link in it.</p>
+  <h2>Document sequence</h2>
+  <p class="section-sub">Documents in the order they are exchanged. Identifiers set in one document are matched in later ones.</p>
   ${flows.map((f) => flowSection(hub, f.guides, f.role)).join('')}
-  <p class="rc-note" style="margin-top:16px">The grouping and order shown here are OpenText's, for readability. ${esc(hub.name)} attests the guides, not the sequence.</p>
+  <p class="rc-note" style="margin-top:16px">Sequence grouping is provided by OpenText. ${esc(hub.name)} attests the guides, not the sequence.</p>
 </div></section>
 
 ${rules.length ? `<section class="section"><div class="shell">
-  <h2>Rules that apply to every document</h2>
-  <p class="section-sub">${esc(hub.name)} enforces these across every transaction set. Stated once here instead of repeated in each guide.</p>
+  <h2>Hub-wide rules</h2>
+  <p class="section-sub">Enforced by ${esc(hub.name)} across every transaction set.</p>
   <ul class="rules">
     ${rules.map((r) => `<li class="rule ${r.severity === 'reject' ? 'rule-reject' : r.severity === 'warn' ? 'rule-warn' : ''}">
       <div class="rule-head">${severityPill(r.severity)}<span class="rule-id">${esc(r.id)}</span>${r.appliesTo ? `<span class="rule-applies">${esc(r.appliesTo)}</span>` : ''}</div>
@@ -234,7 +234,7 @@ ${rules.length ? `<section class="section"><div class="shell">
 
 <section class="section tight"><div class="shell"><div class="tint">
   <h3>Setup facts</h3>
-  <p class="rc-note" style="margin-bottom:14px">Read once at setup, then never again.</p>
+  <p class="rc-note" style="margin-bottom:14px">Required for initial configuration.</p>
   <div class="factgrid">
     <div class="fact"><p class="f-lab">X12 version</p><p class="f-val mono">${esc(hub.stdVersion)}</p></div>
     <div class="fact"><p class="f-lab">Interchange qualifier</p><p class="f-val mono">${esc(env.qualifier || '')}</p></div>
@@ -258,22 +258,22 @@ ${rules.length ? `<section class="section"><div class="shell">
 
 <section class="section"><div class="shell">
   <h2>Every document</h2>
-  <p class="section-sub">Grouped by direction, because that is how the work splits. What ${esc(hub.name)} sends you, you parse. What you send ${esc(hub.name)} you build, and that is what gets rejected.</p>
+  <p class="section-sub">Grouped by direction of exchange.</p>
   ${outbound.length ? `<div class="dgroup">
-    <div class="dgroup-h"><h3>What you send to ${esc(hub.name)}</h3><span class="dg-n">${outbound.length}</span></div>
+    <div class="dgroup-h"><h3>Outbound to ${esc(hub.name)}</h3><span class="dg-n">${outbound.length}</span></div>
     <ul class="dlist">${outbound.map(docRow).join('')}</ul>
   </div>` : ''}
   ${inbound.length ? `<div class="dgroup">
-    <div class="dgroup-h"><h3>What ${esc(hub.name)} sends you</h3><span class="dg-n">${inbound.length}</span></div>
+    <div class="dgroup-h"><h3>Inbound from ${esc(hub.name)}</h3><span class="dg-n">${inbound.length}</span></div>
     <ul class="dlist">${inbound.map(docRow).join('')}</ul>
   </div>` : ''}
-  <p class="rc-note" style="margin-top:16px">Attested means a named owner at ${esc(hub.name)} put their name and a date on that version, and the version is immutable: a requirements change publishes a new version and leaves the old one readable for anyone mid-build. It does not mean OpenText reviewed the content, that the guide covers every case ${esc(hub.name)} will send you, or that a conforming file will be accepted.</p>
+  <p class="rc-note" style="margin-top:16px">Attestation records an authorized representative and approval date. Published versions remain accessible and unchanged. Attestation does not guarantee acceptance of a conforming file.</p>
 </div></section>
 
 <section class="section"><div class="shell"><div class="twocol">
   <div>
-    <h2>Who owns this</h2>
-    <p class="section-sub">Listed by what they can resolve. OpenText publishes the guide; ${esc(hub.name)} decides what is in it.</p>
+    <h2>Contacts</h2>
+    <p class="section-sub">Requirement questions are resolved by ${esc(hub.name)}.</p>
     <ul class="contactgrid">
       ${(hub.contacts || []).map((c) => `<li class="contact">
         <p class="c-role">${esc(c.role || '')}</p>
@@ -284,26 +284,24 @@ ${rules.length ? `<section class="section"><div class="shell">
     </ul>
   </div>
   <div class="tint">
-    <h3>Connectivity</h3>
-    <p class="rc-note">This page carries no AS2 endpoints, SFTP hosts or certificates. Those come from the hub contact.</p>
-    <h3 style="margin-top:16px">Certification</h3>
-    <p class="rc-note">Open Guides does not test or certify you. Scheduling a certification is a conversation with ${esc(hub.name)}.</p>
+    <h3>Not included</h3>
+    <p class="rc-note">AS2 endpoints, SFTP hosts, certificates and certification scheduling. Request these from the hub contact.</p>
   </div>
 </div></div></section>
 
 <section class="section"><div class="shell">
   <div class="agentbox">
     <h3>Connect an agent</h3>
-    <p>Every guide here is also served as JSON, as Markdown and through an MCP endpoint, from the same stored version the page renders. An agent that knows X12 does not know that ${esc(hub.name)} rejects one structure code or charges back a late transmission. Point it here and it reads the requirement instead of inferring it.</p>
-    <p class="rc-note">A plain fetch works with no setup: <code>curl -H "Accept: text/markdown" ${esc(baseUrl)}/h/${esc(hub.slug)}</code></p>
-    <p style="margin:14px 0 6px"><b>Or connect once and reach every hub:</b></p>
+    <p>Every guide is served as JSON, Markdown and MCP from the version this page renders.</p>
+    <p class="rc-note">Markdown is returned to any client that requests it: <code>curl -H "Accept: text/markdown" ${esc(baseUrl)}/h/${esc(hub.slug)}</code></p>
+    <p style="margin:14px 0 6px"><b>MCP configuration, all hubs:</b></p>
     <pre id="mcp-config"><code>${esc(mcpConfig)}</code></pre>
     <div class="copyrow">
-      <a class="btn btn-outline" href="/h/${esc(hub.slug)}.md">This hub as Markdown</a>
+      <a class="btn btn-outline" href="/h/${esc(hub.slug)}.md">View Markdown</a>
       <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
-      <a class="btn btn-quiet" href="/for-agents">Endpoints and setup</a>
+      <a class="btn btn-quiet" href="/for-agents">View agent setup</a>
     </div>
-    <p class="rc-note" style="margin:14px 0 0">These surfaces publish requirements and nothing more. They do not accept your test file, check it, certify you with ${esc(hub.name)}, generate a map or provision connectivity. If an agent tells you your file will pass, that is the model talking.</p>
+    <p class="rc-note" style="margin:14px 0 0">Endpoints provide integration requirements. File validation and hub certification are not supported.</p>
   </div>
 </div></section>
 
@@ -400,24 +398,24 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
   const body = `
 <div class="phead"><div class="shell">
   <p class="eyebrow">For agents and developers</p>
-  <h1>Read a hub's requirements, not the standard</h1>
-  <p class="lede">An agent asked to build an 856 knows X12. It does not know that this hub rejects structure 0004, requires one SSCC per carton, and charges back a late transmission. Those facts live in the hub's guide.</p>
+  <h1>Agent integration</h1>
+  <p class="lede">Retrieve a hub's enforced requirements in machine-readable form.</p>
 </div></div>
 
 <section class="section"><div class="shell"><div class="twocol">
   <div>
-    <h3>1. Fetch the page</h3>
-    <p>Every guide and every hub serves Markdown to a client that asks for it, so a plain fetch works with no setup:</p>
+    <h3>HTTP fetch</h3>
+    <p>Guides and hubs return Markdown to any client that requests it:</p>
     <pre><code>curl -H "Accept: text/markdown" ${esc(baseUrl)}${esc(examplePath)}</code></pre>
     <p>Or append the format: <code>${esc(examplePath)}.md</code> and <code>${esc(examplePath)}.json</code>. A whole hub is at <code>/h/&lt;hub&gt;.md</code>.</p>
 
-    <h3 style="margin-top:22px">2. Connect the MCP server</h3>
-    <p>Configure once and reach every hub, with tools that return a segment or a rule set rather than an entire document:</p>
+    <h3 style="margin-top:22px">MCP server</h3>
+    <p>Tools return a segment or rule set rather than a full document:</p>
     <pre id="mcp-config"><code>${esc(mcpConfig)}</code></pre>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy config</button>
 
-    <h3 style="margin-top:22px">3. Through your provider</h3>
-    <p>If an integration provider builds on your behalf, they read the same endpoints. Nothing here is gated on being an OpenText customer.</p>
+    <h3 style="margin-top:22px">Integration provider</h3>
+    <p>Providers use the same endpoints. No OpenText account is required.</p>
   </div>
   <div class="tint">
     <h3>Tools</h3>
@@ -430,18 +428,18 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
       <dt>get_sample</dt><dd>A structural sample for one scenario.</dd>
       <dt>get_guide_markdown</dt><dd>The whole guide, when you want it all in context.</dd>
     </dl>
-    <h3 style="margin-top:18px">Boundary</h3>
-    <p class="rc-note">These endpoints publish requirements. They do not validate a file you have built and cannot certify you with a hub. If an answer implies your file passes, that is the model talking.</p>
+    <h3 style="margin-top:18px">Limitations</h3>
+    <p class="rc-note">Endpoints provide integration requirements. File validation and hub certification are not supported.</p>
   </div>
 </div></div></section>
 
 <section class="section"><div class="shell">
-  <h2>What makes a guide here worth reading</h2>
+  <h2>Guide publishing standards</h2>
   <ul class="inline-list">
-    <li><b>Attested.</b> A named person at the hub signed the version, with a date.</li>
-    <li><b>Cited.</b> Each segment, element and rule carries the page of the hub's source document it came from.</li>
-    <li><b>Versioned.</b> Published versions are immutable. A change publishes a new version and the old one stays readable for a partner mid-build.</li>
-    <li><b>Scoped.</b> The guide states what the hub enforces and what it merely prefers, which the standard cannot tell you.</li>
+    <li><b>Hub attestation:</b> authorized representative and approval date recorded.</li>
+    <li><b>Source citation:</b> each segment, element and rule cites its source document page.</li>
+    <li><b>Version history:</b> published versions remain accessible and unchanged.</li>
+    <li><b>Enforcement scope:</b> each rule states whether the hub rejects, holds or advises.</li>
   </ul>
 </div></section>
 
@@ -471,7 +469,7 @@ export function renderNotFound() {
   return layout({
     title: 'Not found | Trading Grid Open Guides',
     body: `<div class="phead"><div class="shell"><h1>Not found</h1>
-<p class="lede">No guide at this address. It may be unlisted, or it may never have been published.</p>
+<p class="lede">No guide at this address. The guide may be unlisted or unpublished.</p>
 <div class="copyrow"><a class="btn btn-outline" href="/">Back to the hubs</a></div></div></div>`
   });
 }
