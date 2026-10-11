@@ -1,0 +1,25 @@
+databases:
+  - name: tg-open-guides-db
+    plan: basic_256mb
+    region: virginia
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: tg-open-guides
+    runtime: node
+    plan: starter
+    region: virginia
+    branch: main
+    buildCommand: npm ci --omit=dev --no-audit --no-fund
+    startCommand: node server/index.mjs
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tg-open-guides-db
+          property: connectionString
+      - key: NODE_VERSION
+        value: "22"
+      - key: PUBLIC_BASE_URL
+        value: https://tg-open-guides.onrender.com

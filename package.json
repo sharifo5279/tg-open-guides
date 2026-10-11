@@ -1,0 +1,24 @@
+{
+  "name": "tg-open-guides",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Trading Grid Open Guides - hub-attested EDI implementation guides for people and AI agents",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "migrate": "node server/migrate.mjs",
+    "seed": "node server/seed.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.68.0",
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "express": "4.22.3",
+    "multer": "2.4.0",
+    "pdfjs-dist": "4.10.38",
+    "pg": "8.13.1"
+  }
+}
