@@ -32,7 +32,15 @@ function baseUrlOf(req) {
 }
 
 app.use(express.json({ limit: '4mb' }));
-app.use('/static', express.static(path.join(here, '..', 'public'), { maxAge: '1h' }));
+// A request carrying ?v= is fingerprinted, so it can be cached hard. One without
+// it must revalidate, or a stale copy outlives the deploy that replaced it.
+app.use('/static', (req, res, next) => {
+  res.setHeader(
+    'Cache-Control',
+    req.query.v ? 'public, max-age=31536000, immutable' : 'public, max-age=0, must-revalidate'
+  );
+  next();
+}, express.static(path.join(here, '..', 'public'), { etag: true, lastModified: true, cacheControl: false }));
 
 app.get('/healthz', async (_req, res) => {
   res.json({ ok: true, db: await dbReady() });

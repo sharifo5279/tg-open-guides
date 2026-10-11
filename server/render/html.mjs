@@ -1,3 +1,28 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import nodePath from 'node:path';
+
+/**
+ * Fingerprint the stylesheet at boot and put the hash in its URL.
+ *
+ * Static assets are served with a long max-age, which is right for bytes that
+ * never change and wrong for a file that changes every deploy. Without this, a
+ * reader who visited before a release keeps the old stylesheet for an hour and
+ * sees new markup wearing old styles. The URL changing is what actually busts a
+ * browser cache; cache headers alone cannot.
+ */
+function fingerprint(relPath) {
+  try {
+    const abs = nodePath.join(nodePath.dirname(fileURLToPath(import.meta.url)), '..', '..', relPath);
+    return createHash('sha256').update(readFileSync(abs)).digest('hex').slice(0, 10);
+  } catch {
+    return String(Date.now());
+  }
+}
+
+export const ASSET_VERSION = fingerprint('public/app.css');
+
 export function esc(v) {
   if (v == null) return '';
   return String(v)
@@ -45,7 +70,7 @@ export function layout({ title, description = '', body, head = '', bodyClass = '
 ${description ? `<meta name="description" content="${attr(description)}">` : ''}
 ${canonical ? `<link rel="canonical" href="${attr(canonical)}">` : ''}
 <link rel="stylesheet" href="https://assets.ot.digital/min/m/v1/css/opentext-fonts.min.css">
-<link rel="stylesheet" href="/static/app.css">
+<link rel="stylesheet" href="/static/app.css?v=${ASSET_VERSION}">
 ${head}
 </head>
 <body class="${attr(bodyClass)}">
