@@ -148,6 +148,7 @@ export function renderGuidePage({
     <p style="margin-bottom:0">This guide is published as structured data, so an agent can read ${esc(g.hub?.name)}'s actual requirements rather than guess from the ${esc(g.standard)} standard. It publishes requirements only: nothing here validates or certifies a file you have built.</p>
     <div class="copyrow">
       <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
+      <a class="btn btn-outline" href="${esc(guidePath)}/samples">Sample files</a>
       <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
       <button class="btn btn-quiet" type="button" data-copy="${esc(baseUrl + mdUrl)}">Copy Markdown URL</button>
       <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>

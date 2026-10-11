@@ -14,7 +14,8 @@ import {
 } from './store.mjs';
 import { specToMarkdown, DIRECTIONS } from './spec.mjs';
 import { renderGuidePage } from './render/guide.mjs';
-import { renderCatalogue, renderForAgents, renderReadership, renderNotFound } from './render/pages.mjs';
+import { renderCatalogue, renderForAgents, renderReadership, renderNotFound, renderSamples } from './render/pages.mjs';
+import { generateSamples, samplesReadme } from './samples.mjs';
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
 
@@ -225,6 +226,40 @@ app.get('/g/:hub/:guide/v/:version', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+app.get('/g/:hub/:guide/samples', async (req, res, next) => {
+  try {
+    const found = await loadGuide(req.params.hub, req.params.guide);
+    if (!found?.version) return res.status(404).type('html').send(renderNotFound());
+    const samples = generateSamples(found.version.spec);
+    await logRead({ guideId: found.guide.id, version: found.version.version, surface: 'samples', userAgent: req.get('user-agent') || '' });
+    res.type('html').send(renderSamples({ guide: found.guide, version: found.version, samples, baseUrl: baseUrlOf(req) }));
+  } catch (err) { next(err); }
+});
+
+app.get('/g/:hub/:guide/samples/:id.edi', async (req, res, next) => {
+  try {
+    const found = await loadGuide(req.params.hub, req.params.guide);
+    if (!found?.version) return res.status(404).type('text/plain').send('not found');
+    const id = req.params.id;
+    const hit = generateSamples(found.version.spec).find((s) => s.id === id);
+    if (!hit) return res.status(404).type('text/plain').send('no such scenario');
+    await logRead({ guideId: found.guide.id, version: found.version.version, surface: 'samples', tool: id, userAgent: req.get('user-agent') || '' });
+    res.set('content-disposition', `attachment; filename="${found.guide.hub_slug}-${found.guide.slug}-${id}.edi"`);
+    res.type('text/plain; charset=utf-8').send(hit.edi + '\n');
+  } catch (err) { next(err); }
+});
+
+app.get('/g/:hub/:guide/samples.md', async (req, res, next) => {
+  try {
+    const found = await loadGuide(req.params.hub, req.params.guide);
+    if (!found?.version) return res.status(404).type('text/plain').send('not found');
+    const samples = generateSamples(found.version.spec);
+    const md = [samplesReadme(found.version.spec, samples), '', ...samples.map((s) => `## ${s.id} ${s.name}\n\n\`\`\`\n${s.edi}\n\`\`\`\n`)].join('\n');
+    await logRead({ guideId: found.guide.id, version: found.version.version, surface: 'samples', userAgent: req.get('user-agent') || '' });
+    res.type('text/markdown; charset=utf-8').send(md);
+  } catch (err) { next(err); }
 });
 
 app.get('/hub/:hub/readership', async (req, res, next) => {

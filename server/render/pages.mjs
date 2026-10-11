@@ -186,3 +186,27 @@ export function renderNotFound({ baseUrl = '' } = {}) {
 <div class="copyrow"><a class="btn btn-outline" href="/">Back to the catalogue</a></div></div></div>`
   });
 }
+
+export function renderSamples({ guide, version, samples, baseUrl = '' }) {
+  const spec = version.spec;
+  const g = spec.guide || {};
+  const guidePath = `/g/${guide.hub_slug}/${guide.slug}`;
+  const body = `
+<div class="phead"><div class="shell">
+  <p class="eyebrow">${esc(g.hub?.name)} &middot; ${esc(g.standard)} ${esc(g.transactionSet)}</p>
+  <h1>Sample files</h1>
+  <p class="lede">Generated from version ${esc(version.version)} of the published guide, one per scenario the hub expects a partner to handle. Each sample satisfies the hub's own structural rules: hierarchy parentage, the carton count in TD102, the HL count in CTT01, and one valid SSCC per pack.</p>
+  <div class="copyrow"><a class="btn btn-outline" href="${esc(guidePath)}">Back to the guide</a></div>
+</div></div>
+
+<section class="section"><div class="shell">
+  <div class="notice">These illustrate structure. They are not certified transactions, and passing a comparison against one does not mean the hub will accept your file. Identifiers are invented; SSCC check digits are arithmetically valid so the format is right, but the numbers belong to nobody. The ISA and GS envelope is not generated because its values are specific to your trading relationship.</div>
+  ${samples.map((s) => `<div class="scenario">
+    <h4>${esc(s.id)} &middot; ${esc(s.name)}</h4>
+    ${s.requirement ? `<p class="sc-req">${esc(s.requirement)}</p>` : ''}
+    <p class="rc-note">${esc(s.segmentCount)} segments. <a href="${esc(guidePath)}/samples/${esc(s.id)}.edi">Download</a></p>
+    <pre><code>${esc(s.edi)}</code></pre>
+  </div>`).join('\n')}
+</div></section>`;
+  return layout({ title: `Sample files | ${g.hub?.name} ${g.transactionSet}`, body, canonical: `${baseUrl}${guidePath}/samples` });
+}

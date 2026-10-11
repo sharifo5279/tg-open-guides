@@ -17,7 +17,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 import { listGuides, getGuide, getVersion, logRead } from './store.mjs';
-import { findSegment, specToMarkdown, specStats, DIRECTIONS, usageLabel } from './spec.mjs';
+import { specToMarkdown, specStats, DIRECTIONS, usageLabel } from './spec.mjs';
+import { generateSamples } from './samples.mjs';
 
 const BOUNDARY =
   'Publishes the hub’s stated requirements only. It does not validate, test or certify a file you have built, and it cannot tell you whether the hub will accept your transaction.';
@@ -308,6 +309,44 @@ function buildServer({ baseUrl, userAgent }) {
           version: v.version,
           attestation: v
         })
+      );
+    }
+  );
+
+  server.registerTool(
+    'get_sample',
+    {
+      title: 'Get a conformant sample file',
+      description:
+        'A sample transaction generated from the guide for one of the scenarios the hub expects a partner to handle, useful as a structural reference while building. Identifiers in it are invented. A sample illustrates structure and is not a certified transaction: matching it does not mean the hub will accept your file, and the ISA and GS envelope is not included because those values are specific to your trading relationship. ' +
+        BOUNDARY,
+      inputSchema: {
+        guide: z.string().optional().describe('Exact reference such as "crestfield/856-004010"'),
+        hub: z.string().optional(),
+        transactionSet: z.string().optional(),
+        scenario: z.string().optional().describe('Scenario id such as "S-2". Omit to list what is available.')
+      }
+    },
+    async (args) => {
+      const g = await resolveGuide(args);
+      if (!g) return notFound(args);
+      const v = await getVersion(g.id);
+      if (!v) return textResult(`${g.hub_name} has no published version of this guide.`);
+      await logRead({ guideId: g.id, version: v.version, surface: 'mcp', tool: 'get_sample', userAgent });
+      const samples = generateSamples(v.spec);
+      if (!samples.length) return textResult('No samples can be generated from this guide.');
+      if (!args.scenario) {
+        return textResult(
+          `${samples.length} sample(s) available for ${v.spec.guide.hub.name} ${v.spec.guide.transactionSet}. Pass "scenario" to fetch one.\n\n` +
+            samples.map((s) => `- ${s.id}: ${s.name}. ${s.requirement || ''} (${s.segmentCount} segments)`).join('\n')
+        );
+      }
+      const hit = samples.find((s) => s.id.toLowerCase() === String(args.scenario).toLowerCase());
+      if (!hit) {
+        return textResult(`No scenario "${args.scenario}". Available: ${samples.map((s) => s.id).join(', ')}`);
+      }
+      return textResult(
+        `# ${hit.id} ${hit.name}\n${hit.requirement || ''}\nGenerated from guide v${v.version}. Structure only, identifiers invented, no ISA/GS envelope.\n\n\`\`\`\n${hit.edi}\n\`\`\``
       );
     }
   );
