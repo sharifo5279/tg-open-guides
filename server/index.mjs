@@ -13,6 +13,7 @@ import {
   dbAvailable
 } from './store.mjs';
 import { specToMarkdown, normalizeSpec } from './spec.mjs';
+import { diffSpecs } from './findings.mjs';
 import { renderGuidePage } from './render/guide.mjs';
 import { renderCodeView } from './render/codeview.mjs';
 import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderBacklog, renderNotFound } from './render/pages.mjs';
@@ -229,12 +230,15 @@ async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber 
   }
 
   const versions = await listVersions(guide.id);
+  const previous = version.version > 1 ? await getVersion(guide.id, version.version - 1) : null;
   res.type('html').send(
     renderGuidePage({
       spec: version.spec,
       guide,
       version,
       versions,
+      diff: previous ? diffSpecs(normalizeSpec(previous.spec), version.spec) : null,
+      previousVersion: previous?.version ?? null,
       baseUrl: base,
       guidePath,
     })

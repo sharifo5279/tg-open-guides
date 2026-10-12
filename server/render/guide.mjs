@@ -204,6 +204,30 @@ ${rows.map((r) => `<tr>
 </tbody></table>`;
 }
 
+/* ------------------------------------------------------------- version diff */
+
+const FIELD_LABEL = { pos: 'position', name: 'name', usage: 'requirement', type: 'type', min: 'min', max: 'max', maxUse: 'max use', loopId: 'loop', note: 'note', value: 'required value', statement: 'rule', appliesTo: 'applies to', rationale: 'rationale', description: 'description', requirement: 'requirement', values: 'accepted values' };
+
+function diffLabel(f) {
+  const it = f.item;
+  const ref = f.kind === 'element' ? `${f.parent?.id || ''} ${it.ref}`.trim() : f.ref;
+  const name = it.name || it.statement || it.requirement || '';
+  return `<span class="mono">${esc(ref)}</span> ${esc(String(name).slice(0, 90))}`;
+}
+
+function diffBlock(diff, prevV, curV) {
+  const n = diff.added.length + diff.removed.length + diff.changed.length;
+  if (!n) return `<p class="section-sub">No requirement changes from version ${esc(prevV)}.</p>`;
+  const rows = [
+    ...diff.added.map((f) => `<tr><td class="dk dk-add">Added</td><td>${diffLabel(f)}</td><td class="el-note"></td></tr>`),
+    ...diff.removed.map((f) => `<tr><td class="dk dk-rm">Removed</td><td>${diffLabel(f)}</td><td class="el-note"></td></tr>`),
+    ...diff.changed.map((f) => `<tr><td class="dk dk-ch">Changed</td><td>${diffLabel(f)}</td><td class="el-note">${f.fields.map((x) => esc(FIELD_LABEL[x] || x)).join(', ')}</td></tr>`)
+  ];
+  return `<h3>Changes from version ${esc(prevV)}</h3>
+<p class="section-sub">${diff.added.length} added, ${diff.removed.length} removed, ${diff.changed.length} changed.</p>
+<table class="tbl-dense tbl-diff"><thead><tr><th>Change</th><th>Finding</th><th>Fields</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+
 /* -------------------------------------------------------------------- page */
 
 export function renderGuidePage({
@@ -211,6 +235,8 @@ export function renderGuidePage({
   guide,
   version,
   versions = [],
+  diff = null,
+  previousVersion = null,
   baseUrl = '',
   guidePath = '',
 }) {
@@ -329,6 +355,7 @@ ${sidebar(areas)}
   </section>
 
   <section class="panel" id="about" role="tabpanel">
+    ${diff ? diffBlock(diff, previousVersion, version?.version) : ''}
     <div class="twocol">
       <div>
         <h3>Version history</h3>

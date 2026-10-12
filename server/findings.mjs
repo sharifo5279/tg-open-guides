@@ -88,3 +88,33 @@ export function publishableSpec(spec) {
   out.scenarios = (spec.scenarios || []).filter(keep);
   return out;
 }
+
+/* ------------------------------------------------------------------ diff */
+
+const COMPARED = ['pos', 'name', 'usage', 'type', 'min', 'max', 'maxUse', 'loopId', 'note', 'value', 'statement', 'appliesTo', 'rationale', 'description', 'requirement'];
+
+function identity(f) {
+  if (f.item.fid) return f.item.fid;
+  const pos = f.kind === 'segment' ? String(f.item.pos || '').replace(/^0+(?=\d)/, '') : f.parent ? String(f.parent.pos || '').replace(/^0+(?=\d)/, '') : '';
+  return `${f.kind}:${f.group || ''}:${f.ref}:${pos}`;
+}
+
+function valuesKey(values) {
+  return (values || []).map((v) => `${v.code}=${v.description || ''}`).join('|');
+}
+
+/** What changed from one version to the next, by finding. */
+export function diffSpecs(prev, next) {
+  const a = new Map(listFindings(prev || {}).map((f) => [identity(f), f]));
+  const b = new Map(listFindings(next || {}).map((f) => [identity(f), f]));
+  const added = [], removed = [], changed = [];
+  for (const [k, f] of b) {
+    const old = a.get(k);
+    if (!old) { added.push(f); continue; }
+    const fields = COMPARED.filter((x) => (old.item[x] ?? null) !== (f.item[x] ?? null));
+    if (valuesKey(old.item.values) !== valuesKey(f.item.values)) fields.push('values');
+    if (fields.length) changed.push({ ...f, fields, before: old.item });
+  }
+  for (const [k, f] of a) if (!b.has(k)) removed.push(f);
+  return { added, removed, changed };
+}

@@ -114,7 +114,7 @@ export const EPICS = [
     items: [
       { id: 'E6-1', title: 'Attestation by a signed-in owner', detail: 'Replace the open link with an authenticated action recording the account.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
       { id: 'E6-2', title: 'Attestation request', detail: 'An editor or professional services author sends a version to the owner for signature.', personas: ['hub-editor', 'ps-author', 'hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E6-3', title: 'Version diff', detail: 'Show what changed between two published versions.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Not started' },
+      { id: 'E6-3', title: 'Version diff', detail: 'The Versions tab lists findings added, removed and changed since the previous version, by stable finding ID.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Done' },
       { id: 'E6-4', title: 'Withdraw a version', detail: 'Mark a published version as withdrawn without deleting it.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
       { id: 'E6-5', title: 'Attestation record export', detail: 'A downloadable record of who signed what and when.', personas: ['hub-owner'], size: 'S', state: 'Not started' }
     ]
