@@ -13,6 +13,7 @@ import {
 } from './store.mjs';
 import { specToMarkdown } from './spec.mjs';
 import { renderGuidePage } from './render/guide.mjs';
+import { renderCodeView } from './render/codeview.mjs';
 import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderBacklog, renderNotFound } from './render/pages.mjs';
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
@@ -153,6 +154,28 @@ async function loadGuide(hubSlug, guideSlug, versionNumber = null) {
   return { guide, version };
 }
 
+/* The JSON payload, shared by the raw endpoint and the JSON view so the two
+   can never drift. */
+function guideJson(guide, version, base, guidePath) {
+  return {
+    ...version.spec,
+    publication: {
+      guideRef: `${guide.hub_slug}/${guide.slug}`,
+      version: version.version,
+      status: version.status,
+      attestedBy: version.attested_by,
+      attestedRole: version.attested_role,
+      attestedAt: version.attested_at,
+      publishedAt: version.published_at,
+      compiledFrom: version.source_name,
+      canonical: base + guidePath,
+      markdown: `${base}${guidePath}.md`,
+      notice:
+        'Requirements as attested by the hub. This document does not validate or certify a transaction.'
+    }
+  };
+}
+
 async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber = null }) {
   const found = await loadGuide(hubSlug, guideSlug, versionNumber);
   if (!found) {
@@ -174,23 +197,7 @@ async function serveGuide(req, res, { hubSlug, guideSlug, format, versionNumber 
 
   if (format === 'json') {
     res.set('Access-Control-Allow-Origin', '*');
-    return res.json({
-      ...version.spec,
-      publication: {
-        guideRef: `${guide.hub_slug}/${guide.slug}`,
-        version: version.version,
-        status: version.status,
-        attestedBy: version.attested_by,
-        attestedRole: version.attested_role,
-        attestedAt: version.attested_at,
-        publishedAt: version.published_at,
-        compiledFrom: version.source_name,
-        canonical: base + guidePath,
-        markdown: `${base}${guidePath}.md`,
-        notice:
-          'Requirements as attested by the hub. This document does not validate or certify a transaction.'
-      }
-    });
+    return res.json(guideJson(guide, version, base, guidePath));
   }
 
   if (format === 'md') {
@@ -237,6 +244,29 @@ app.get('/g/:hub/:guide', async (req, res, next) => {
       format = 'json';
     }
     await serveGuide(req, res, { hubSlug: req.params.hub, guideSlug, format });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/g/:hub/:guide/:format(md|json)', async (req, res, next) => {
+  try {
+    const found = await loadGuide(req.params.hub, req.params.guide);
+    if (!found || !found.version) return res.status(404).type('html').send(renderNotFound());
+    const { guide, version } = found;
+    const base = baseUrlOf(req);
+    const guidePath = `/g/${guide.hub_slug}/${guide.slug}`;
+    const format = req.params.format;
+    const source =
+      format === 'md'
+        ? specToMarkdown(version.spec, {
+            baseUrl: base,
+            guidePath,
+            version: version.version,
+            attestation: version
+          })
+        : JSON.stringify(guideJson(guide, version, base, guidePath), null, 2);
+    res.type('html').send(renderCodeView({ guide, version, format, source, baseUrl: base, guidePath }));
   } catch (err) {
     next(err);
   }

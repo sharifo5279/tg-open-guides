@@ -232,8 +232,8 @@ export function renderGuidePage({
   const stats = specStats(spec);
   const areas = outline(spec);
   const rules = spec.rules || [];
-  const mdUrl = `${guidePath}.md`;
-  const jsonUrl = `${guidePath}.json`;
+  const mdUrl = `${guidePath}/md`;
+  const jsonUrl = `${guidePath}/json`;
   const mcpConfig = JSON.stringify(
     { mcpServers: { 'tg-open-guides': { type: 'http', url: `${baseUrl}/mcp` } } },
     null,
@@ -270,8 +270,8 @@ export function renderGuidePage({
   ${attested}
   </div>
   <div class="copyrow ghead-aside">
-    <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
-    <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
+    <a class="btn btn-outline" href="${esc(mdUrl)}">View Markdown</a>
+    <a class="btn btn-outline" href="${esc(jsonUrl)}">View JSON</a>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
   </div>
 </div></div>
