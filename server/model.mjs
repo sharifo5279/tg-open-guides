@@ -6,6 +6,8 @@
  * OpenText trust boundary is a configuration change rather than a rewrite.
  */
 
+import { jsonrepair } from 'jsonrepair';
+
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-pro';
 
@@ -28,6 +30,7 @@ async function completeAnthropic({ system, prompt, maxTokens }) {
     system,
     messages: [{ role: 'user', content: prompt }]
   });
+  if (res.stop_reason === 'max_tokens') console.warn(`[model] output reached max_tokens (${maxTokens}); the response is truncated`);
   return res.content
     .filter((b) => b.type === 'text')
     .map((b) => b.text)
@@ -71,5 +74,12 @@ export function parseJsonLoose(text) {
   if (start > 0) s = s.slice(start);
   const lastBrace = Math.max(s.lastIndexOf('}'), s.lastIndexOf(']'));
   if (lastBrace !== -1 && lastBrace < s.length - 1) s = s.slice(0, lastBrace + 1);
-  return JSON.parse(s);
+  try {
+    return JSON.parse(s);
+  } catch (err) {
+    /* Guide text is full of quoted codes ("ST", "00"), and the model sometimes
+       leaves one unescaped inside a string. Repair before giving up the chunk. */
+    console.warn(`[model] invalid JSON (${err.message.slice(0, 80)}); repairing`);
+    return JSON.parse(jsonrepair(s));
+  }
 }
