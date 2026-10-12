@@ -296,6 +296,7 @@ export function renderGuidePage({
       ${attested}
       ${withdrawn}
     </ul>
+    ${version?.compiled_by && version.compiled_by !== 'seed' ? `<p class="disclosure">Compiled by a language model${version.source_name ? ` from ${esc(version.source_name)}` : ''}, reviewed by a person and attested by ${esc(g.hub?.name || 'the hub')}. Each finding cites its source page.</p>` : ''}
     ${g.summary ? `<p class="lede">${inlineProse(g.summary)}</p>` : ''}
   </div>
   <div class="copyrow ghead-aside">

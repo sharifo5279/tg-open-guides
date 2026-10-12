@@ -294,6 +294,7 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
 .specline .att-ok { color: var(--ink); }
 .specline .att-ok b { color: var(--success); }
 .specline .att-no b { color: var(--danger); }
+.disclosure { font-size: 12.5px; color: var(--slate); margin: 8px 0 0; }
 
 /* Tabs */
 .tabbar { position: sticky; top: 61px; z-index: 15; background: var(--white); border-bottom: 1px solid var(--line); }
