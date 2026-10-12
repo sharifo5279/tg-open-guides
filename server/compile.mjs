@@ -266,10 +266,12 @@ export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
   };
 
   let failures = 0;
+  await onProgress?.(`Compiling ${pages.length} pages with ${modelName()} in ${chunks.length} chunks.`);
   for (const [i, chunk] of chunks.entries()) {
     const allowed = new Set(chunk.map((p) => p.page));
-    onProgress?.({ chunk: i + 1, chunks: chunks.length });
-    console.log(`[compile] chunk ${i + 1}/${chunks.length}, pages ${chunk[0].page} to ${chunk[chunk.length - 1].page}`);
+    const label = `Chunk ${i + 1} of ${chunks.length}, pages ${chunk[0].page} to ${chunk[chunk.length - 1].page}`;
+    console.log(`[compile] ${label}`);
+    await onProgress?.(`${label}: reading.`);
     try {
       const text = await complete({
         system: SYSTEM,
@@ -301,9 +303,11 @@ export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
         spec.delimiters = { ...spec.delimiters, ...parsed.delimiters };
       }
       for (const n of parsed.notFound || []) notFound.push(n);
+      await onProgress?.(`${label}: done. ${spec.segments.length} segments and ${spec.rules.length} rules so far.`);
     } catch (err) {
       failures += 1;
       console.warn(`[compile] chunk ${i + 1}/${chunks.length} failed: ${err.message}`);
+      await onProgress?.(`${label}: failed (${err.message.slice(0, 120)}). Recorded as a gap.`);
       notFound.push(`pages ${chunk[0].page} to ${chunk[chunk.length - 1].page} could not be compiled (${err.message.slice(0, 80)})`);
     }
   }

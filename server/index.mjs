@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import { migrate, dbReady, query } from './db.mjs';
+import { migrate, dbReady } from './db.mjs';
 import {
   listGuides,
   listHubs,
@@ -24,6 +24,7 @@ import { membershipsFor, destroyExpiredSessions } from './accounts.mjs';
 import { renderAccount } from './render/account.mjs';
 import { mountHubs, roleInHub } from './hubs.mjs';
 import { rateLimit } from './ratelimit.mjs';
+import { resumeCompiles } from './jobs.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -362,16 +363,11 @@ if (process.env.DATABASE_URL) {
   } catch (err) {
     console.error('[boot] session sweep failed:', err.message);
   }
-  /* A compile runs inside the upload request, so a restart ends it. Imports
-     left mid-run would otherwise show as compiling indefinitely. */
   try {
-    const r = await query(
-      `UPDATE imports SET status='failed', error='Interrupted by a server restart. Import the PDF again.', updated_at=now()
-        WHERE status IN ('extracting','compiling')`
-    );
-    if (r.rowCount) console.log(`[boot] marked ${r.rowCount} interrupted imports as failed`);
+    const resumed = await resumeCompiles();
+    if (resumed) console.log(`[boot] restarted ${resumed} interrupted compiles`);
   } catch (err) {
-    console.error('[boot] import sweep failed:', err.message);
+    console.error('[boot] compile resume failed:', err.message);
   }
 }
 

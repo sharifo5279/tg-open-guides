@@ -13,12 +13,13 @@ import express from 'express';
 import multer from 'multer';
 import { esc, layout, citeTag } from './render/html.mjs';
 import { extractPages, detectTransactionSets, detectStandardVersion } from './extract.mjs';
-import { compileGuide, triage } from './compile.mjs';
+import { triage } from './compile.mjs';
 import { validateSpec, specStats, DIRECTIONS, USAGE } from './spec.mjs';
 import { modelAvailable, modelName } from './model.mjs';
 import { query, one, many } from './db.mjs';
 import { dbAvailable, newId } from './store.mjs';
 import { requirePlatformAdmin } from './auth.mjs';
+import { appendLog, startCompile } from './jobs.mjs';
 
 const form = express.urlencoded({ extended: false });
 
@@ -105,7 +106,7 @@ ${imports?.length ? `<section class="section"><div class="shell">
     <td>${esc(i.status)}${i.error ? ` <span class="rc-note">${esc(String(i.error).slice(0, 80))}</span>` : ''}</td>
     <td class="mono">${esc(i.compiled_by || '-')}</td>
     <td class="mono">${esc(i.pages ?? '-')}</td>
-    <td>${i.status === 'ready' ? `<a href="/builder/i/${esc(i.id)}">Review</a>` : ''}</td>
+    <td><a href="/builder/i/${esc(i.id)}">${i.status === 'ready' ? 'Review' : i.status === 'failed' ? 'View log' : 'View progress'}</a></td>
   </tr>`).join('')}</tbody></table></div>
 </div></section>` : ''}
 
@@ -383,6 +384,35 @@ ${done ? `<section class="section"><div class="shell">
   return layout({ title: `Attest | ${guide.hub_name}`, body, canonical: `${baseUrl}/attest/${version.id}` });
 }
 
+function progressScreen(imp) {
+  const running = imp.status === 'compiling' || imp.status === 'extracting';
+  const time = (at) => String(at || '').slice(11, 19);
+  const lines = (imp.log || []).map((e) => `${time(e.at)}  ${e.line}`).join('\n');
+  const lede = running
+    ? 'Compilation runs on the server. You can close this page and return later.'
+    : imp.error || 'Compilation stopped.';
+  const body = `
+<div class="phead"><div class="shell">
+  <h1>${esc(imp.source_name)}</h1>
+  <ul class="specline">
+    <li>Status: <b>${esc(imp.status)}</b></li>
+    ${imp.pages ? `<li>${esc(imp.pages)} pages</li>` : ''}
+    <li>Started ${esc(String(imp.created_at ? new Date(imp.created_at).toISOString() : '').slice(0, 16).replace('T', ' '))} UTC</li>
+  </ul>
+  <p class="lede">${esc(lede)}</p>
+</div></div>
+<section class="section"><div class="shell">
+  <h2>Compiler log</h2>
+  <pre>${esc(lines || 'Waiting for the compiler.')}</pre>
+  <div class="copyrow"><a class="btn btn-outline" href="/builder">Guide Builder</a></div>
+</div></section>`;
+  return layout({
+    title: `${imp.status === 'failed' ? 'Import failed' : 'Compiling'} | Trading Grid Open Guides`,
+    head: running ? '<meta http-equiv="refresh" content="5">' : '',
+    body
+  });
+}
+
 function message({ title, lede, links = [] }) {
   return layout({
     title: `${title} | Trading Grid Open Guides`,
@@ -475,18 +505,19 @@ export function mountBuilder(app, { baseUrlOf }) {
         meta.title = `${meta.standard} ${meta.transactionSet} supplier requirements`;
       }
 
-      await query(`UPDATE imports SET status='compiling', pages=$2, page_text=$3, updated_at=now() WHERE id=$1`, [
+      await query(`UPDATE imports SET status='compiling', pages=$2, page_text=$3, meta=$4, updated_at=now() WHERE id=$1`, [
         importId,
         extracted.totalPages,
-        JSON.stringify(extracted.pages)
+        JSON.stringify(extracted.pages),
+        JSON.stringify(meta)
       ]);
-
-      const spec = await compileGuide(extracted.pages, meta);
-      await query(
-        `UPDATE imports SET status='ready', spec=$2, compiled_by=$3, updated_at=now() WHERE id=$1`,
-        [importId, JSON.stringify(spec), spec.compileReport?.compiledBy || 'unknown']
+      await appendLog(
+        importId,
+        `Extracted ${extracted.totalPages} pages from ${sourceName}. ${meta.standard || 'Standard'} ${meta.version || ''} ${meta.transactionSet || ''}`.replace(/\s+/g, ' ').trim() + '.'
       );
 
+      /* The compile runs on the server; the page shows its progress. */
+      startCompile(importId);
       res.redirect(`/builder/i/${importId}`);
     } catch (err) {
       next(err);
@@ -499,9 +530,7 @@ export function mountBuilder(app, { baseUrlOf }) {
       const imp = await one(`SELECT * FROM imports WHERE id = $1`, [req.params.id]);
       if (!imp) return res.status(404).type('html').send(message({ title: 'Import not found', lede: 'No import with that id.', links: [{ href: '/builder', label: 'Back' }] }));
       if (imp.status !== 'ready') {
-        return res.type('html').send(
-          message({ title: `Import is ${imp.status}`, lede: imp.error || 'Still working. Reload in a moment.', links: [{ href: '/builder', label: 'Back' }] })
-        );
+        return res.type('html').send(progressScreen(imp));
       }
       res.type('html').send(reviewScreen({ imp, spec: imp.spec, baseUrl: baseUrlOf(req) }));
     } catch (err) {

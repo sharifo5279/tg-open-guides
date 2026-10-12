@@ -147,3 +147,10 @@ ALTER TABLE guides ALTER COLUMN visibility SET DEFAULT 'open';
 -- ordered lists on the hub because they are edited and read as a whole.
 ALTER TABLE hubs ADD COLUMN IF NOT EXISTS contacts     JSONB NOT NULL DEFAULT '[]'::jsonb;
 ALTER TABLE hubs ADD COLUMN IF NOT EXISTS common_rules JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+-- Background compilation: the import keeps its own inputs, progress log and
+-- attempt count, so a compile survives the browser closing and resumes after
+-- a server restart.
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS meta     JSONB;
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS log      JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 0;
