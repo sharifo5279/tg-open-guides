@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { migrate, dbReady } from './db.mjs';
 import {
   listGuides,
@@ -18,11 +19,17 @@ import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderBacklog, r
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
 import { initHighlight } from './highlight.mjs';
+import { mountAuth, attachAccount, requireAccount } from './auth.mjs';
+import { membershipsFor, destroyExpiredSessions } from './accounts.mjs';
+import { renderAccount } from './render/account.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', true);
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(attachAccount());
 
 const PORT = process.env.PORT || 10000;
 
@@ -287,6 +294,20 @@ app.get('/g/:hub/:guide/v/:version', async (req, res, next) => {
   }
 });
 
+/* ---------------------------------------------------------------- accounts */
+
+mountAuth(app, { baseUrlOf });
+
+app.get('/account', requireAccount, async (req, res, next) => {
+  try {
+    res.type('html').send(
+      renderAccount({ account: req.account, memberships: await membershipsFor(req.account.id) })
+    );
+  } catch (err) {
+    next(err);
+  }
+});
+
 /* ----------------------------------------------------------------------- mcp */
 
 app.all('/mcp', async (req, res) => {
@@ -326,5 +347,14 @@ try {
 }
 
 await initHighlight();
+
+if (process.env.DATABASE_URL) {
+  try {
+    const removed = await destroyExpiredSessions();
+    if (removed) console.log(`[boot] cleared ${removed} expired sessions`);
+  } catch (err) {
+    console.error('[boot] session sweep failed:', err.message);
+  }
+}
 
 app.listen(PORT, () => console.log(`[boot] listening on ${PORT}`));

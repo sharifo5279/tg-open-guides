@@ -64,3 +64,81 @@ CREATE TABLE IF NOT EXISTS imports (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ---------------------------------------------------------------- accounts
+-- One row per person. Credentials live with the identity provider, so there is
+-- no password column here and there is not meant to be one.
+
+CREATE TABLE IF NOT EXISTS accounts (
+  id                TEXT PRIMARY KEY,
+  email             TEXT UNIQUE NOT NULL,
+  name              TEXT,
+  is_platform_admin BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at      TIMESTAMPTZ
+);
+
+-- An account can hold more than one sign-in method. Google today, email link
+-- later, without migrating the account.
+CREATE TABLE IF NOT EXISTS identities (
+  id               TEXT PRIMARY KEY,
+  account_id       TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  provider         TEXT NOT NULL,              -- google | email
+  provider_user_id TEXT NOT NULL,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (provider, provider_user_id)
+);
+
+-- Sessions are held server side so that access can be revoked.
+CREATE TABLE IF NOT EXISTS sessions (
+  id         TEXT PRIMARY KEY,
+  account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  user_agent TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS sessions_account_idx ON sessions (account_id);
+
+-- What an account may do inside one hub. The professional services author is an
+-- editor with engagement_ends_at set, so the engagement expires on its own
+-- rather than needing a role of its own.
+CREATE TABLE IF NOT EXISTS memberships (
+  id                 TEXT PRIMARY KEY,
+  account_id         TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  hub_id             TEXT NOT NULL REFERENCES hubs(id) ON DELETE CASCADE,
+  role               TEXT NOT NULL,            -- owner | admin | editor | reader
+  state              TEXT NOT NULL DEFAULT 'active',  -- invited | active | revoked
+  invited_by         TEXT REFERENCES accounts(id) ON DELETE SET NULL,
+  invited_at         TIMESTAMPTZ,
+  accepted_at        TIMESTAMPTZ,
+  engagement_ends_at TIMESTAMPTZ,
+  created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (account_id, hub_id)
+);
+
+CREATE INDEX IF NOT EXISTS memberships_hub_idx ON memberships (hub_id, state);
+
+-- A partner's access to one guide that is not open. A request and its decision
+-- are the same row, so the history of who approved what stays intact.
+CREATE TABLE IF NOT EXISTS guide_access (
+  id           TEXT PRIMARY KEY,
+  guide_id     TEXT NOT NULL REFERENCES guides(id) ON DELETE CASCADE,
+  account_id   TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  state        TEXT NOT NULL DEFAULT 'requested',  -- requested | granted | declined | revoked
+  reason       TEXT,
+  requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  decided_by   TEXT REFERENCES accounts(id) ON DELETE SET NULL,
+  decided_at   TIMESTAMPTZ,
+  UNIQUE (guide_id, account_id)
+);
+
+CREATE INDEX IF NOT EXISTS guide_access_state_idx ON guide_access (guide_id, state);
+
+ALTER TABLE hubs ADD COLUMN IF NOT EXISTS created_by TEXT REFERENCES accounts(id) ON DELETE SET NULL;
+
+-- Visibility becomes the hub's own access decision: open, behind approval, or
+-- unlisted. The old values are migrated in place.
+UPDATE guides SET visibility = 'open'     WHERE visibility = 'public';
+UPDATE guides SET visibility = 'approval' WHERE visibility = 'community';
+ALTER TABLE guides ALTER COLUMN visibility SET DEFAULT 'open';

@@ -27,11 +27,11 @@ export const EPICS = [
     name: 'Accounts and access',
     why: 'Nothing else can ship without identity. The application has no users at all today.',
     items: [
-      { id: 'E1-1', title: 'Google sign-in', detail: 'Registration and login with a Google account. No password storage.', personas: ['hub-owner', 'hub-admin', 'partner-member'], size: 'M', state: 'Not started' },
+      { id: 'E1-1', title: 'Google sign-in', detail: 'Registration and login with a Google account. No password storage.', personas: ['hub-owner', 'hub-admin', 'partner-member'], size: 'M', state: 'Built, untested' },
       { id: 'E1-2', title: 'Email sign-in fallback', detail: 'Magic link for users without a Google account.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Not started' },
-      { id: 'E1-3', title: 'Sessions and sign-out', detail: 'Server sessions, device sign-out, session expiry.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
-      { id: 'E1-4', title: 'Account record', detail: 'An account owns one or more hubs. Separates the person from the organisation.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
-      { id: 'E1-5', title: 'Roles and permissions', detail: 'Owner, editor and reader per hub. Only owners attest and publish.', personas: ['hub-admin', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E1-3', title: 'Sessions and sign-out', detail: 'Server sessions, device sign-out, session expiry.', personas: ['hub-owner'], size: 'S', state: 'Done' },
+      { id: 'E1-4', title: 'Account record', detail: 'An account owns one or more hubs. Separates the person from the organisation.', personas: ['hub-admin'], size: 'M', state: 'Done' },
+      { id: 'E1-5', title: 'Roles and permissions', detail: 'Owner, admin, editor and reader per hub. Only owners attest and publish.', personas: ['hub-admin', 'hub-editor'], size: 'M', state: 'Partial' },
       { id: 'E1-6', title: 'Invite users to a hub', detail: 'Invite by email, assign a role, revoke access.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
       { id: 'E1-7', title: 'Professional services author role', detail: 'Authors across the hubs assigned to an engagement. Cannot attest or publish.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E1-8', title: 'Full entitlement', detail: 'Every account has every capability. No plans, no billing, no commercial metering.', personas: ['platform-admin'], size: 'S', state: 'Decided' }
@@ -44,7 +44,7 @@ export const EPICS = [
     items: [
       { id: 'E2-1', title: 'Remove platform assumptions', detail: 'No Trading Grid identifiers, entitlements or sign-on anywhere in the data model.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E2-2', title: 'Own domain and TLS', detail: 'Move off the temporary Render subdomain to a product domain.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E2-3', title: 'Managed Postgres', detail: 'Provision the database and run migrations on deploy.', personas: ['platform-admin'], size: 'S', state: 'Blocked' },
+      { id: 'E2-3', title: 'Managed Postgres', detail: 'Provision the database and run migrations on deploy.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E2-4', title: 'Model provider configuration', detail: 'One adapter, keys held by the application. Required for the authoring agent.', personas: ['platform-admin'], size: 'S', state: 'Blocked' },
       { id: 'E2-5', title: 'Backups and restore test', detail: 'Scheduled backups with a documented restore.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E2-6', title: 'Environments', detail: 'Separate staging and production services.', personas: ['platform-admin'], size: 'S', state: 'Not started' }

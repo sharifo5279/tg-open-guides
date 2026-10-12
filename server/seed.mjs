@@ -55,7 +55,7 @@ async function main() {
       const id = newId('gd');
       await query(
         `INSERT INTO guides (id, hub_id, slug, title, standard, transaction_set, std_version, direction, summary, visibility)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'public')`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'open')`,
         [id, hub.id, guideSlug, g.title, g.standard, g.transactionSet, g.version, g.direction, g.summary || '']
       );
       guide = { id };

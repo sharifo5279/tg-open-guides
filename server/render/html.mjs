@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import nodePath from 'node:path';
+import { currentAccount } from '../context.mjs';
 
 /**
  * Fingerprint the stylesheet at boot and put the hash in its URL.
@@ -84,6 +85,12 @@ ${head}
       <a href="/">Hubs</a>
       <a href="/for-agents">For agents</a>
       <a href="/builder">Guide Builder</a>
+      ${(() => {
+        const me = currentAccount();
+        return me
+          ? `<a class="nav-me" href="/account">${esc(me.name || me.email)}</a>`
+          : '<a class="nav-me" href="/signin">Sign in</a>';
+      })()}
     </nav>
   </div>
 </header>

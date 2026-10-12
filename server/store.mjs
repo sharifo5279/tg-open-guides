@@ -86,7 +86,7 @@ async function loadSeeds() {
           std_version: g.version || '',
           direction: g.direction || 'partner_sends',
           summary: g.summary || '',
-          visibility: 'public'
+          visibility: 'open'
         },
         version: {
           id: `seedv_${f}`,
@@ -164,7 +164,7 @@ export async function listGuides({ includeUnlisted = false } = {}) {
             ORDER BY version DESC LIMIT 1
          ) v ON TRUE
         WHERE v.version IS NOT NULL
-          AND ($1::boolean OR g.visibility = 'public')
+          AND ($1::boolean OR g.visibility = 'open')
         ORDER BY h.name, g.transaction_set`,
       [includeUnlisted]
     );

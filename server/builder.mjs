@@ -259,9 +259,9 @@ ${t.note ? `<section class="section"><div class="shell"><div class="notice">${es
       <label>Guide title <input name="title" value="${esc(g.title || '')}" required></label>
       <label>Visibility
         <select name="visibility">
+          <option value="open" selected>Open: any partner can read it, which onboards fastest</option>
+          <option value="approval">Approval: the hub approves each partner</option>
           <option value="unlisted">Unlisted: anyone with the link, not in the catalogue</option>
-          <option value="public">Public: listed in the catalogue</option>
-          <option value="community">Community: hub's partners only</option>
         </select>
       </label>
       <label>Changelog <input name="changelog" placeholder="First structured publication, compiled from the v4.2 PDF"></label>
@@ -575,7 +575,7 @@ export function mountBuilder(app, { baseUrlOf }) {
       const transactionSet = (req.body.transactionSet || spec.guide?.transactionSet || '').trim();
       const stdVersion = (req.body.version || spec.guide?.version || '').trim();
       const title = (req.body.title || spec.guide?.title || '').trim();
-      const visibility = ['public', 'unlisted', 'community'].includes(req.body.visibility) ? req.body.visibility : 'unlisted';
+      const visibility = ['open', 'approval', 'unlisted'].includes(req.body.visibility) ? req.body.visibility : 'open';
 
       if (!hubName || !transactionSet || !stdVersion || !title) {
         return res.status(400).type('html').send(
