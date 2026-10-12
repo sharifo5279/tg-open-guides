@@ -6,10 +6,8 @@
  * leads with what the compiler could not find, then the items it is unsure about, and
  * collapses what it is confident about behind a count.
  *
- * Attestation is deliberately a separate, linkable page with no account behind it. In
- * the motion that matters, OpenText Professional Services authors the guide and the
- * hub signs it, and the hub should not need a builder login to put their name on
- * their own requirements.
+ * Attestation is a separate page. While the platform is single-operator it requires
+ * the platform administrator, who records the hub signatory's name and role.
  */
 import express from 'express';
 import multer from 'multer';
@@ -398,6 +396,7 @@ function message({ title, lede, links = [] }) {
 export function mountBuilder(app, { baseUrlOf }) {
   /* The builder runs the authoring agent on the platform model key. */
   app.use('/builder', requirePlatformAdmin);
+  app.use('/attest', requirePlatformAdmin);
   app.get('/builder', async (req, res, next) => {
     try {
       const dbUp = await dbAvailable();
@@ -636,11 +635,10 @@ export function mountBuilder(app, { baseUrlOf }) {
       );
       await query(`UPDATE imports SET hub_id=$2, updated_at=now() WHERE id=$1`, [imp.id, hub.id]);
 
-      const base = baseUrlOf(req);
       res.type('html').send(
         message({
           title: `Version ${nextVersion} created as a draft`,
-          lede: `Send this link to ${hubName} for signature: ${base}/attest/${versionId} . Nothing is published until they attest it.`,
+          lede: `Record the ${hubName} signatory on the attestation page. The version is not published until attested.`,
           links: [
             { href: `/attest/${versionId}`, label: 'Open the attestation page' },
             { href: `/g/${hubSlug}/${guideSlug}/v/${nextVersion}`, label: 'Preview the guide' },
@@ -653,7 +651,7 @@ export function mountBuilder(app, { baseUrlOf }) {
     }
   });
 
-  /* Standalone attestation: a link the hub can open with no account. */
+  /* Attestation publishes a version, so it requires the platform administrator. */
   app.get('/attest/:versionId', async (req, res, next) => {
     try {
       if (!(await dbAvailable())) return res.status(503).type('html').send(message({ title: 'Database not connected', lede: 'Attestation needs the database.', links: [{ href: '/', label: 'Catalogue' }] }));

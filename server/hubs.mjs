@@ -7,7 +7,7 @@
 import { randomBytes } from 'node:crypto';
 import { one, query } from './db.mjs';
 import { addMembership, membershipIn, atLeast } from './accounts.mjs';
-import { requireAccount } from './auth.mjs';
+import { requirePlatformAdmin } from './auth.mjs';
 import { renderHubForm } from './render/hubform.mjs';
 
 const RESERVED = new Set([
@@ -37,11 +37,11 @@ async function slugAvailable(slug) {
 }
 
 export function mountHubs(app, { listHubs }) {
-  app.get('/hubs/new', requireAccount, (req, res) => {
+  app.get('/hubs/new', requirePlatformAdmin, (req, res) => {
     res.type('html').send(renderHubForm({}));
   });
 
-  app.post('/hubs', requireAccount, async (req, res, next) => {
+  app.post('/hubs', requirePlatformAdmin, async (req, res, next) => {
     try {
       const values = {
         name: clean(req.body.name),
@@ -87,11 +87,11 @@ export function mountHubs(app, { listHubs }) {
     }
   });
 
-  app.get('/h/:hub/settings', requireAccount, withHubRole('admin'), (req, res) => {
+  app.get('/h/:hub/settings', requirePlatformAdmin, withHubRole('admin'), (req, res) => {
     res.type('html').send(renderHubForm({ hub: toForm(req.hubRow) }));
   });
 
-  app.post('/h/:hub/settings', requireAccount, withHubRole('admin'), async (req, res, next) => {
+  app.post('/h/:hub/settings', requirePlatformAdmin, withHubRole('admin'), async (req, res, next) => {
     try {
       const name = clean(req.body.name);
       if (!name) {
