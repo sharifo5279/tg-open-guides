@@ -376,6 +376,7 @@ ${sidebar(areas)}
 <span class="ver ${v.version === version?.version ? 'v-cur' : ''}"><a href="${esc(guidePath)}/v/${esc(v.version)}">v${esc(v.version)}</a></span>
 <span>${v.status === 'withdrawn' ? 'withdrawn' : v.published_at ? esc(new Date(v.published_at).toISOString().slice(0, 10)) : 'draft'}</span>
 <span class="rc-note">${esc(v.changelog || '')}</span>
+${v.attested_at ? `<a class="rc-note" href="${esc(guidePath)}/v/${esc(v.version)}/attestation.json">Attestation record</a>` : ''}
 ${admin && v.id && v.status !== 'draft' ? withdrawForm(v) : ''}
 </li>`).join('\n') : '<li><span class="rc-note">This is the first version.</span></li>'}
         </ul>

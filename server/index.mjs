@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -299,6 +300,33 @@ app.get('/g/:hub/:guide/v/:version', async (req, res, next) => {
       guideSlug: req.params.guide,
       format: wantsMarkdown(req) ? 'md' : wantsJson(req) ? 'json' : 'html',
       versionNumber: n
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* The attestation record: who signed which content, when. The content hash
+   lets anyone holding the JSON confirm it is the version that was signed. */
+app.get('/g/:hub/:guide/v/:version/attestation.json', async (req, res, next) => {
+  try {
+    const n = Number.parseInt(req.params.version.replace(/^v/, ''), 10);
+    const found = Number.isFinite(n) ? await loadGuide(req.params.hub, req.params.guide, n) : null;
+    if (!found?.version) return res.status(404).json({ error: 'not_found' });
+    const { guide, version } = found;
+    const canonicalSpec = JSON.stringify(normalizeSpec(version.spec));
+    const base = baseUrlOf(req);
+    res.set('content-disposition', `attachment; filename="${guide.hub_slug}-${guide.slug}-v${version.version}-attestation.json"`);
+    res.json({
+      record: 'attestation',
+      guide: { hub: guide.hub_name, ref: `${guide.hub_slug}/${guide.slug}`, standard: guide.standard, transactionSet: guide.transaction_set, stdVersion: guide.std_version, title: guide.title },
+      version: version.version,
+      status: version.status,
+      attested: version.attested_at ? { by: version.attested_by, role: version.attested_role, at: version.attested_at } : null,
+      publishedAt: version.published_at,
+      compiledFrom: version.source_name,
+      content: { url: `${base}/g/${guide.hub_slug}/${guide.slug}/v/${version.version}.json`, sha256: createHash('sha256').update(canonicalSpec).digest('hex'), bytes: Buffer.byteLength(canonicalSpec) },
+      notice: 'Requirements as attested by the hub. This record does not validate or certify a transaction.'
     });
   } catch (err) {
     next(err);

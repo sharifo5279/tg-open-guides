@@ -95,7 +95,7 @@ export const EPICS = [
       { id: 'E5-8', title: 'Platform-supplied model keys', detail: 'Keys are held by the application and never exposed to a hub.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E5-9', title: 'Agent limits', detail: 'One import compiles up to 150 pages, with a stated message above that. Per-hub run and token caps are not started.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Partial' },
       { id: 'E5-10', title: 'Agent audit trail', detail: 'Each import records who started it, the model, the prompt version and a timed log of every chunk. Per-chunk prompts and raw output are not kept.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Partial' },
-      { id: 'E5-11', title: 'Agent questions on a source document', detail: 'Where the document is silent or contradictory, the agent asks instead of asserting.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-11', title: 'Agent questions on a source document', detail: 'Where the document is silent or contradictory, the agent asks instead of asserting. Today gaps and conflicts appear as compiler gaps and notes. Decision needed before building: what an answer becomes (a rule, a hub note, or a change to the finding it concerns).', personas: ['hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E5-12', title: 'PDF extraction', detail: 'Per-page text extraction feeding the document path.', personas: ['hub-editor'], size: 'L', state: 'Done' },
       { id: 'E5-13', title: 'Triaged review', detail: 'Superseded by E5-19: every finding is a row with a state; open findings are the review queue.', personas: ['hub-editor'], size: 'M', state: 'Done' },
       { id: 'E5-14', title: 'Excel and Word sources', detail: 'Word (.docx) and Excel (.xlsx) import alongside PDF. Citations for those refer to 60-line blocks of the document, stated in the compile log.', personas: ['hub-editor'], size: 'M', state: 'Done' },
@@ -116,7 +116,7 @@ export const EPICS = [
       { id: 'E6-2', title: 'Attestation request', detail: 'An editor or professional services author sends a version to the owner for signature.', personas: ['hub-editor', 'ps-author', 'hub-owner'], size: 'M', state: 'Not started' },
       { id: 'E6-3', title: 'Version diff', detail: 'The Versions tab lists findings added, removed and changed since the previous version, by stable finding ID.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Done' },
       { id: 'E6-4', title: 'Withdraw a version', detail: 'An administrator withdraws a published version from the Versions tab; the previous version becomes current, the withdrawn one stays readable and can be reinstated.', personas: ['hub-owner'], size: 'S', state: 'Done' },
-      { id: 'E6-5', title: 'Attestation record export', detail: 'A downloadable record of who signed what and when.', personas: ['hub-owner'], size: 'S', state: 'Not started' }
+      { id: 'E6-5', title: 'Attestation record export', detail: 'Each attested version serves attestation.json: signatory, role, date, version, and a SHA-256 of the signed content. Linked from the Versions tab.', personas: ['hub-owner'], size: 'S', state: 'Done' }
     ]
   },
   {
