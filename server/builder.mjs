@@ -24,6 +24,10 @@ import { appendLog, startCompile } from './jobs.mjs';
 
 const form = express.urlencoded({ extended: false });
 
+/* One import compiles at most this many pages. A guide longer than this is
+   several transaction sets and imports better as several guides. */
+const MAX_PAGES = 150;
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024, files: 1 }
@@ -100,7 +104,7 @@ ${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The d
 ${imports?.length ? `<section class="section"><div class="shell">
   <h2>Recent imports</h2>
   <div class="tbl-wrap"><table class="tbl">
-  <thead><tr><th>Source</th><th>Hub</th><th>Status</th><th>Review</th><th>Published</th><th>Pages</th><th></th></tr></thead>
+  <thead><tr><th>Source</th><th>Hub</th><th>Status</th><th>Review</th><th>Published</th><th>Pages</th><th>Started</th><th></th></tr></thead>
   <tbody>${imports.map((i) => {
     const sum = i.status === 'ready' && i.spec ? findingsSummary(i.spec) : null;
     const status = i.status === 'ready' ? (i.published_version ? 'Published' : sum && sum.reviewed === sum.total ? 'Reviewed' : 'In review') : i.status;
@@ -111,6 +115,7 @@ ${imports?.length ? `<section class="section"><div class="shell">
     <td class="mono">${sum ? `${sum.reviewed}/${sum.total}` : '-'}</td>
     <td class="mono">${i.published_version ? `v${esc(i.published_version)}${i.attested_at ? '' : ' (unattested)'}` : '-'}</td>
     <td class="mono">${esc(i.pages ?? '-')}</td>
+    <td class="rc-note">${esc(i.created_at ? new Date(i.created_at).toISOString().slice(0, 10) : '')}${i.started_by ? ` by ${esc(i.started_by)}` : ''}</td>
     <td><a href="/builder/i/${esc(i.id)}">${i.status === 'ready' ? (i.published_version ? 'Open review' : 'Resume review') : i.status === 'failed' ? 'View log' : 'View progress'}</a></td>
   </tr>`;
   }).join('')}</tbody></table></div>
@@ -238,7 +243,7 @@ export function mountBuilder(app, { baseUrlOf }) {
       let imports = [];
       if (dbUp) {
         imports = await many(
-          `SELECT i.id, i.source_name, i.status, i.error, i.pages, i.compiled_by, i.created_at, i.spec,
+          `SELECT i.id, i.source_name, i.status, i.error, i.pages, i.compiled_by, i.created_at, i.spec, i.started_by,
                   h.name AS hub_name,
                   (SELECT max(v.version) FROM guide_versions v WHERE v.import_id = i.id) AS published_version,
                   (SELECT max(v.attested_at) FROM guide_versions v WHERE v.import_id = i.id) AS attested_at
@@ -269,8 +274,8 @@ export function mountBuilder(app, { baseUrlOf }) {
       const importId = newId('imp');
       const sourceName = req.file.originalname || 'guide.pdf';
       await query(
-        `INSERT INTO imports (id, source_name, status) VALUES ($1,$2,'extracting')`,
-        [importId, sourceName]
+        `INSERT INTO imports (id, source_name, status, started_by) VALUES ($1,$2,'extracting',$3)`,
+        [importId, sourceName, req.account?.email || null]
       );
 
       let extracted;
@@ -280,6 +285,21 @@ export function mountBuilder(app, { baseUrlOf }) {
         await query(`UPDATE imports SET status='failed', error=$2, updated_at=now() WHERE id=$1`, [importId, `extraction failed: ${err.message}`]);
         return res.status(422).type('html').send(
           message({ title: 'Could not read that PDF', lede: err.message, links: [{ href: '/builder', label: 'Back' }] })
+        );
+      }
+
+      if (extracted.totalPages > MAX_PAGES) {
+        await query(`UPDATE imports SET status='failed', error=$2, pages=$3, updated_at=now() WHERE id=$1`, [
+          importId,
+          `${extracted.totalPages} pages exceeds the ${MAX_PAGES}-page limit for one import.`,
+          extracted.totalPages
+        ]);
+        return res.status(422).type('html').send(
+          message({
+            title: 'Document too long',
+            lede: `${extracted.totalPages} pages. One import compiles up to ${MAX_PAGES} pages. Split the guide by transaction set and import each part.`,
+            links: [{ href: '/builder', label: 'Back' }]
+          })
         );
       }
 
@@ -545,9 +565,9 @@ export function mountBuilder(app, { baseUrlOf }) {
       const importId = newId('imp');
       const spec = prepareForReview(version.spec).spec;
       await query(
-        `INSERT INTO imports (id, hub_id, source_name, status, pages, spec, compiled_by)
-         VALUES ($1,$2,$3,'ready',$4,$5,$6)`,
-        [importId, guide.hub_id, `${guide.hub_name} ${guide.transaction_set} v${version.version}`, version.source_pages, JSON.stringify(spec), version.compiled_by]
+        `INSERT INTO imports (id, hub_id, source_name, status, pages, spec, compiled_by, started_by)
+         VALUES ($1,$2,$3,'ready',$4,$5,$6,$7)`,
+        [importId, guide.hub_id, `${guide.hub_name} ${guide.transaction_set} v${version.version}`, version.source_pages, JSON.stringify(spec), version.compiled_by, req.account?.email || null]
       );
       await appendLog(importId, `Opened from published version ${version.version} for revision.`);
       res.redirect(`/builder/i/${importId}`);

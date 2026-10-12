@@ -165,7 +165,8 @@ export function renderReview({ imp, spec, versions = [], baseUrl }) {
     <li>${esc(g.standard || 'X12')} ${esc(g.version || '?')}, set <b>${esc(g.transactionSet || '?')}</b></li>
     <li>${esc(DIRECTIONS[g.direction] || g.direction || '')}</li>
     <li>${stats.segments} segments, ${stats.elements} elements, ${stats.rules} rules</li>
-    <li>Compiled by <code>${esc(imp.compiled_by || spec.compileReport?.compiledBy || '')}</code></li>
+    <li>Compiled by <code>${esc(imp.compiled_by || spec.compileReport?.compiledBy || '')}</code>${spec.compileReport?.promptVersion ? `, prompt ${esc(spec.compileReport.promptVersion)}` : ''}</li>
+    ${imp.started_by ? `<li>Started by ${esc(imp.started_by)}</li>` : ''}
     ${latest ? `<li>Published as <a href="/g/${esc(latest.hub_slug)}/${esc(latest.guide_slug)}/v/${esc(latest.version)}">v${esc(latest.version)}</a>${latest.attested_at ? ', attested' : ', awaiting attestation'}</li>` : ''}
   </ul>
   <div class="rv-progress" title="${sum.reviewed} of ${sum.total} findings reviewed">

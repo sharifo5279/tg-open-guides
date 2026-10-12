@@ -19,6 +19,9 @@ import { detectStandardVersion } from './extract.mjs';
 const CHUNK_PAGES = 10;
 const CHUNK_OVERLAP = 1;
 
+/* Bumped whenever SYSTEM or chunkPrompt changes, and recorded on every run. */
+export const PROMPT_VERSION = 'p1';
+
 const SYSTEM = `You compile EDI implementation guides into structured JSON.
 
 You are reading pages of one trading partner's implementation guide: a buyer hub telling its suppliers what it requires. Your job is to extract what the hub REQUIRES, not to teach the X12 or EDIFACT standard. If a page restates the standard without hub-specific constraint, extract it only when it carries a usage, a length, a code restriction or a note.
@@ -266,7 +269,7 @@ export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
   };
 
   let failures = 0;
-  await onProgress?.(`Compiling ${pages.length} pages with ${modelName()} in ${chunks.length} chunks.`);
+  await onProgress?.(`Compiling ${pages.length} pages with ${modelName()}, prompt ${PROMPT_VERSION}, in ${chunks.length} chunks.`);
   for (const [i, chunk] of chunks.entries()) {
     const allowed = new Set(chunk.map((p) => p.page));
     const label = `Chunk ${i + 1} of ${chunks.length}, pages ${chunk[0].page} to ${chunk[chunk.length - 1].page}`;
@@ -338,6 +341,7 @@ export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
 
   spec.compileReport = {
     compiledBy: modelName(),
+    promptVersion: PROMPT_VERSION,
     chunks: chunks.length,
     failedChunks: failures,
     gaps: findGaps(spec, notFound)

@@ -158,3 +158,6 @@ ALTER TABLE imports ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 0
 -- Review: a version remembers the import it was published from, so the
 -- review can list its versions and publish the next one.
 ALTER TABLE guide_versions ADD COLUMN IF NOT EXISTS import_id TEXT REFERENCES imports(id) ON DELETE SET NULL;
+
+-- Audit: who started an import.
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS started_by TEXT;
