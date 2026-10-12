@@ -269,6 +269,7 @@ export async function compileWithModel(pages, meta = {}, { onProgress } = {}) {
   for (const [i, chunk] of chunks.entries()) {
     const allowed = new Set(chunk.map((p) => p.page));
     onProgress?.({ chunk: i + 1, chunks: chunks.length });
+    console.log(`[compile] chunk ${i + 1}/${chunks.length}, pages ${chunk[0].page} to ${chunk[chunk.length - 1].page}`);
     try {
       const text = await complete({
         system: SYSTEM,
