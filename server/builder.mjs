@@ -13,7 +13,7 @@ import express from 'express';
 import multer from 'multer';
 import { esc, layout, citeTag } from './render/html.mjs';
 import { extractAny, detectTransactionSets, detectStandardVersion } from './extract.mjs';
-import { specStats, USAGE } from './spec.mjs';
+import { specStats, validateSpec, USAGE } from './spec.mjs';
 import { renderReview } from './render/review.mjs';
 import { prepareForReview, findByFid, findingsSummary, publishableSpec, assignFindingIds, REVIEW_STATES } from './findings.mjs';
 import { modelAvailable, modelName } from './model.mjs';
@@ -488,6 +488,13 @@ export function mountBuilder(app, { baseUrlOf }) {
       if (!hubName || !transactionSet || !stdVersion || !title) {
         return res.status(400).type('html').send(
           message({ title: 'Missing details', lede: 'Hub name, transaction set, version and title are all needed to publish.', links: [{ href: `/builder/i/${imp.id}`, label: 'Back to review' }] })
+        );
+      }
+
+      const check = validateSpec({ ...spec, guide: { ...spec.guide, hub: { ...(spec.guide?.hub || {}), name: hubName }, title, transactionSet, version: stdVersion } });
+      if (check.errors.length) {
+        return res.status(422).type('html').send(
+          message({ title: 'Cannot publish', lede: `${check.errors[0]}${check.errors.length > 1 ? ` (${check.errors.length - 1} more on the review page)` : ''}.`, links: [{ href: `/builder/i/${imp.id}`, label: 'Back to review' }] })
         );
       }
 
