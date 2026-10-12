@@ -78,19 +78,25 @@ export const EPICS = [
   {
     id: 'E5',
     name: 'Guide authoring',
-    why: 'Authoring is the agent’s work. People correct and attest. The application supplies the model keys, so no hub configures a provider.',
+    why: 'Authoring is the agent’s work and has two entry paths: a source document, or an interview when the hub has nothing written down. People correct and attest. The application supplies the model keys.',
     items: [
-      { id: 'E5-1', title: 'Built-in authoring agent', detail: 'Reads a hub’s source documents and drafts a guide, with a citation for every statement.', personas: ['hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
-      { id: 'E5-2', title: 'Platform-supplied model keys', detail: 'Keys are held by the application and never exposed to a hub.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E5-3', title: 'Agent limits', detail: 'Caps per hub and per document on pages, runs and tokens, with a stated message at the limit.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Not started' },
-      { id: 'E5-4', title: 'Agent audit trail', detail: 'Each run records the source, prompt version, model, output and who started it.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E5-5', title: 'Agent questions to the editor', detail: 'Where the source is silent or contradictory, the agent asks instead of asserting.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E5-6', title: 'PDF extraction', detail: 'Per-page text extraction feeding the agent.', personas: ['hub-editor'], size: 'L', state: 'Built, untested' },
-      { id: 'E5-7', title: 'Triaged review', detail: 'Gaps first, uncertain items next, confident items collapsed.', personas: ['hub-editor'], size: 'M', state: 'Built, untested' },
-      { id: 'E5-8', title: 'Excel and Word sources', detail: 'Many hubs keep requirements in a spreadsheet rather than a PDF.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E5-9', title: 'Manual correction', detail: 'Edit any field the agent produced. The fallback path, not the primary one.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
-      { id: 'E5-10', title: 'Revise a published guide', detail: 'Open a published version as a new draft and diff it against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E5-11', title: 'Scenarios editor', detail: 'The hub declares its own processes. Process lives here, not in a platform sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
+      { id: 'E5-1', title: 'Built-in authoring agent', detail: 'One agent with two entry paths, producing the same guide contract either way.', personas: ['hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E5-2', title: 'Author from a source document', detail: 'The agent reads the hub’s document and cites every statement to a page.', personas: ['hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E5-3', title: 'Author by interview', detail: 'No source document. The agent asks the hub what it requires and drafts from the answers.', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E5-4', title: 'Interview workflows', detail: 'A question set per transaction set, asking only what the hub has to decide.', personas: ['hub-editor'], size: 'L', state: 'Not started' },
+      { id: 'E5-5', title: 'Standard knowledge at authoring time', detail: 'The agent brings segment and element knowledge to the interview. No standards library is stored or maintained.', personas: ['platform-admin'], size: 'M', state: 'Decided' },
+      { id: 'E5-6', title: 'Resume an interview', detail: 'An interview spans sessions. Answers are saved as given and remain editable.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-7', title: 'Answer provenance', detail: 'An interview-authored guide cites the person and date behind each statement, as a document path cites a page.', personas: ['hub-owner', 'partner-reader'], size: 'M', state: 'Not started' },
+      { id: 'E5-8', title: 'Platform-supplied model keys', detail: 'Keys are held by the application and never exposed to a hub.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E5-9', title: 'Agent limits', detail: 'Caps per hub and per document on pages, runs and tokens, with a stated message at the limit.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Not started' },
+      { id: 'E5-10', title: 'Agent audit trail', detail: 'Each run records the path taken, source or answers, prompt version, model, output and who started it.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E5-11', title: 'Agent questions on a source document', detail: 'Where the document is silent or contradictory, the agent asks instead of asserting.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-12', title: 'PDF extraction', detail: 'Per-page text extraction feeding the document path.', personas: ['hub-editor'], size: 'L', state: 'Built, untested' },
+      { id: 'E5-13', title: 'Triaged review', detail: 'Gaps first, uncertain items next, confident items collapsed.', personas: ['hub-editor'], size: 'M', state: 'Built, untested' },
+      { id: 'E5-14', title: 'Excel and Word sources', detail: 'Many hubs keep requirements in a spreadsheet rather than a PDF.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-15', title: 'Manual correction', detail: 'Edit any field the agent produced. The fallback path, not the primary one.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-16', title: 'Revise a published guide', detail: 'Open a published version as a new draft and diff it against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-17', title: 'Scenarios editor', detail: 'The hub declares its own processes. Process lives here, not in a platform sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
     ]
   },
   {
@@ -205,5 +211,5 @@ export const OUT_OF_SCOPE = [
   'File validation, partner certification and mapping.',
   'Connectivity provisioning: AS2, SFTP, certificates.',
   'A platform-defined business process model. Process is declared by each hub as scenarios.',
-  'An OpenText-maintained X12 standards library. Guide content comes from the hub’s own document.'
+  'An OpenText-maintained X12 standards library. Guide content comes from the hub, by document or by interview.'
 ];
