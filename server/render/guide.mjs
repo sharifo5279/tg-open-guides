@@ -3,7 +3,6 @@ import { codeBlock } from '../highlight.mjs';
 import {
   DIRECTIONS,
   outline,
-  loopInfo,
   segAnchor,
   maxUseLabel,
   repeatLabel,
@@ -13,14 +12,15 @@ import {
 } from '../spec.mjs';
 
 /**
- * The guide page is a reference document, so it is built like one: a persistent
- * structure tree on the left, an index of the whole transaction set before the
- * detail, and element tables in the column order EDI people already read
- * (position, element, name, type, requirement, min, max, repeat).
+ * The guide page is laid out the way EDI implementation guides are read: the
+ * transaction set structure is the document. One dense table lists every
+ * segment in area and loop order, and each row opens to its element table in
+ * place. Rules, envelope, code lists, agent access and version history are
+ * tabs beside it, so the structure holds the first screen.
  *
- * What it does differently from a standards reference: it opens with what the hub
- * requires and what the hub rejects, because a supplier's developer asks those two
- * questions before they ask about segment order. The reference follows underneath.
+ * Navigation: a sticky structure tree on the left, a position rail on the
+ * right that follows the reader through the structure, and deep links to any
+ * segment or rule. Without JavaScript every panel and every segment is shown.
  */
 
 function reqLabel(usage) {
@@ -32,52 +32,48 @@ function reqLabel(usage) {
   }[usage] || usageLabel(usage);
 }
 
-/** Wrap cell content so a stacked cell has a single grid child beside its label. */
-function cell(inner) {
-  return `<span class="cw">${inner}</span>`;
+function reqCell(usage, short = false) {
+  const cls = usage === 'required' ? 'rq rq-m' : usage === 'notUsed' ? 'rq rq-n' : usage === 'conditional' ? 'rq rq-c' : 'rq rq-o';
+  const label = short ? { required: 'M', conditional: 'C', optional: 'O', notUsed: 'N/U' }[usage] || reqLabel(usage) : reqLabel(usage);
+  return `<span class="${cls}" title="${esc(reqLabel(usage))}">${esc(label)}</span>`;
 }
 
-function reqCell(usage) {
-  const cls = usage === 'required' ? 'rq rq-m' : usage === 'notUsed' ? 'rq rq-n' : usage === 'conditional' ? 'rq rq-c' : 'rq rq-o';
-  return `<span class="${cls}">${esc(reqLabel(usage))}</span>`;
+function maxCell(n) {
+  if (n == null || n === '') return '';
+  const v = Number(n);
+  if (!Number.isFinite(v)) return esc(String(n));
+  return v === 0 || v >= 100000 ? '&gt;1' : esc(String(v));
+}
+
+function repeatCell(n) {
+  if (n == null || n === '') return '';
+  const v = Number(n);
+  if (!Number.isFinite(v)) return esc(String(n));
+  return v === 0 || v >= 100000 ? '&gt;1' : esc(String(v));
+}
+
+function loopAnchor(lp) {
+  return `loop-${String(lp.id).toLowerCase().replace(/[^a-z0-9]+/g, '')}`;
 }
 
 /* ------------------------------------------------------------------ sidebar */
 
-function sidebar(spec, areas) {
-  const sections = [
-    ['requirements', 'What you must send'],
-    ['rules', 'Enforced rules'],
-    ['agents', 'For your agent'],
-    ['scenarios', 'Scenarios'],
-    ['envelope', 'Envelope'],
-    ['structure', 'Structure index'],
-    ['reference', 'Segment reference'],
-    ['codes', 'Code lists'],
-    ['about', 'Versions and provenance']
-  ];
+function sidebar(areas) {
+  const item = (s) =>
+    `<li data-seg="${esc(s.id)}"><a href="#${esc(segAnchor(s))}"><span class="t-id">${esc(s.id)}</span><span class="t-nm">${esc(s.name || '')}</span></a></li>`;
   return `<aside class="side">
   <details class="side-in" id="sidedisc" open>
-    <summary class="side-sum">Contents and structure</summary>
+    <summary class="side-sum">Structure</summary>
     <input class="side-filter" type="search" id="navfilter" placeholder="Filter segments" aria-label="Filter segments">
-    <nav class="side-nav" aria-label="On this page">
-      <p class="side-h">On this page</p>
-      <ul class="side-list">
-        ${sections.map(([id, label]) => `<li><a href="#${id}">${esc(label)}</a></li>`).join('')}
-      </ul>
-      <p class="side-h">Structure</p>
+    <nav class="side-nav" aria-label="Structure">
       ${areas.map((area) => `<p class="side-area">${esc(area.label)}</p>
       <ul class="side-list side-tree">
         ${area.rows.map((row) => {
-          if (row.type === 'segment') {
-            return `<li data-seg="${esc(row.segment.id)}"><a href="#${esc(segAnchor(row.segment))}"><span class="t-id">${esc(row.segment.id)}</span><span class="t-nm">${esc(row.segment.name || '')}</span></a></li>`;
-          }
+          if (row.type === 'segment') return item(row.segment);
           const lp = row.loop;
           return `<li class="t-loop" data-seg="${esc(lp.segments.map((s) => s.id).join(' '))}">
-            <span class="t-loophead">${esc(lp.id)}<span class="t-rep">${esc(repeatLabel(lp.repeat))}</span></span>
-            <ul class="side-list t-sub">
-              ${lp.segments.map((s) => `<li data-seg="${esc(s.id)}"><a href="#${esc(segAnchor(s))}"><span class="t-id">${esc(s.id)}</span><span class="t-nm">${esc(s.name || '')}</span></a></li>`).join('')}
-            </ul>
+            <a class="t-loophead" href="#${esc(loopAnchor(lp))}">${esc(lp.id)} loop<span class="t-rep">${repeatCell(lp.repeat) ? `&times;${repeatCell(lp.repeat)}` : ''}</span></a>
+            <ul class="side-list t-sub">${lp.segments.map(item).join('')}</ul>
           </li>`;
         }).join('')}
       </ul>`).join('')}
@@ -86,136 +82,125 @@ function sidebar(spec, areas) {
 </aside>`;
 }
 
-/* ------------------------------------------------- structure index (Stedi-like) */
+/* --------------------------------------------------------------- position rail */
 
-function structureIndex(spec, areas) {
-  const rows = [];
+function rail(areas) {
+  const ticks = [];
   for (const area of areas) {
-    rows.push(`<tr class="ix-area"><td colspan="5">${esc(area.label)}</td></tr>`);
+    ticks.push(`<a class="rail-area" href="#area-${esc(area.key)}" title="${esc(area.label)}">${esc(area.label[0])}</a>`);
     for (const row of area.rows) {
-      if (row.type === 'segment') {
-        const s = row.segment;
-        rows.push(`<tr>
-<td class="mono" data-c="pos">${esc(s.pos || '')}</td>
-<td class="mono" data-c="seg"><a href="#${esc(segAnchor(s))}">${esc(s.id)}</a></td>
-<td data-c="name">${esc(s.name || '')}</td>
-<td data-c="req">${reqCell(s.usage)}</td>
-<td class="mono ix-max" data-c="max">${esc(maxUseLabel(s.maxUse))}</td>
-</tr>`);
-        continue;
-      }
-      const lp = row.loop;
-      rows.push(`<tr class="ix-loop">
-<td data-c="pos"></td>
-<td class="mono" colspan="2" data-c="name"><b>${esc(lp.id)} Loop</b> <span class="el-note">${esc(lp.name)}</span></td>
-<td data-c="req">${reqCell(lp.usage)}</td>
-<td class="mono ix-max" data-c="max">${esc(repeatLabel(lp.repeat))}</td>
-</tr>`);
-      for (const s of lp.segments) {
-        rows.push(`<tr class="ix-in">
-<td class="mono" data-c="pos">${esc(s.pos || '')}</td>
-<td class="mono" data-c="seg"><a href="#${esc(segAnchor(s))}">${esc(s.id)}</a></td>
-<td data-c="name">${esc(s.name || '')}</td>
-<td data-c="req">${reqCell(s.usage)}</td>
-<td class="mono ix-max" data-c="max">${esc(maxUseLabel(s.maxUse))}</td>
-</tr>`);
+      const segs = row.type === 'segment' ? [row.segment] : row.loop.segments;
+      for (const s of segs) {
+        ticks.push(`<a class="rail-tick${row.type === 'loop' ? ' in-loop' : ''}" href="#${esc(segAnchor(s))}" data-for="${esc(segAnchor(s))}" title="${esc(s.id)} ${esc(s.name || '')}"><span>${esc(s.id)}</span></a>`);
       }
     }
   }
-  return `<div class="tbl-wrap"><table class="tbl tbl-ix">
-<thead><tr><th>Position</th><th>Segment</th><th>Name</th><th>Requirement</th><th>Max use</th></tr></thead>
-<tbody>${rows.join('\n')}</tbody></table></div>`;
+  return `<nav class="rail" aria-label="Position in structure">
+  <a class="rail-top" href="#top" title="Top of page">&uarr;</a>
+  <div class="rail-ticks">${ticks.join('')}</div>
+</nav>`;
 }
 
-/* ------------------------------------------------------------ element tables */
+/* ---------------------------------------------------------------- elements */
+
+function codesInline(values) {
+  if (!(values || []).length) return '';
+  return `<span class="codes">${values.map((v) =>
+    `<span class="cd"><code>${esc(v.code)}</code> ${esc(v.description || '')}${v.note ? ` <i class="el-note">(${esc(v.note)})</i>` : ''}</span>`
+  ).join('')}</span>`;
+}
 
 function elementsTable(seg) {
   if (!(seg.elements || []).length) {
-    return '<p class="rc-note">This segment carries no elements the hub has documented.</p>';
+    return '<p class="st-empty">No element detail documented by the hub for this segment.</p>';
   }
-  return `<div class="tbl-wrap"><table class="tbl tbl-el">
-<thead><tr><th>Position</th><th>Element</th><th>Name</th><th>Type</th><th>Requirement</th><th>Min</th><th>Max</th><th>Notes and values</th></tr></thead>
+  return `<table class="tbl-el">
+<thead><tr><th>Ref</th><th>Name</th><th>Type</th><th>Req</th><th>Min</th><th>Max</th><th>Notes and values</th></tr></thead>
 <tbody>
-${seg.elements.map((el) => {
-    const pos = String(el.ref).match(/(\d{2})$/)?.[1] ?? '';
-    const codes = (el.values || []).length
-      ? `<ul class="codelist">${el.values.map((v) => `<li><code>${esc(v.code)}</code><span class="cv">${esc(v.description || '')}${v.note ? `<span class="el-note">${esc(v.note)}</span>` : ''}</span></li>`).join('')}</ul>`
-      : '';
-    const note = el.note ? `<div class="el-note">${inlineProse(el.note)}</div>` : '';
-    return `<tr${el.usage === 'notUsed' ? ' class="el-unused"' : ''}>
-<td class="mono" data-l="Position">${cell(esc(pos))}</td>
-<td class="mono" data-l="Element">${cell(`<b>${esc(el.ref)}</b>${el.id ? `<span class="el-dict">${esc(el.id)}</span>` : ''}`)}</td>
-<td data-l="Name">${cell(esc(el.name || ''))}</td>
-<td class="mono nowrap" data-l="Type">${cell(esc(typeLabel(el.type)))}</td>
-<td data-l="Requirement">${cell(reqCell(el.usage))}</td>
-<td class="mono" data-l="Min">${cell(esc(el.min ?? ''))}</td>
-<td class="mono" data-l="Max">${cell(esc(el.max ?? ''))}</td>
-<td data-l="Notes">${cell(`${note}${codes}${citeTag(el.citation)}`)}</td>
-</tr>`;
-  }).join('\n')}
-</tbody></table></div>`;
+${seg.elements.map((el) => `<tr${el.usage === 'notUsed' ? ' class="el-unused"' : ''}>
+<td class="mono"><b>${esc(el.ref)}</b>${el.id ? ` <span class="el-dict">${esc(el.id)}</span>` : ''}</td>
+<td>${esc(el.name || '')}</td>
+<td class="mono">${esc(el.type ? String(el.type).toUpperCase() : '')}</td>
+<td>${reqCell(el.usage, true)}</td>
+<td class="mono num">${esc(el.min ?? '')}</td>
+<td class="mono num">${esc(el.max ?? '')}</td>
+<td class="notes">${el.note ? `<span class="el-note">${inlineProse(el.note)}</span> ` : ''}${codesInline(el.values)}${citeTag(el.citation)}</td>
+</tr>`).join('\n')}
+</tbody></table>`;
 }
 
-function segmentBlock(seg, guidePath) {
+/* --------------------------------------------------------------- structure */
+
+function segmentRows(seg, inLoop) {
   const anchor = segAnchor(seg);
-  return `<article class="seg" id="${esc(anchor)}" data-seg="${esc(seg.id)}">
-  <header class="seg-head">
-    <h4 class="seg-title"><span class="seg-id">${esc(seg.id)}</span> ${esc(seg.name || '')}</h4>
-    <div class="seg-facts">
-      ${reqCell(seg.usage)}
-      <span class="seg-fact">Position ${esc(seg.pos || '-')}</span>
-      ${seg.maxUse ? `<span class="seg-fact">${esc(maxUseLabel(seg.maxUse))}</span>` : ''}
-      ${seg.loopId ? `<span class="seg-fact">Loop ${esc(seg.loopId)}</span>` : ''}
-      ${citeTag(seg.citation)}
-      <a class="seg-link" href="#${esc(anchor)}" title="Link to this segment">#</a>
-    </div>
-  </header>
-  ${seg.note ? `<p class="seg-note">${inlineProse(seg.note)}</p>` : ''}
-  ${elementsTable(seg)}
-</article>`;
+  const n = (seg.elements || []).length;
+  return `<tr class="st-seg${inLoop ? ' st-in' : ''}" id="${esc(anchor)}" data-seg="${esc(seg.id)}">
+<td class="mono pos">${esc(seg.pos || '')}</td>
+<td class="mono seg"><button class="st-tog" type="button" aria-expanded="false" aria-controls="${esc(anchor)}-d"><span class="chev"></span>${esc(seg.id)}</button></td>
+<td class="name">${esc(seg.name || '')}</td>
+<td>${reqCell(seg.usage)}</td>
+<td class="mono num">${maxCell(seg.maxUse)}</td>
+<td class="mono num">${n || ''}</td>
+<td class="cite-c">${citeTag(seg.citation)}<a class="seg-link" href="#${esc(anchor)}" title="Link to this segment">#</a></td>
+</tr>
+<tr class="st-det" id="${esc(anchor)}-d" hidden><td colspan="7"><div class="st-det-in${inLoop ? ' st-in' : ''}">${seg.note ? `<p class="st-segnote">${inlineProse(seg.note)}</p>` : ''}${elementsTable(seg)}</div></td></tr>`;
+}
+
+function structureTable(areas) {
+  const rows = [];
+  for (const area of areas) {
+    rows.push(`<tr class="st-area" id="area-${esc(area.key)}"><td colspan="7">${esc(area.label)}<span class="st-count">${area.count} segment${area.count === 1 ? '' : 's'}</span></td></tr>`);
+    for (const row of area.rows) {
+      if (row.type === 'segment') {
+        rows.push(segmentRows(row.segment, false));
+        continue;
+      }
+      const lp = row.loop;
+      rows.push(`<tr class="st-loop" id="${esc(loopAnchor(lp))}">
+<td class="mono pos"></td>
+<td class="mono seg">${esc(lp.id)}</td>
+<td class="name"><b>${esc(lp.id)} loop</b>${lp.name && lp.name !== lp.id ? ` <span class="el-note">${esc(lp.name)}</span>` : ''}${lp.note ? `<span class="st-note">${inlineProse(lp.note)}</span>` : ''}</td>
+<td>${reqCell(lp.usage)}</td>
+<td class="mono num" title="Loop repeat">${repeatCell(lp.repeat) ? `&times;${repeatCell(lp.repeat)}` : ''}</td>
+<td></td>
+<td class="cite-c">${citeTag(lp.citation)}</td>
+</tr>`);
+      for (const s of lp.segments) rows.push(segmentRows(s, true));
+    }
+  }
+  return `<table class="tbl-st" id="sttable">
+<thead><tr><th>Pos</th><th>Segment</th><th>Name</th><th>Requirement</th><th title="Max use, or loop repeat">Max</th><th title="Documented elements">Elem</th><th></th></tr></thead>
+<tbody>${rows.join('\n')}</tbody></table>`;
+}
+
+/* ---------------------------------------------------------------- panels */
+
+function rulesTable(rules) {
+  if (!rules.length) return '<p class="rc-note">No hub rules were documented beyond the structure.</p>';
+  return `<table class="tbl-dense tbl-rules">
+<thead><tr><th>ID</th><th>Applies to</th><th>Rule</th><th>Source</th></tr></thead>
+<tbody>${rules.map((r) => `<tr id="rule-${esc(r.id)}">
+<td class="mono"><b>${esc(r.id)}</b></td>
+<td class="mono">${esc(r.appliesTo || '')}</td>
+<td>${inlineProse(r.statement)}${r.rationale ? `<span class="st-note">${inlineProse(r.rationale)}</span>` : ''}</td>
+<td class="cite-c">${citeTag(r.citation)}</td>
+</tr>`).join('\n')}</tbody></table>`;
 }
 
 function envelopeTable(rows, label, id) {
   if (!rows?.length) return '';
   return `<h3 id="${esc(id)}">${esc(label)}</h3>
-<div class="tbl-wrap"><table class="tbl tbl-stack">
-<thead><tr><th>Element</th><th>Name</th><th>Requirement</th><th>Required value</th><th>Notes</th></tr></thead>
+<table class="tbl-dense">
+<thead><tr><th>Element</th><th>Name</th><th>Req</th><th>Value</th><th>Notes</th></tr></thead>
 <tbody>
 ${rows.map((r) => `<tr>
-<td class="mono" data-l="Element">${cell(`<b>${esc(r.ref)}</b>`)}</td>
-<td data-l="Name">${cell(esc(r.name || ''))}</td>
-<td data-l="Requirement">${cell(reqCell(r.usage))}</td>
-<td class="mono" data-l="Required value">${cell(r.value ? `<code>${esc(r.value)}</code>` : '')}</td>
-<td data-l="Notes">${cell(`${r.note ? `<span class="el-note">${inlineProse(r.note)}</span> ` : ''}${citeTag(r.citation)}`)}</td>
+<td class="mono"><b>${esc(r.ref)}</b></td>
+<td>${esc(r.name || '')}</td>
+<td>${reqCell(r.usage, true)}</td>
+<td class="mono">${r.value ? `<code>${esc(r.value)}</code>` : ''}</td>
+<td class="notes">${r.note ? `<span class="el-note">${inlineProse(r.note)}</span> ` : ''}${citeTag(r.citation)}</td>
 </tr>`).join('\n')}
-</tbody></table></div>`;
-}
-
-/* ------------------------------------------------------------- lead sections */
-
-function requiredSummary(spec) {
-  const seen = new Set();
-  const cards = [];
-  for (const seg of (spec.segments || []).filter((s) => s.usage === 'required')) {
-    const key = `${seg.id}:${seg.loopId || seg.level}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const reqEls = (seg.elements || []).filter((e) => e.usage === 'required').map((e) => e.ref);
-    cards.push(`<li class="reqcard">
-<a class="rc-seg" href="#${esc(segAnchor(seg))}">${esc(seg.id)}</a>${seg.loopId ? `<span class="rc-loop">${esc(seg.loopId)}</span>` : ''}
-<div class="rc-name">${esc(seg.name || '')}</div>
-<p class="rc-note">${reqEls.length ? reqEls.map((r) => `<code>${esc(r)}</code>`).join(' ') : 'No mandatory elements beyond the segment itself.'}</p>
-</li>`);
-  }
-  return cards.join('\n');
-}
-
-function ruleItem(rule) {
-  return `<li class="rule" id="rule-${esc(rule.id)}">
-<div class="rule-head"><span class="rule-id">${esc(rule.id)}</span>${rule.appliesTo ? `<span class="rule-applies">${esc(rule.appliesTo)}</span>` : ''}${citeTag(rule.citation)}</div>
-<p class="rule-stmt">${inlineProse(rule.statement)}</p>
-${rule.rationale ? `<p class="rule-why">${inlineProse(rule.rationale)}</p>` : ''}
-</li>`;
+</tbody></table>`;
 }
 
 /* -------------------------------------------------------------------- page */
@@ -232,6 +217,8 @@ export function renderGuidePage({
   const stats = specStats(spec);
   const areas = outline(spec);
   const rules = spec.rules || [];
+  const codeLists = Object.entries(spec.codeLists || {});
+  const scenarios = spec.scenarios || [];
   const mdUrl = `${guidePath}/md`;
   const jsonUrl = `${guidePath}/json`;
   const mcpConfig = JSON.stringify(
@@ -241,61 +228,96 @@ export function renderGuidePage({
   );
 
   const attested = version?.attested_by
-    ? `<div class="attested">
-<span class="att-label">Attested by ${esc(version.attested_by)}${version.attested_role ? `, ${esc(version.attested_role)}` : ''} at ${esc(g.hub?.name)}</span>
-<span class="att-meta">on ${esc(new Date(version.attested_at).toISOString().slice(0, 10))}, as the requirements in force for version ${esc(version.version)}.</span>
-</div>`
-    : `<div class="attested unattested">
-<span class="att-label">Not attested.</span>
-<span class="att-meta">Compiled from ${esc(version?.source_name || 'a source guide')}, not yet signed by ${esc(g.hub?.name)}. Do not build against it.</span>
-</div>`;
+    ? `<li class="att-ok"><b>Attested</b> by ${esc(version.attested_by)}${version.attested_role ? `, ${esc(version.attested_role)}` : ''}, ${esc(new Date(version.attested_at).toISOString().slice(0, 10))}</li>`
+    : `<li class="att-no"><b>Not attested.</b> Compiled from ${esc(version?.source_name || 'a source guide')}, not signed by ${esc(g.hub?.name)}. Do not build against it.</li>`;
+
+  const tabs = [
+    ['structure', 'Structure', stats.segments],
+    ['rules', 'Rules', rules.length],
+    ['envelope', 'Envelope', null],
+    ...(codeLists.length ? [['codes', 'Code lists', codeLists.length]] : []),
+    ...(scenarios.length ? [['scenarios', 'Scenarios', scenarios.length]] : []),
+    ['agents', 'Agent access', null],
+    ['about', 'Versions', versions.length || null]
+  ];
 
   const body = `
-<div class="crumbs"><div class="wide">
+<div class="crumbs" id="top"><div class="wide">
   <a href="/">Hubs</a> <span>/</span> <a href="/h/${esc(guide.hub_slug)}">${esc(g.hub?.name || '')}</a> <span>/</span>
   <b>${esc(g.standard)} ${esc(g.transactionSet)} ${esc(g.version)}</b>
 </div></div>
 
 <div class="guidehead"><div class="wide ghead">
   <div class="ghead-main">
-  <h1>${esc(g.title)}</h1>
-  <ul class="specline">
-    <li><b>${esc(g.hub?.name || '')}</b></li>
-    <li>${esc(g.standard)} ${esc(g.version)}, set <b>${esc(g.transactionSet)}</b></li>
-    <li>${esc(DIRECTIONS[g.direction] || g.direction)}</li>
-    ${g.effectiveFrom ? `<li>Effective <b>${esc(g.effectiveFrom)}</b></li>` : ''}
-    <li>Guide <b>v${esc(version?.version ?? '-')}</b></li>
-  </ul>
-  ${g.summary ? `<p class="lede">${inlineProse(g.summary)}</p>` : ''}
-  ${attested}
+    <h1>${esc(g.transactionSet)}${g.title && g.title !== g.transactionSet ? ` <span class="h1-sub">${esc(g.title)}</span>` : ''}</h1>
+    <ul class="specline">
+      <li><b>${esc(g.hub?.name || '')}</b></li>
+      <li>${esc(g.standard)} ${esc(g.version)}</li>
+      <li>${esc(DIRECTIONS[g.direction] || g.direction)}</li>
+      ${g.effectiveFrom ? `<li>Effective ${esc(g.effectiveFrom)}</li>` : ''}
+      <li>Guide v${esc(version?.version ?? '-')}</li>
+      ${attested}
+    </ul>
+    ${g.summary ? `<p class="lede">${inlineProse(g.summary)}</p>` : ''}
   </div>
   <div class="copyrow ghead-aside">
-    <a class="btn btn-outline" href="${esc(mdUrl)}">View Markdown</a>
-    <a class="btn btn-outline" href="${esc(jsonUrl)}">View JSON</a>
+    <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
+    <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
   </div>
 </div></div>
 
+<div class="tabbar"><div class="wide tabbar-in">
+  <nav class="tabs" role="tablist" aria-label="Guide sections">
+    ${tabs.map(([id, label, n], i) => `<a class="tab${i === 0 ? ' on' : ''}" role="tab" href="#${id}" data-tab="${id}" aria-selected="${i === 0}">${esc(label)}${n != null ? `<span class="tab-n">${esc(n)}</span>` : ''}</a>`).join('')}
+  </nav>
+  <div class="tabtools" data-tools="structure">
+    <button class="btn-link" type="button" id="expand-all">Expand all</button>
+    <button class="btn-link" type="button" id="collapse-all">Collapse all</button>
+  </div>
+</div></div>
+
 <div class="guidebody"><div class="wide wide-split">
-${sidebar(spec, areas)}
+${sidebar(areas)}
 <div class="doc">
 
-  <section class="dsec" id="requirements">
-    <h2>Required segments</h2>
-    <p class="section-sub">${stats.requiredSegments} mandatory segments, ${stats.requiredElements} mandatory elements, ${stats.rules} enforced rules.</p>
-    <ul class="reqgrid">${requiredSummary(spec)}</ul>
+  <section class="panel on" id="structure" role="tabpanel">
+    <p class="panel-sub">${stats.segments} segments, ${stats.requiredSegments} mandatory. ${stats.elements} documented elements, ${stats.requiredElements} mandatory. Open a segment for its elements.</p>
+    ${structureTable(areas)}
   </section>
 
-  <section class="dsec" id="rules">
-    <h2>Enforced rules</h2>
-    <p class="section-sub">Stated by ${esc(g.hub?.name)} in its own words, each cited to a source page.</p>
-    <ul class="rules">${rules.map(ruleItem).join('\n')}</ul>
+  <section class="panel" id="rules" role="tabpanel">
+    <p class="panel-sub">Stated by ${esc(g.hub?.name)} in its own words, each cited to a source page.</p>
+    ${rulesTable(rules)}
   </section>
 
-  <section class="dsec" id="agents">
+  <section class="panel" id="envelope" role="tabpanel">
+    <p class="panel-sub">Delimiters: segment <code>${esc(spec.delimiters?.segment)}</code>, element <code>${esc(spec.delimiters?.element)}</code>, component <code>${esc(spec.delimiters?.component)}</code>, repetition <code>${esc(spec.delimiters?.repetition)}</code>.</p>
+    ${envelopeTable(spec.envelope?.isa, 'ISA interchange', 'env-isa')}
+    ${envelopeTable(spec.envelope?.gs, 'GS functional group', 'env-gs')}
+    ${envelopeTable(spec.envelope?.st, 'ST transaction set', 'env-st')}
+  </section>
+
+  ${codeLists.length ? `<section class="panel" id="codes" role="tabpanel">
+    <p class="panel-sub">Only these values are accepted. Codes valid in ${esc(g.standard)} but absent here are rejected.</p>
+    ${codeLists.map(([ref, codes]) => `<h3 class="mono">${esc(ref)}</h3>
+    <table class="tbl-dense">
+    <thead><tr><th>Code</th><th>Description</th><th>Note</th></tr></thead>
+    <tbody>${codes.map((c) => `<tr><td class="mono"><b>${esc(c.code)}</b></td><td>${esc(c.description || '')}</td><td class="el-note">${esc(c.note || '')}</td></tr>`).join('')}</tbody>
+    </table>`).join('\n')}
+  </section>` : ''}
+
+  ${scenarios.length ? `<section class="panel" id="scenarios" role="tabpanel">
+    <p class="panel-sub">Cases ${esc(g.hub?.name)} expects a partner to support before cutover.</p>
+    <table class="tbl-dense">
+    <thead><tr><th>ID</th><th>Scenario</th><th>Requirement</th><th>Source</th></tr></thead>
+    <tbody>${scenarios.map((s) => `<tr><td class="mono"><b>${esc(s.id)}</b></td><td><b>${esc(s.name)}</b>${s.description ? `<span class="st-note">${inlineProse(s.description)}</span>` : ''}</td><td>${inlineProse(s.requirement || '')}</td><td class="cite-c">${citeTag(s.citation)}</td></tr>`).join('')}</tbody>
+    </table>
+  </section>` : ''}
+
+  <section class="panel" id="agents" role="tabpanel">
+    <p class="panel-sub">This guide is served as JSON, Markdown and MCP from the version rendered here.</p>
     <div class="agentbox">
-      <h3>Agent access</h3>
-      <p>This guide is served as JSON, Markdown and MCP from the version rendered here.</p>
       <p class="rc-note" style="margin-bottom:8px">Markdown is returned to any client that requests it:</p>
       ${codeBlock(`curl -H "Accept: text/markdown" ${baseUrl}${guidePath}`, 'bash')}
       <p style="margin:14px 0 6px"><b>MCP configuration, all hubs:</b></p>
@@ -304,70 +326,10 @@ ${sidebar(spec, areas)}
     </div>
   </section>
 
-  ${(spec.scenarios || []).length ? `<section class="dsec" id="scenarios">
-    <h2>Test scenarios</h2>
-    <p class="section-sub">Cases ${esc(g.hub?.name)} expects a partner to support before cutover.</p>
-    ${spec.scenarios.map((s) => `<div class="scenario">
-<h4>${esc(s.id)} &middot; ${esc(s.name)}</h4>
-${s.description ? `<p class="rc-note">${inlineProse(s.description)}</p>` : ''}
-${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.requirement)}</p>` : ''}
-</div>`).join('\n')}
-  </section>` : ''}
-
-  <section class="dsec" id="envelope">
-    <h2>Envelope and delimiters</h2>
-    <p class="section-sub">Segment <code>${esc(spec.delimiters?.segment)}</code>, element <code>${esc(spec.delimiters?.element)}</code>, component <code>${esc(spec.delimiters?.component)}</code>, repetition <code>${esc(spec.delimiters?.repetition)}</code>.</p>
-    ${envelopeTable(spec.envelope?.isa, 'ISA interchange', 'env-isa')}
-    ${envelopeTable(spec.envelope?.gs, 'GS functional group', 'env-gs')}
-    ${envelopeTable(spec.envelope?.st, 'ST transaction set', 'env-st')}
-  </section>
-
-  <section class="dsec" id="structure">
-    <h2>Structure index</h2>
-    <p class="section-sub">Full transaction set in ${esc(g.standard)} area order, with loop repeat limits.</p>
-    ${structureIndex(spec, areas)}
-  </section>
-
-  <section class="dsec" id="reference">
-    <h2>Segment reference</h2>
-    <p class="section-sub">${stats.segments} segments, ${stats.elements} elements. Each row cites its source document page.</p>
-    ${areas.map((area) => `<div class="areablock" id="area-${esc(area.key)}">
-      <h3 class="area-h">${esc(area.label)}</h3>
-      ${area.rows.map((row) => {
-        if (row.type === 'segment') return segmentBlock(row.segment, guidePath);
-        const lp = row.loop;
-        return `<div class="loopblock" id="loop-${esc(lp.id.toLowerCase().replace(/[^a-z0-9]+/g, ''))}">
-          <div class="loop-h">
-            <span class="loop-id">${esc(lp.id)} Loop</span>
-            <span class="loop-name">${esc(lp.name)}</span>
-            ${reqCell(lp.usage)}
-            <span class="seg-fact">${esc(repeatLabel(lp.repeat))}</span>
-            ${lp.parent ? `<span class="seg-fact">in ${esc(lp.parent)}</span>` : ''}
-            ${citeTag(lp.citation)}
-          </div>
-          ${lp.note ? `<p class="loop-note">${inlineProse(lp.note)}</p>` : ''}
-          ${lp.segments.map((s) => segmentBlock(s, guidePath)).join('\n')}
-        </div>`;
-      }).join('\n')}
-    </div>`).join('\n')}
-  </section>
-
-  ${Object.keys(spec.codeLists || {}).length ? `<section class="dsec" id="codes">
-    <h2>Code lists</h2>
-    <p class="section-sub">Only these values are accepted. Codes valid in ${esc(g.standard)} but absent here are rejected.</p>
-    ${Object.entries(spec.codeLists).map(([ref, codes]) => `<div class="cl">
-      <h4 class="cl-h mono">${esc(ref)}</h4>
-      <div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>Code</th><th>Description</th><th>Note</th></tr></thead>
-      <tbody>${codes.map((c) => `<tr><td class="mono"><b>${esc(c.code)}</b></td><td>${esc(c.description || '')}</td><td class="el-note">${esc(c.note || '')}</td></tr>`).join('')}</tbody>
-      </table></div>
-    </div>`).join('\n')}
-  </section>` : ''}
-
-  <section class="dsec" id="about">
-    <h2>Version history</h2>
+  <section class="panel" id="about" role="tabpanel">
     <div class="twocol">
       <div>
+        <h3>Version history</h3>
         <p class="section-sub">Published versions remain accessible and unchanged.</p>
         <ul class="verlist">
           ${versions.length ? versions.map((v) => `<li>
@@ -392,9 +354,12 @@ ${s.requirement ? `<p class="sc-req"><b>Requirement:</b> ${inlineProse(s.require
   </section>
 
 </div>
+${rail(areas)}
 </div></div>
 
 <script>
+document.documentElement.classList.add('js');
+
 document.addEventListener('click', function (e) {
   var btn = e.target.closest('[data-copy],[data-copy-pre]');
   if (!btn) return;
@@ -407,13 +372,61 @@ document.addEventListener('click', function (e) {
   });
 });
 
-/* Filter the structure tree and the segment reference together, so a developer
-   hunting for MAN gets the nav and the document narrowed at once. */
+/* Tabs. The panel ids double as hashes, and a hash that names a segment or a
+   rule opens the panel that holds it. */
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab[data-tab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  var tools = document.querySelector('.tabtools');
+  var body = document.body;
+  function show(id) {
+    panels.forEach(function (p) { p.classList.toggle('on', p.id === id); });
+    tabs.forEach(function (t) { var on = t.getAttribute('data-tab') === id; t.classList.toggle('on', on); t.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    if (tools) tools.hidden = tools.getAttribute('data-tools') !== id;
+    body.classList.toggle('on-structure', id === 'structure');
+  }
+  function open(hash) {
+    var id = (hash || '').replace(/^#/, '');
+    if (!id) return show('structure');
+    var el = document.getElementById(id);
+    if (!el) return;
+    var panel = el.closest ? el.closest('.panel') : null;
+    if (panel) show(panel.id); else return;
+    if (el !== panel) {
+      if (el.classList.contains('st-seg')) expand(el, true);
+      setTimeout(function () { el.scrollIntoView({ block: 'start' }); }, 0);
+    }
+  }
+  window.addEventListener('hashchange', function () { open(location.hash); });
+  open(location.hash);
+
+  /* Segment rows open to their element table. */
+  function expand(row, on) {
+    var btn = row.querySelector('.st-tog');
+    var det = document.getElementById(row.id + '-d');
+    if (!btn || !det) return;
+    det.hidden = !on;
+    btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+    row.classList.toggle('open', on);
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.st-tog');
+    if (!btn) return;
+    var row = btn.closest('tr');
+    expand(row, btn.getAttribute('aria-expanded') !== 'true');
+  });
+  var rows = Array.prototype.slice.call(document.querySelectorAll('tr.st-seg'));
+  var ea = document.getElementById('expand-all'), ca = document.getElementById('collapse-all');
+  if (ea) ea.addEventListener('click', function () { rows.forEach(function (r) { expand(r, true); }); });
+  if (ca) ca.addEventListener('click', function () { rows.forEach(function (r) { expand(r, false); }); });
+})();
+
+/* Filter the structure tree and the structure table together. */
 (function () {
   var input = document.getElementById('navfilter');
   if (!input) return;
   var navItems = Array.prototype.slice.call(document.querySelectorAll('.side-tree [data-seg]'));
-  var segs = Array.prototype.slice.call(document.querySelectorAll('.doc .seg[data-seg]'));
+  var rows = Array.prototype.slice.call(document.querySelectorAll('tr.st-seg'));
   input.addEventListener('input', function () {
     var q = input.value.trim().toUpperCase();
     navItems.forEach(function (li) {
@@ -421,16 +434,18 @@ document.addEventListener('click', function (e) {
       var txt = (li.textContent || '').toUpperCase();
       li.style.display = !q || ids.indexOf(q) !== -1 || txt.indexOf(q) !== -1 ? '' : 'none';
     });
-    segs.forEach(function (a) {
-      var id = (a.getAttribute('data-seg') || '').toUpperCase();
-      var txt = (a.textContent || '').toUpperCase();
-      a.style.display = !q || id.indexOf(q) !== -1 || txt.indexOf(q) !== -1 ? '' : 'none';
+    rows.forEach(function (r) {
+      var id = (r.getAttribute('data-seg') || '').toUpperCase();
+      var txt = (r.textContent || '').toUpperCase();
+      var hit = !q || id.indexOf(q) !== -1 || txt.indexOf(q) !== -1;
+      r.style.display = hit ? '' : 'none';
+      var det = document.getElementById(r.id + '-d');
+      if (det && !hit) det.hidden = true;
     });
   });
 })();
 
-/* On a narrow screen the structure tree would push the document off the first
-   three screenfuls, so it starts collapsed there and open on a wide one. */
+/* On a narrow screen the tree starts collapsed. */
 (function () {
   var d = document.getElementById('sidedisc');
   if (!d) return;
@@ -440,21 +455,46 @@ document.addEventListener('click', function (e) {
   if (narrow.addEventListener) narrow.addEventListener('change', sync);
 })();
 
-/* Mark the section the reader is in. */
+/* Follow the reader through the structure: the tree and the rail mark the
+   segment nearest the top of the viewport. */
 (function () {
-  var links = Array.prototype.slice.call(document.querySelectorAll('.side-list a[href^="#"]'));
-  var targets = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
-  if (!('IntersectionObserver' in window)) return;
-  var obs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (!en.isIntersecting) return;
-      var i = targets.indexOf(en.target);
-      if (i === -1) return;
-      links.forEach(function (l) { l.classList.remove('cur'); });
-      links[i].classList.add('cur');
-    });
-  }, { rootMargin: '-70px 0px -75% 0px' });
-  targets.forEach(function (t) { if (t) obs.observe(t); });
+  var rows = Array.prototype.slice.call(document.querySelectorAll('tr.st-seg'));
+  if (!rows.length) return;
+  var treeLinks = {}, railTicks = {};
+  Array.prototype.forEach.call(document.querySelectorAll('.side-tree a[href^="#s-"]'), function (a) { treeLinks[a.getAttribute('href').slice(1)] = a; });
+  Array.prototype.forEach.call(document.querySelectorAll('.rail-tick'), function (a) { railTicks[a.getAttribute('data-for')] = a; });
+  var current = null;
+  function mark() {
+    var line = 120, best = null;
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].style.display === 'none') continue;
+      var top = rows[i].getBoundingClientRect().top;
+      if (top <= line) best = rows[i]; else break;
+    }
+    if (!best) best = rows[0];
+    if (best === current) return;
+    if (current) {
+      if (treeLinks[current.id]) treeLinks[current.id].classList.remove('cur');
+      if (railTicks[current.id]) railTicks[current.id].classList.remove('cur');
+    }
+    current = best;
+    if (treeLinks[best.id]) {
+      treeLinks[best.id].classList.add('cur');
+      var side = document.querySelector('.side');
+      if (side) {
+        var r = treeLinks[best.id].getBoundingClientRect(), s = side.getBoundingClientRect();
+        if (r.top < s.top + 40 || r.bottom > s.bottom - 40) treeLinks[best.id].scrollIntoView({ block: 'center' });
+      }
+    }
+    if (railTicks[best.id]) railTicks[best.id].classList.add('cur');
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { mark(); ticking = false; });
+  }, { passive: true });
+  mark();
 })();
 </script>`;
 
@@ -462,7 +502,7 @@ document.addEventListener('click', function (e) {
     title: `${g.standard} ${g.transactionSet} | ${g.hub?.name} | Trading Grid Open Guides`,
     description: `${g.hub?.name} requirements for ${g.standard} ${g.transactionSet} ${g.version}. Hub-attested, versioned, readable by people and agents.`,
     canonical: baseUrl + guidePath,
-    bodyClass: 'is-guide',
+    bodyClass: 'is-guide on-structure',
     body
   });
 }

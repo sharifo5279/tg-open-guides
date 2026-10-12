@@ -12,7 +12,7 @@ import {
   listVersions,
   dbAvailable
 } from './store.mjs';
-import { specToMarkdown } from './spec.mjs';
+import { specToMarkdown, normalizeSpec } from './spec.mjs';
 import { renderGuidePage } from './render/guide.mjs';
 import { renderCodeView } from './render/codeview.mjs';
 import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderBacklog, renderNotFound } from './render/pages.mjs';
@@ -165,7 +165,7 @@ async function loadGuide(hubSlug, guideSlug, versionNumber = null) {
   if (!guide) return null;
   const version = await getVersion(guide.id, versionNumber);
   if (!version) return { guide, version: null };
-  return { guide, version };
+  return { guide, version: { ...version, spec: normalizeSpec(version.spec) } };
 }
 
 /* The JSON payload, shared by the raw endpoint and the JSON view so the two

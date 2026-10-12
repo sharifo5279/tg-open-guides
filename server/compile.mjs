@@ -13,7 +13,7 @@
  * because a gap in their own guide is news to them.
  */
 import { complete, parseJsonLoose, modelAvailable, modelName } from './model.mjs';
-import { emptySpec, USAGE } from './spec.mjs';
+import { emptySpec, USAGE, segKey } from './spec.mjs';
 import { detectStandardVersion } from './extract.mjs';
 
 const CHUNK_PAGES = 10;
@@ -150,8 +150,8 @@ function mergeSegments(target, incoming, allowedPages) {
       seg.elements.push(e);
     }
 
-    const key = `${seg.id}|${seg.loopId || ''}|${seg.pos || ''}`;
-    const existing = target.find((s) => `${s.id}|${s.loopId || ''}|${s.pos || ''}` === key);
+    const key = segKey(seg);
+    const existing = target.find((s) => segKey(s) === key);
     if (!existing) {
       target.push(seg);
       continue;

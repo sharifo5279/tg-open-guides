@@ -199,6 +199,49 @@ export function outline(spec) {
   }).filter((a) => a.count > 0);
 }
 
+/** Segment identity: id, area and position. Positions compare without leading
+    zeros, so the 020 a guide prints in its table of contents and the 0020 it
+    prints on the segment page are the same segment. */
+export function segKey(seg) {
+  const pos = String(seg.pos || '').replace(/^0+(?=\d)/, '');
+  return `${String(seg.id).toUpperCase()}|${seg.level || 'detail'}|${pos}`;
+}
+
+/** Merge segments that describe the same position. The entry with the most
+    elements is kept and the others fill in what it lacks. */
+export function dedupeSegments(segments) {
+  const groups = new Map();
+  for (const seg of segments || []) {
+    const k = segKey(seg);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(seg);
+  }
+  const out = [];
+  for (const group of groups.values()) {
+    group.sort((a, b) => (b.elements?.length || 0) - (a.elements?.length || 0));
+    const base = { ...group[0], elements: [...(group[0].elements || [])] };
+    for (const other of group.slice(1)) {
+      for (const f of ['name', 'note', 'citation', 'loopId', 'maxUse']) {
+        if ((base[f] == null || base[f] === '') && other[f] != null && other[f] !== '') base[f] = other[f];
+      }
+      if (String(other.pos || '').length > String(base.pos || '').length) base.pos = other.pos;
+      if (base.confidence !== 'high' && other.confidence === 'high') base.confidence = 'high';
+      for (const el of other.elements || []) {
+        if (!base.elements.some((x) => x.ref === el.ref)) base.elements.push(el);
+      }
+    }
+    out.push(base);
+  }
+  return out;
+}
+
+/** A spec as it should be read: one entry per segment position. */
+export function normalizeSpec(spec) {
+  if (!spec || !Array.isArray(spec.segments)) return spec;
+  const segments = dedupeSegments(spec.segments);
+  return segments.length === spec.segments.length ? spec : { ...spec, segments };
+}
+
 /** Stable anchor for a segment, used by the sidebar, the index and deep links. */
 export function segAnchor(seg) {
   return `s-${String(seg.id).toLowerCase()}-${String(seg.pos || '0').toLowerCase()}${seg.loopId ? `-${String(seg.loopId).toLowerCase().replace(/[^a-z0-9]+/g, '')}` : ''}`;
