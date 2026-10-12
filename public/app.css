@@ -304,7 +304,7 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
 .tab:hover { color: var(--ink); text-decoration: none; }
 .tab.on { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
 .tab-n { font-family: var(--mono); font-size: 11px; color: var(--slate); background: var(--cloud); border-radius: 4px; padding: 1px 5px; }
-.tab.on .tab-n { color: var(--primary); background: #EAF2FF; }
+.tab.on .tab-n { color: var(--primary-dark); background: #EAF2FF; }
 .tabtools { display: flex; gap: 14px; flex: none; }
 .btn-link { background: none; border: 0; padding: 0; font: 500 13px/1 var(--sans); color: var(--primary); cursor: pointer; }
 .btn-link:hover { text-decoration: underline; }

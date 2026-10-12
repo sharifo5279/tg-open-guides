@@ -197,7 +197,7 @@ export const EPICS = [
       { id: 'E12-3', title: 'Privacy notice', detail: 'Accounts hold names and work email addresses.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E12-4', title: 'Ownership of authored guides', detail: 'When professional services authors for a hub, the hub owns and attests the result.', personas: ['hub-owner', 'ps-author', 'platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E12-5', title: 'Agent output disclosure', detail: 'State on the guide that a draft was agent-authored and attested by a named person.', personas: ['partner-reader', 'platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E12-6', title: 'Accessibility review', detail: 'Keyboard navigation, contrast and screen reader pass on the reading surfaces.', personas: ['partner-reader'], size: 'M', state: 'Not started' }
+      { id: 'E12-6', title: 'Accessibility review', detail: 'Automated WCAG 2.1 AA check (axe) is clean on home, hub, guide, builder, review, agents, backlog and sign-in. A manual keyboard and screen-reader pass is not done.', personas: ['partner-reader'], size: 'M', state: 'Partial' }
     ]
   },
   {
