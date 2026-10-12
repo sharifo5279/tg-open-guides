@@ -673,6 +673,7 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 .tbl-fd > thead > tr > th:nth-child(5) { width: 36px; }
 .tbl-fd > thead > tr > th:nth-child(6), .tbl-fd > thead > tr > th:nth-child(7) { width: 70px; }
 .tbl-fd > thead > tr > th:nth-child(8) { width: 150px; }
+.tbl-fd .fd-add { float: right; text-transform: none; letter-spacing: 0; font-weight: 500; }
 .tbl-fd tr.fd-sec > td { padding: 14px 8px 5px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink); border-bottom: 1px solid var(--ink); }
 .tbl-fd tr.fd-element > td.ref, .tbl-fd tr.fd-element > td.kind { padding-left: 20px; }
 .tbl-fd tr.fd-element > td.ref { box-shadow: inset 2px 0 0 var(--line); }

@@ -15,7 +15,7 @@ import { esc, layout, citeTag } from './render/html.mjs';
 import { extractPages, detectTransactionSets, detectStandardVersion } from './extract.mjs';
 import { specStats, USAGE } from './spec.mjs';
 import { renderReview } from './render/review.mjs';
-import { prepareForReview, findByFid, findingsSummary, publishableSpec, REVIEW_STATES } from './findings.mjs';
+import { prepareForReview, findByFid, findingsSummary, publishableSpec, assignFindingIds, REVIEW_STATES } from './findings.mjs';
 import { modelAvailable, modelName } from './model.mjs';
 import { query, one, many } from './db.mjs';
 import { dbAvailable, newId } from './store.mjs';
@@ -367,7 +367,30 @@ export function mountBuilder(app, { baseUrlOf }) {
       let applied = 0;
       const missing = [];
 
+      const added = [];
       for (const edit of req.body?.edits || []) {
+        if (edit?.action === 'add') {
+          const fields = edit.fields || {};
+          let item;
+          if (edit.kind === 'rule') {
+            if (!String(fields.statement || '').trim()) continue;
+            const n = (spec.rules || []).length + 1;
+            item = { id: `R-${String(n).padStart(3, '0')}`, statement: String(fields.statement).trim(), appliesTo: String(fields.appliesTo || '').trim() || null, rationale: String(fields.rationale || '').trim() || null, confidence: 'high', citation: null };
+            spec.rules = [...(spec.rules || []), item];
+          } else if (edit.kind === 'scenario') {
+            if (!String(fields.name || '').trim()) continue;
+            const n = (spec.scenarios || []).length + 1;
+            item = { id: `S-${n}`, name: String(fields.name).trim(), description: String(fields.description || '').trim() || '', requirement: String(fields.requirement || '').trim() || '', confidence: 'high', citation: null };
+            spec.scenarios = [...(spec.scenarios || []), item];
+          } else {
+            continue;
+          }
+          assignFindingIds(spec);
+          item.review = { state: 'edited', editedAt: now, added: true };
+          added.push(item.fid);
+          applied += 1;
+          continue;
+        }
         const f = findByFid(spec, edit?.fid);
         if (!f) { missing.push(edit?.fid); continue; }
         const it = f.item;
@@ -416,7 +439,7 @@ export function mountBuilder(app, { baseUrlOf }) {
       }
 
       await query(`UPDATE imports SET spec=$2, updated_at=now() WHERE id=$1`, [imp.id, JSON.stringify(spec)]);
-      res.json({ ok: true, applied, missing, summary: findingsSummary(spec) });
+      res.json({ ok: true, applied, missing, added, summary: findingsSummary(spec) });
     } catch (err) {
       next(err);
     }

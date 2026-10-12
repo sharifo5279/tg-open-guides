@@ -98,8 +98,20 @@ function row(f) {
 </td></tr>`;
 }
 
-function sectionRow(label, count) {
-  return `<tr class="fd-sec"><td colspan="8">${esc(label)}${count != null ? `<span class="st-count">${count}</span>` : ''}</td></tr>`;
+function sectionRow(label, count, addKind = null) {
+  return `<tr class="fd-sec"><td colspan="8">${esc(label)}${count != null ? `<span class="st-count">${count}</span>` : ''}${addKind ? `<button type="button" class="btn-link fd-add" data-add="${addKind}">Add ${addKind}</button>` : ''}</td></tr>${addKind ? addRow(addKind) : ''}`;
+}
+
+function addRow(kind) {
+  const fields = kind === 'rule'
+    ? `${area('Rule', 'statement', '', 3)}${field('Applies to', 'appliesTo', '', 'class="mono"')}${area('Rationale', 'rationale', '', 2)}`
+    : `${field('Name', 'name', '')}${area('Description', 'description', '', 2)}${area('Requirement', 'requirement', '', 2)}`;
+  return `<tr class="fd-edit" id="add-${kind}" hidden><td colspan="8">
+  <form class="fd-form" data-add="${kind}">
+    <div class="fd-fields">${fields}</div>
+    <div class="fd-form-acts"><button class="btn" type="submit">Add ${kind}</button><button class="btn btn-outline" type="button" data-act="cancel-add">Cancel</button><span class="rc-note" data-msg></span></div>
+  </form>
+</td></tr>`;
 }
 
 function findingsTable(spec) {
@@ -121,15 +133,11 @@ function findingsTable(spec) {
     }
   }
   const rules = all.filter((f) => f.kind === 'rule');
-  if (rules.length) {
-    rows.push(sectionRow('Rules', rules.length));
-    rows.push(...rules.map(row));
-  }
+  rows.push(sectionRow('Rules', rules.length, 'rule'));
+  rows.push(...rules.map(row));
   const sc = all.filter((f) => f.kind === 'scenario');
-  if (sc.length) {
-    rows.push(sectionRow('Scenarios', sc.length));
-    rows.push(...sc.map(row));
-  }
+  rows.push(sectionRow('Scenarios', sc.length, 'scenario'));
+  rows.push(...sc.map(row));
   return `<table class="tbl-fd" id="fdtable">
 <thead><tr><th>ID</th><th>Kind</th><th>Ref</th><th>Finding</th><th>Req</th><th>Page</th><th>State</th><th></th></tr></thead>
 <tbody>${rows.join('\n')}</tbody></table>`;
@@ -218,7 +226,7 @@ ${gaps.length || check.errors.length ? `<section class="section rv-gaps"><div cl
   </div>
   <div class="tint">
     <h3>Versions from this import</h3>
-    ${versions.length ? `<ul class="verlist">${versions.map((v) => `<li><span class="ver">v${esc(v.version)}</span><span>${v.attested_at ? 'attested ' + esc(String(v.attested_at).slice(0, 10)) : 'awaiting attestation'}</span><span><a href="/g/${esc(v.hub_slug)}/${esc(v.guide_slug)}/v/${esc(v.version)}">View</a>${v.attested_at ? '' : ` &middot; <a href="/attest/${esc(v.id)}">Attest</a>`}</span></li>`).join('')}</ul>` : '<p class="rc-note">None yet.</p>'}
+    ${versions.length ? `<ul class="verlist">${versions.map((v) => `<li><span class="ver">v${esc(v.version)}</span><span>${v.attested_at ? 'attested ' + esc(new Date(v.attested_at).toISOString().slice(0, 10)) : 'awaiting attestation'}</span><span><a href="/g/${esc(v.hub_slug)}/${esc(v.guide_slug)}/v/${esc(v.version)}">View</a>${v.attested_at ? '' : ` &middot; <a href="/attest/${esc(v.id)}">Attest</a>`}</span></li>`).join('')}</ul>` : '<p class="rc-note">None yet.</p>'}
     <h3 style="margin-top:16px">Citation coverage</h3>
     <p class="rc-note">${Math.round(stats.citedFraction * 100)}% of items cite a source page.</p>
   </div>
@@ -281,10 +289,23 @@ ${gaps.length || check.errors.length ? `<section class="section rv-gaps"><div cl
       post([{ fid: fid, action: act }]).then(function (j) { done(fid, j); }).catch(function (err) { alert(err.message); btn.disabled = false; });
     }
   });
+  table.addEventListener('click', function (e) {
+    var add = e.target.closest('[data-add]');
+    if (add && add.tagName === 'BUTTON') { var r = document.getElementById('add-' + add.getAttribute('data-add')); r.hidden = !r.hidden; if (!r.hidden) r.querySelector('input,textarea').focus(); return; }
+    var cancel = e.target.closest('[data-act="cancel-add"]');
+    if (cancel) cancel.closest('tr').hidden = true;
+  });
   table.addEventListener('submit', function (e) {
     var form = e.target.closest('form.fd-form');
     if (!form) return;
     e.preventDefault();
+    if (form.getAttribute('data-add')) {
+      var kind = form.getAttribute('data-add'), f2 = {};
+      Array.prototype.forEach.call(form.elements, function (el) { if (el.name) f2[el.name] = el.value; });
+      var m2 = form.querySelector('[data-msg]'); m2.textContent = 'Saving';
+      post([{ action: 'add', kind: kind, fields: f2 }]).then(function (j) { done(j.added && j.added[0] ? j.added[0] : '', j, m2); }).catch(function (err) { m2.textContent = 'Failed: ' + err.message; });
+      return;
+    }
     var fid = form.getAttribute('data-fid');
     var fields = {};
     Array.prototype.forEach.call(form.elements, function (el) { if (el.name) fields[el.name] = el.value; });
