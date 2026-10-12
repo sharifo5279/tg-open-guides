@@ -12,7 +12,7 @@
 import express from 'express';
 import multer from 'multer';
 import { esc, layout, citeTag } from './render/html.mjs';
-import { extractPages, detectTransactionSets, detectStandardVersion } from './extract.mjs';
+import { extractAny, detectTransactionSets, detectStandardVersion } from './extract.mjs';
 import { specStats, USAGE } from './spec.mjs';
 import { renderReview } from './render/review.mjs';
 import { prepareForReview, findByFid, findingsSummary, publishableSpec, assignFindingIds, REVIEW_STATES } from './findings.mjs';
@@ -84,9 +84,10 @@ ${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The d
           <option value="partner_receives">Partner receives from hub</option>
         </select>
       </label>
-      <label>Source PDF
-        <input type="file" name="pdf" accept="application/pdf" required ${dbUp ? '' : 'disabled'}>
+      <label>Source document
+        <input type="file" name="pdf" accept=".pdf,.docx,.xlsx,.xlsm,.xls,.csv,application/pdf" required ${dbUp ? '' : 'disabled'}>
       </label>
+      <p class="rc-note">PDF, Word (.docx) or Excel (.xlsx). Page citations for Word and Excel refer to 60-line blocks of the document.</p>
       <p class="rc-note">Leave transaction set, standard or version blank to detect them from the document.</p>
       <button class="btn" type="submit" ${dbUp ? '' : 'disabled'}>Compile draft</button>
     </form>
@@ -267,12 +268,17 @@ export function mountBuilder(app, { baseUrlOf }) {
       }
       if (!req.file?.buffer?.length) {
         return res.status(400).type('html').send(
-          message({ title: 'No file', lede: 'Attach a PDF of the hub’s implementation guide.', links: [{ href: '/builder', label: 'Back' }] })
+          message({ title: 'No file', lede: 'Attach the hub’s implementation guide as PDF, Word or Excel.', links: [{ href: '/builder', label: 'Back' }] })
         );
       }
 
       const importId = newId('imp');
       const sourceName = req.file.originalname || 'guide.pdf';
+      if (!/\.(pdf|docx|xlsx|xlsm|xls|csv)$/i.test(sourceName)) {
+        return res.status(400).type('html').send(
+          message({ title: 'Unsupported file type', lede: 'Import a PDF, Word (.docx) or Excel (.xlsx) document.', links: [{ href: '/builder', label: 'Back' }] })
+        );
+      }
       await query(
         `INSERT INTO imports (id, source_name, status, started_by) VALUES ($1,$2,'extracting',$3)`,
         [importId, sourceName, req.account?.email || null]
@@ -280,11 +286,11 @@ export function mountBuilder(app, { baseUrlOf }) {
 
       let extracted;
       try {
-        extracted = await extractPages(req.file.buffer);
+        extracted = await extractAny(req.file.buffer, sourceName);
       } catch (err) {
         await query(`UPDATE imports SET status='failed', error=$2, updated_at=now() WHERE id=$1`, [importId, `extraction failed: ${err.message}`]);
         return res.status(422).type('html').send(
-          message({ title: 'Could not read that PDF', lede: err.message, links: [{ href: '/builder', label: 'Back' }] })
+          message({ title: 'Could not read that file', lede: err.message, links: [{ href: '/builder', label: 'Back' }] })
         );
       }
 
@@ -343,6 +349,7 @@ export function mountBuilder(app, { baseUrlOf }) {
       await appendLog(
         importId,
         `Extracted ${extracted.totalPages} pages from ${sourceName}. ${meta.standard || 'Standard'} ${meta.version || ''} ${meta.transactionSet || ''}`.replace(/\s+/g, ' ').trim() + '.'
+          + (extracted.pageUnit ? ` A page here is one ${extracted.pageUnit}.` : '')
       );
 
       /* The compile runs on the server; the page shows its progress. */

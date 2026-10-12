@@ -103,3 +103,57 @@ export function detectStandardVersion(pages) {
     version: v ? v[0] : ''
   };
 }
+
+/* ------------------------------------------------- Word and Excel sources */
+
+const LINES_PER_PAGE = 60;
+
+/* A document without pages is cut into numbered blocks of lines, so a finding
+   can still cite where it came from. The block size is stated in the log. */
+function paginateLines(lines, label) {
+  const pages = [];
+  for (let i = 0; i < lines.length; i += LINES_PER_PAGE) {
+    pages.push({ page: pages.length + 1, text: lines.slice(i, i + LINES_PER_PAGE).join('\n') });
+  }
+  if (!pages.length) pages.push({ page: 1, text: '' });
+  const charCount = lines.join('').length;
+  return {
+    pages,
+    totalPages: pages.length,
+    extractedPages: pages.length,
+    truncated: false,
+    looksScanned: charCount < 200,
+    pageUnit: `${LINES_PER_PAGE}-line block of the ${label}`
+  };
+}
+
+export async function extractDocx(buffer) {
+  const mammoth = await import('mammoth');
+  const { value } = await mammoth.extractRawText({ buffer });
+  const lines = String(value || '').split(/\r?\n/).map((l) => l.replace(/\s+$/, '')).filter((l) => l.trim());
+  return paginateLines(lines, 'Word document');
+}
+
+export async function extractXlsx(buffer) {
+  const XLSX = await import('xlsx');
+  const wb = XLSX.read(buffer, { type: 'buffer' });
+  const lines = [];
+  for (const name of wb.SheetNames) {
+    const sheet = wb.Sheets[name];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false, defval: '' });
+    lines.push(`## Sheet: ${name}`);
+    for (const row of rows) {
+      const cells = row.map((c) => String(c ?? '').trim());
+      if (cells.some(Boolean)) lines.push(cells.join('  |  ').replace(/(\s*\|\s*)+$/, ''));
+    }
+  }
+  return paginateLines(lines, 'spreadsheet');
+}
+
+/** Pick the extractor by file name, falling back to PDF. */
+export async function extractAny(buffer, filename, opts) {
+  const ext = String(filename || '').toLowerCase().split('.').pop();
+  if (ext === 'docx') return extractDocx(buffer);
+  if (ext === 'xlsx' || ext === 'xlsm' || ext === 'xls' || ext === 'csv') return extractXlsx(buffer);
+  return extractPages(buffer, opts);
+}
