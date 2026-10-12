@@ -102,7 +102,8 @@ export const EPICS = [
       { id: 'E5-15', title: 'Manual correction', detail: 'Edit any field the agent produced. The fallback path, not the primary one.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
       { id: 'E5-16', title: 'Revise a published guide', detail: 'Open a published version as a new draft and diff it against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E5-17', title: 'Scenarios editor', detail: 'The hub declares its own processes. Process lives here, not in a platform sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E5-18', title: 'Background compilation', detail: 'Upload returns at once. The compile runs on the server with a live log, survives closing the page and restarts after a server restart.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Done' }
+      { id: 'E5-18', title: 'Background compilation', detail: 'Upload returns at once. The compile runs on the server with a live log, survives closing the page and restarts after a server restart.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Done' },
+      { id: 'E5-19', title: 'Review before publishing', detail: 'Each finding has a stable ID and can be edited at any time; edits save to the draft, which stays reachable from the builder until published.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' }
     ]
   },
   {
