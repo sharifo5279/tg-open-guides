@@ -13,8 +13,9 @@ import express from 'express';
 import multer from 'multer';
 import { esc, layout, citeTag } from './render/html.mjs';
 import { extractPages, detectTransactionSets, detectStandardVersion } from './extract.mjs';
-import { triage } from './compile.mjs';
-import { validateSpec, specStats, DIRECTIONS, USAGE } from './spec.mjs';
+import { specStats, USAGE } from './spec.mjs';
+import { renderReview } from './render/review.mjs';
+import { prepareForReview, findByFid, findingsSummary, publishableSpec, REVIEW_STATES } from './findings.mjs';
 import { modelAvailable, modelName } from './model.mjs';
 import { query, one, many } from './db.mjs';
 import { dbAvailable, newId } from './store.mjs';
@@ -99,15 +100,20 @@ ${!dbUp ? `<section class="section"><div class="shell"><div class="notice">The d
 ${imports?.length ? `<section class="section"><div class="shell">
   <h2>Recent imports</h2>
   <div class="tbl-wrap"><table class="tbl">
-  <thead><tr><th>Source</th><th>Hub</th><th>Status</th><th>Compiled by</th><th>Pages</th><th></th></tr></thead>
-  <tbody>${imports.map((i) => `<tr>
+  <thead><tr><th>Source</th><th>Hub</th><th>Status</th><th>Review</th><th>Published</th><th>Pages</th><th></th></tr></thead>
+  <tbody>${imports.map((i) => {
+    const sum = i.status === 'ready' && i.spec ? findingsSummary(i.spec) : null;
+    const status = i.status === 'ready' ? (i.published_version ? 'Published' : sum && sum.reviewed === sum.total ? 'Reviewed' : 'In review') : i.status;
+    return `<tr>
     <td>${esc(i.source_name)}</td>
-    <td>${esc(i.hub_name || '-')}</td>
-    <td>${esc(i.status)}${i.error ? ` <span class="rc-note">${esc(String(i.error).slice(0, 80))}</span>` : ''}</td>
-    <td class="mono">${esc(i.compiled_by || '-')}</td>
+    <td>${esc(i.hub_name || i.spec?.guide?.hub?.name || '-')}</td>
+    <td>${esc(status)}${i.error ? ` <span class="rc-note">${esc(String(i.error).slice(0, 80))}</span>` : ''}</td>
+    <td class="mono">${sum ? `${sum.reviewed}/${sum.total}` : '-'}</td>
+    <td class="mono">${i.published_version ? `v${esc(i.published_version)}${i.attested_at ? '' : ' (unattested)'}` : '-'}</td>
     <td class="mono">${esc(i.pages ?? '-')}</td>
-    <td><a href="/builder/i/${esc(i.id)}">${i.status === 'ready' ? 'Review' : i.status === 'failed' ? 'View log' : 'View progress'}</a></td>
-  </tr>`).join('')}</tbody></table></div>
+    <td><a href="/builder/i/${esc(i.id)}">${i.status === 'ready' ? (i.published_version ? 'Open review' : 'Resume review') : i.status === 'failed' ? 'View log' : 'View progress'}</a></td>
+  </tr>`;
+  }).join('')}</tbody></table></div>
 </div></section>` : ''}
 
 <style>
@@ -119,207 +125,6 @@ ${imports?.length ? `<section class="section"><div class="shell">
 </style>`;
 
   return layout({ title: 'Guide Builder | Trading Grid Open Guides', body, canonical: `${baseUrl}/builder` });
-}
-
-function reviewItemRow(entry, idx) {
-  const it = entry.item;
-  const path = `${entry.kind}:${idx}`;
-  if (entry.kind === 'rule') {
-    return `<div class="rv" data-path="${esc(path)}">
-  <div class="rv-head">
-    <span class="rv-kind">Rule</span><span class="rule-id">${esc(it.id)}</span>${citeTag(it.citation)}
-    <label class="rv-drop"><input type="checkbox" data-drop> Drop</label>
-  </div>
-  <textarea data-field="statement" rows="2">${esc(it.statement)}</textarea>
-  <div class="rv-row">
-    <label>Applies to <input data-field="appliesTo" value="${esc(it.appliesTo || '')}"></label>
-  </div>
-  <textarea data-field="rationale" rows="1" placeholder="Why the hub enforces this, if the guide says">${esc(it.rationale || '')}</textarea>
-</div>`;
-  }
-  if (entry.kind === 'element') {
-    return `<div class="rv" data-path="${esc(path)}">
-  <div class="rv-head">
-    <span class="rv-kind">Element</span><span class="mono">${esc(entry.ref)}</span>${citeTag(it.citation)}
-    <label class="rv-drop"><input type="checkbox" data-drop> Drop</label>
-  </div>
-  <div class="rv-row">
-    <label>Name <input data-field="name" value="${esc(it.name || '')}"></label>
-    <label>Usage
-      <select data-field="usage">${USAGE.map((u) => `<option value="${u}" ${it.usage === u ? 'selected' : ''}>${u}</option>`).join('')}</select>
-    </label>
-    <label>Type <input data-field="type" value="${esc(it.type || '')}"></label>
-    <label>Min <input data-field="min" value="${esc(it.min ?? '')}" inputmode="numeric"></label>
-    <label>Max <input data-field="max" value="${esc(it.max ?? '')}" inputmode="numeric"></label>
-  </div>
-  <textarea data-field="note" rows="1" placeholder="Hub note">${esc(it.note || '')}</textarea>
-</div>`;
-  }
-  if (entry.kind === 'envelope') {
-    return `<div class="rv" data-path="${esc(path)}">
-  <div class="rv-head"><span class="rv-kind">Envelope</span><span class="mono">${esc(it.ref)}</span>${citeTag(it.citation)}
-    <label class="rv-drop"><input type="checkbox" data-drop> Drop</label></div>
-  <div class="rv-row">
-    <label>Name <input data-field="name" value="${esc(it.name || '')}"></label>
-    <label>Usage <select data-field="usage">${USAGE.map((u) => `<option value="${u}" ${it.usage === u ? 'selected' : ''}>${u}</option>`).join('')}</select></label>
-    <label>Required value <input data-field="value" value="${esc(it.value || '')}"></label>
-  </div>
-  <textarea data-field="note" rows="1" placeholder="Note">${esc(it.note || '')}</textarea>
-</div>`;
-  }
-  if (entry.kind === 'scenario') {
-    return `<div class="rv" data-path="${esc(path)}">
-  <div class="rv-head"><span class="rv-kind">Scenario</span><span class="mono">${esc(it.id || '')}</span>${citeTag(it.citation)}
-    <label class="rv-drop"><input type="checkbox" data-drop> Drop</label></div>
-  <div class="rv-row"><label>Name <input data-field="name" value="${esc(it.name || '')}"></label></div>
-  <textarea data-field="requirement" rows="2" placeholder="What the partner must prove">${esc(it.requirement || '')}</textarea>
-</div>`;
-  }
-  return `<div class="rv" data-path="${esc(path)}">
-  <div class="rv-head"><span class="rv-kind">Segment</span><span class="mono">${esc(entry.ref)}</span>${citeTag(it.citation)}
-    <label class="rv-drop"><input type="checkbox" data-drop> Drop</label></div>
-  <div class="rv-row">
-    <label>Name <input data-field="name" value="${esc(it.name || '')}"></label>
-    <label>Usage <select data-field="usage">${USAGE.map((u) => `<option value="${u}" ${it.usage === u ? 'selected' : ''}>${u}</option>`).join('')}</select></label>
-    <label>Loop <input data-field="loopId" value="${esc(it.loopId || '')}"></label>
-    <label>Max use <input data-field="maxUse" value="${esc(it.maxUse ?? '')}" inputmode="numeric"></label>
-  </div>
-  <textarea data-field="note" rows="1" placeholder="Hub note">${esc(it.note || '')}</textarea>
-</div>`;
-}
-
-function reviewScreen({ imp, spec, baseUrl }) {
-  const t = triage(spec);
-  const stats = specStats(spec);
-  const check = validateSpec(spec);
-  const g = spec.guide || {};
-
-  const body = `
-<div class="phead"><div class="shell">
-  <p class="eyebrow">Guide Builder &middot; review</p>
-  <h1>${esc(g.title || imp.source_name)}</h1>
-  <p class="lede">Compiled from ${esc(imp.source_name)}${imp.pages ? `, ${esc(imp.pages)} pages` : ''} by <code>${esc(t.compiledBy)}</code>. ${t.needsReview.length} of ${t.needsReview.length + t.confirmed.length} items need review.</p>
-  <ul class="specline">
-    <li>${esc(g.standard)} ${esc(g.version || '?')}</li>
-    <li>Set <b>${esc(g.transactionSet || '?')}</b></li>
-    <li>${esc(DIRECTIONS[g.direction] || g.direction)}</li>
-    <li><b>${stats.segments}</b> segments</li>
-    <li><b>${stats.elements}</b> elements</li>
-    <li><b>${stats.rules}</b> rules</li>
-  </ul>
-</div></div>
-
-${t.note ? `<section class="section"><div class="shell"><div class="notice">${esc(t.note)}</div></div></section>` : ''}
-
-<section class="section"><div class="shell">
-  <h2>Gaps</h2>
-  <p class="section-sub">A gap here is usually a gap in the source document, which means partners have been guessing about it.</p>
-  ${t.gaps.length
-    ? `<ul class="inline-list">${t.gaps.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`
-    : '<p class="rc-note">Nothing obvious missing.</p>'}
-  ${check.errors.length ? `<h3 style="margin-top:18px">Blocking errors</h3><ul class="inline-list">${check.errors.slice(0, 20).map((e) => `<li>${esc(e)}</li>`).join('')}</ul>` : ''}
-</div></section>
-
-<section class="section"><div class="shell">
-  <h2>Needs review (${t.needsReview.length})</h2>
-  <p class="section-sub">Items the compiler was unsure about or could not attribute to a page. Correct them, or drop what is not a requirement.</p>
-  <form id="reviewform">
-    ${t.needsReview.length ? t.needsReview.map((e, i) => reviewItemRow(e, i)).join('\n') : '<p class="rc-note">Nothing uncertain. Unusual, so spot-check the confirmed list below.</p>'}
-  </form>
-  <div class="copyrow">
-    <button class="btn" type="button" id="save">Save corrections</button>
-    <span id="savemsg" class="rc-note"></span>
-  </div>
-</div></section>
-
-<section class="section"><div class="shell">
-  <details>
-    <summary><b>Confirmed (${t.confirmed.length})</b>, stated on a cited page</summary>
-    <div class="tbl-wrap" style="margin-top:12px"><table class="tbl">
-      <thead><tr><th>Kind</th><th>Ref</th><th>Detail</th><th>Page</th></tr></thead>
-      <tbody>${t.confirmed.slice(0, 400).map((e) => `<tr>
-        <td>${esc(e.kind)}</td>
-        <td class="mono">${esc(e.ref || '')}</td>
-        <td>${esc(String(e.item.name || e.item.statement || e.item.requirement || '').slice(0, 120))}</td>
-        <td class="mono">${esc(e.item.citation?.page ?? '')}</td>
-      </tr>`).join('')}</tbody></table></div>
-  </details>
-</div></section>
-
-<section class="section"><div class="shell"><div class="twocol">
-  <div>
-    <h2>Publish</h2>
-    <p class="section-sub">Publishing creates an unattested draft and a link to send the hub for signature. Nothing is public until it is attested and set to public.</p>
-    <form method="post" action="/builder/i/${esc(imp.id)}/publish" class="form">
-      <div class="formrow">
-        <label>Hub name <input name="hubName" value="${esc(g.hub?.name || imp.hub_name || '')}" required></label>
-        <label>Transaction set <input name="transactionSet" value="${esc(g.transactionSet || '')}" required></label>
-        <label>Version <input name="version" value="${esc(g.version || '')}" required></label>
-      </div>
-      <label>Guide title <input name="title" value="${esc(g.title || '')}" required></label>
-      <label>Visibility
-        <select name="visibility">
-          <option value="open" selected>Open: any partner can read it, which onboards fastest</option>
-          <option value="approval">Approval: the hub approves each partner</option>
-          <option value="unlisted">Unlisted: anyone with the link, not in the catalogue</option>
-        </select>
-      </label>
-      <label>Changelog <input name="changelog" placeholder="First structured publication, compiled from the v4.2 PDF"></label>
-      <button class="btn" type="submit">Publish draft</button>
-    </form>
-  </div>
-  <div class="tint">
-    <h3>Visibility</h3>
-    <p class="rc-note">An unlisted guide is served to anyone with the link, including agents, but is not listed publicly. Most hubs start here.</p>
-    <h3 style="margin-top:16px">Citation coverage</h3>
-    <p class="rc-note">${Math.round(stats.citedFraction * 100)}% of items cite a source page.</p>
-  </div>
-</div></div></section>
-
-<style>
-.rv { border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px; }
-.rv-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
-.rv-kind { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); }
-.rv-drop { margin-left:auto; font-size:12px; color:var(--slate); display:flex; align-items:center; gap:5px; }
-.rv-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
-.rv-row label { font-size:12px; font-weight:600; color:var(--slate); flex:1 1 130px; }
-.rv input, .rv select, .rv textarea { display:block; width:100%; margin-top:3px; font:400 14px/1.4 var(--sans); color:var(--ink); padding:6px 9px; border:1px solid var(--line); border-radius:6px; background:#fff; }
-.rv textarea { margin-bottom:8px; resize:vertical; }
-.rv input:focus, .rv select:focus, .rv textarea:focus { outline:2px solid var(--primary); outline-offset:-1px; }
-.rv.dropped { opacity:.45; }
-details summary { cursor:pointer; font-size:15px; }
-.form label { display:block; font-size:14px; font-weight:600; color:var(--ink); margin-bottom:12px; }
-.form input, .form select { display:block; width:100%; margin-top:4px; font:400 15px/1.4 var(--sans); color:var(--ink); padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; }
-.formrow { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-@media (max-width:640px){ .formrow { grid-template-columns:1fr; } }
-</style>
-<script>
-document.addEventListener('change', function (e) {
-  if (e.target.matches('[data-drop]')) {
-    e.target.closest('.rv').classList.toggle('dropped', e.target.checked);
-  }
-});
-document.getElementById('save').addEventListener('click', async function () {
-  var edits = [];
-  document.querySelectorAll('.rv').forEach(function (box) {
-    var fields = {};
-    box.querySelectorAll('[data-field]').forEach(function (f) { fields[f.getAttribute('data-field')] = f.value; });
-    edits.push({ path: box.getAttribute('data-path'), drop: !!box.querySelector('[data-drop]:checked'), fields: fields });
-  });
-  var msg = document.getElementById('savemsg');
-  msg.textContent = 'Saving...';
-  try {
-    var r = await fetch(location.pathname + '/apply', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ edits: edits })
-    });
-    var j = await r.json();
-    msg.textContent = j.ok ? ('Saved. ' + j.applied + ' items updated, ' + j.dropped + ' dropped.') : ('Failed: ' + (j.error || 'unknown'));
-    if (j.ok) setTimeout(function () { location.reload(); }, 900);
-  } catch (err) { msg.textContent = 'Failed: ' + err.message; }
-});
-</script>`;
-
-  return layout({ title: `Review ${esc(imp.source_name)} | Guide Builder`, body, canonical: `${baseUrl}/builder/i/${imp.id}` });
 }
 
 function attestScreen({ guide, version, baseUrl, done = false }) {
@@ -433,7 +238,11 @@ export function mountBuilder(app, { baseUrlOf }) {
       let imports = [];
       if (dbUp) {
         imports = await many(
-          `SELECT i.*, h.name AS hub_name FROM imports i
+          `SELECT i.id, i.source_name, i.status, i.error, i.pages, i.compiled_by, i.created_at, i.spec,
+                  h.name AS hub_name,
+                  (SELECT max(v.version) FROM guide_versions v WHERE v.import_id = i.id) AS published_version,
+                  (SELECT max(v.attested_at) FROM guide_versions v WHERE v.import_id = i.id) AS attested_at
+             FROM imports i
              LEFT JOIN hubs h ON h.id = i.hub_id
             ORDER BY i.created_at DESC LIMIT 12`
         );
@@ -532,64 +341,82 @@ export function mountBuilder(app, { baseUrlOf }) {
       if (imp.status !== 'ready') {
         return res.type('html').send(progressScreen(imp));
       }
-      res.type('html').send(reviewScreen({ imp, spec: imp.spec, baseUrl: baseUrlOf(req) }));
+      const prepared = prepareForReview(imp.spec);
+      if (prepared.changed) {
+        await query(`UPDATE imports SET spec=$2, updated_at=now() WHERE id=$1`, [imp.id, JSON.stringify(prepared.spec)]);
+      }
+      const versions = await many(
+        `SELECT v.id, v.version, v.attested_at, v.published_at, g.slug AS guide_slug, h.slug AS hub_slug
+           FROM guide_versions v JOIN guides g ON g.id = v.guide_id JOIN hubs h ON h.id = g.hub_id
+          WHERE v.import_id = $1 ORDER BY v.version DESC`,
+        [imp.id]
+      );
+      res.type('html').send(renderReview({ imp, spec: prepared.spec, versions, baseUrl: baseUrlOf(req) }));
     } catch (err) {
       next(err);
     }
   });
 
-  /** Apply reviewer corrections against the same triage order the screen rendered. */
+  /** Apply review actions by finding ID. Each edit: { fid, action, fields }. */
   app.post('/builder/i/:id/apply', async (req, res, next) => {
     try {
       const imp = await one(`SELECT * FROM imports WHERE id = $1`, [req.params.id]);
       if (!imp) return res.status(404).json({ ok: false, error: 'not_found' });
-      const spec = imp.spec;
-      const order = triage(spec).needsReview;
+      const spec = prepareForReview(imp.spec).spec;
+      const now = new Date().toISOString();
       let applied = 0;
-      const toDrop = [];
+      const missing = [];
 
       for (const edit of req.body?.edits || []) {
-        const [, idxRaw] = String(edit.path || '').split(':');
-        const idx = Number.parseInt(idxRaw, 10);
-        const entry = order[idx];
-        if (!entry) continue;
-        if (edit.drop) {
-          toDrop.push(entry);
+        const f = findByFid(spec, edit?.fid);
+        if (!f) { missing.push(edit?.fid); continue; }
+        const it = f.item;
+        it.review = it.review || {};
+        const action = edit.action;
+        if (action === 'edit') {
+          for (const [field, raw] of Object.entries(edit.fields || {})) {
+            const value = typeof raw === 'string' ? raw.trim() : raw;
+            if (['min', 'max', 'maxUse'].includes(field)) {
+              const n = Number.parseInt(value, 10);
+              it[field] = Number.isFinite(n) ? n : null;
+            } else if (field === 'usage') {
+              if (USAGE.includes(value)) it.usage = value;
+            } else if (field === 'values') {
+              it.values = String(value || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+                const m = line.match(/^(\S+)\s*(.*?)(?:\s*\((.*)\))?$/);
+                return { code: m[1], description: m[2] || '', note: m[3] || null };
+              });
+            } else if (['id', 'ref', 'type'].includes(field)) {
+              if (value) it[field] = String(value).toUpperCase();
+            } else {
+              it[field] = value === '' ? null : value;
+            }
+          }
+          it.review.state = 'edited';
+          it.review.editedAt = now;
+          it.confidence = 'high';
+        } else if (action === 'confirm') {
+          it.review.state = 'confirmed';
+          it.review.confirmedAt = now;
+          it.confidence = 'high';
+        } else if (action === 'drop') {
+          it.review.before = it.review.state || null;
+          it.review.state = 'dropped';
+          it.review.droppedAt = now;
+        } else if (action === 'restore') {
+          it.review.state = it.review.editedAt ? 'edited' : (it.review.before || null);
+          if (!it.review.state) delete it.review.state;
+          delete it.review.droppedAt;
+        } else if (REVIEW_STATES.includes(action)) {
+          it.review.state = action;
+        } else {
           continue;
         }
-        const it = entry.item;
-        for (const [field, value] of Object.entries(edit.fields || {})) {
-          if (['min', 'max', 'maxUse'].includes(field)) {
-            const n = Number.parseInt(value, 10);
-            it[field] = Number.isFinite(n) ? n : null;
-          } else if (field === 'usage') {
-            it.usage = USAGE.includes(value) ? value : it.usage;
-          } else {
-            it[field] = value === '' ? null : value;
-          }
-        }
-        // A human looked at it, so it is no longer the compiler's uncertainty.
-        it.confidence = 'high';
-        it.reviewed = true;
         applied += 1;
       }
 
-      for (const entry of toDrop) {
-        if (entry.kind === 'rule') {
-          spec.rules = spec.rules.filter((r) => r !== entry.item);
-        } else if (entry.kind === 'scenario') {
-          spec.scenarios = spec.scenarios.filter((s) => s !== entry.item);
-        } else if (entry.kind === 'envelope') {
-          spec.envelope[entry.group] = spec.envelope[entry.group].filter((r) => r !== entry.item);
-        } else if (entry.kind === 'element') {
-          entry.parent.elements = entry.parent.elements.filter((e) => e !== entry.item);
-        } else if (entry.kind === 'segment') {
-          spec.segments = spec.segments.filter((s) => s !== entry.item);
-        }
-      }
-
       await query(`UPDATE imports SET spec=$2, updated_at=now() WHERE id=$1`, [imp.id, JSON.stringify(spec)]);
-      res.json({ ok: true, applied, dropped: toDrop.length });
+      res.json({ ok: true, applied, missing, summary: findingsSummary(spec) });
     } catch (err) {
       next(err);
     }
@@ -600,7 +427,7 @@ export function mountBuilder(app, { baseUrlOf }) {
       const imp = await one(`SELECT * FROM imports WHERE id = $1`, [req.params.id]);
       if (!imp) return res.status(404).type('html').send(message({ title: 'Import not found', lede: 'No import with that id.', links: [{ href: '/builder', label: 'Back' }] }));
 
-      const spec = imp.spec;
+      const spec = publishableSpec(prepareForReview(imp.spec).spec);
       const hubName = (req.body.hubName || spec.guide?.hub?.name || '').trim();
       const hubSlug = slugify(hubName);
       const transactionSet = (req.body.transactionSet || spec.guide?.transactionSet || '').trim();
@@ -654,15 +481,19 @@ export function mountBuilder(app, { baseUrlOf }) {
       const versionId = newId('gv');
       await query(
         `INSERT INTO guide_versions
-           (id, guide_id, version, status, spec, source_name, source_pages, compiled_by, changelog)
-         VALUES ($1,$2,$3,'draft',$4,$5,$6,$7,$8)`,
+           (id, guide_id, version, status, spec, source_name, source_pages, compiled_by, changelog, import_id)
+         VALUES ($1,$2,$3,'draft',$4,$5,$6,$7,$8,$9)`,
         [
           versionId, guide.id, nextVersion, JSON.stringify(spec),
           imp.source_name, imp.pages, imp.compiled_by,
-          (req.body.changelog || '').trim() || null
+          (req.body.changelog || '').trim() || null, imp.id
         ]
       );
-      await query(`UPDATE imports SET hub_id=$2, updated_at=now() WHERE id=$1`, [imp.id, hub.id]);
+      /* The draft keeps the guide details the publisher entered, so the next
+         review opens with them. */
+      const draft = prepareForReview(imp.spec).spec;
+      draft.guide = { ...draft.guide, ...spec.guide };
+      await query(`UPDATE imports SET hub_id=$2, spec=$3, updated_at=now() WHERE id=$1`, [imp.id, hub.id, JSON.stringify(draft)]);
 
       res.type('html').send(
         message({
@@ -671,7 +502,7 @@ export function mountBuilder(app, { baseUrlOf }) {
           links: [
             { href: `/attest/${versionId}`, label: 'Open the attestation page' },
             { href: `/g/${hubSlug}/${guideSlug}/v/${nextVersion}`, label: 'Preview the guide' },
-            { href: '/builder', label: 'Builder' }
+            { href: `/builder/i/${imp.id}`, label: 'Back to review' }
           ]
         })
       );

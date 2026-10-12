@@ -1,5 +1,6 @@
 import { esc, inlineProse, layout, citeTag } from './html.mjs';
 import { codeBlock } from '../highlight.mjs';
+import { currentAccount } from '../context.mjs';
 import {
   DIRECTIONS,
   outline,
@@ -264,6 +265,7 @@ export function renderGuidePage({
     <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
     <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
+    ${currentAccount()?.is_platform_admin && version?.import_id ? `<a class="btn btn-quiet" href="/builder/i/${esc(version.import_id)}">Edit in Guide Builder</a>` : ''}
   </div>
 </div></div>
 

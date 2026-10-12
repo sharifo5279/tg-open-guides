@@ -48,7 +48,7 @@ export const EPICS = [
       { id: 'E2-1', title: 'Remove platform assumptions', detail: 'No Trading Grid identifiers, entitlements or sign-on anywhere in the data model.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E2-2', title: 'Own domain and TLS', detail: 'Move off the temporary Render subdomain to a product domain.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E2-3', title: 'Managed Postgres', detail: 'Provision the database and run migrations on deploy.', personas: ['platform-admin'], size: 'S', state: 'Done' },
-      { id: 'E2-4', title: 'Model provider configuration', detail: 'One adapter, keys held by the application. Required for the authoring agent.', personas: ['platform-admin'], size: 'S', state: 'Built, untested' },
+      { id: 'E2-4', title: 'Model provider configuration', detail: 'One adapter, keys held by the application. Required for the authoring agent.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E2-5', title: 'Backups and restore test', detail: 'Scheduled backups with a documented restore.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E2-6', title: 'Environments', detail: 'Separate staging and production services.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E2-7', title: 'Deploy on push', detail: 'Pushes to main do not start a Render deploy. Deploys are triggered manually until fixed.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
@@ -96,15 +96,15 @@ export const EPICS = [
       { id: 'E5-9', title: 'Agent limits', detail: 'Caps per hub and per document on pages, runs and tokens, with a stated message at the limit.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Not started' },
       { id: 'E5-10', title: 'Agent audit trail', detail: 'Each run records the path taken, source or answers, prompt version, model, output and who started it.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E5-11', title: 'Agent questions on a source document', detail: 'Where the document is silent or contradictory, the agent asks instead of asserting.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E5-12', title: 'PDF extraction', detail: 'Per-page text extraction feeding the document path.', personas: ['hub-editor'], size: 'L', state: 'Built, untested' },
-      { id: 'E5-13', title: 'Triaged review', detail: 'Gaps first, uncertain items next, confident items collapsed.', personas: ['hub-editor'], size: 'M', state: 'Built, untested' },
+      { id: 'E5-12', title: 'PDF extraction', detail: 'Per-page text extraction feeding the document path.', personas: ['hub-editor'], size: 'L', state: 'Done' },
+      { id: 'E5-13', title: 'Triaged review', detail: 'Superseded by E5-19: every finding is a row with a state; open findings are the review queue.', personas: ['hub-editor'], size: 'M', state: 'Done' },
       { id: 'E5-14', title: 'Excel and Word sources', detail: 'Many hubs keep requirements in a spreadsheet rather than a PDF.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E5-15', title: 'Manual correction', detail: 'Edit any field the agent produced. The fallback path, not the primary one.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-15', title: 'Manual correction', detail: 'Edit any field of any finding from the review screen; code values as one line per code.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Done' },
       { id: 'E5-16', title: 'Revise a published guide', detail: 'Open a published version as a new draft and diff it against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E5-17', title: 'Scenarios editor', detail: 'The hub declares its own processes. Process lives here, not in a platform sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
       { id: 'E5-18', title: 'Background compilation', detail: 'Upload returns at once. The compile runs on the server with a live log, survives closing the page and restarts after a server restart.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Done' },
-      { id: 'E5-19', title: 'Review before publishing', detail: 'Each finding has a stable ID and can be edited at any time; edits save to the draft, which stays reachable from the builder until published.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' },
-      { id: 'E5-20', title: 'Edit from the published guide', detail: 'An authorized editor opens a published guide and edits it in place. Saving creates a new version for attestation; the import review is not reopened.', personas: ['hub-owner', 'hub-editor'], size: 'M', state: 'Not started' }
+      { id: 'E5-19', title: 'Review before publishing', detail: 'Every finding has a stable ID (F-001) and a state: open, confirmed, edited or dropped. Inline edit, filters, find, confirm all open. Drops are reversible until publication. The draft is saved on each change and reachable from the builder; a published import can be edited and published as the next version.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Done' },
+      { id: 'E5-20', title: 'Edit from the published guide', detail: 'An authorized editor opens a published guide and edits it in place. Saving creates a new version for attestation. For now an administrator sees Edit in Guide Builder on the guide, which opens the import review.', personas: ['hub-owner', 'hub-editor'], size: 'M', state: 'Not started' }
     ]
   },
   {

@@ -154,3 +154,7 @@ ALTER TABLE hubs ADD COLUMN IF NOT EXISTS common_rules JSONB NOT NULL DEFAULT '[
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS meta     JSONB;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS log      JSONB NOT NULL DEFAULT '[]'::jsonb;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 0;
+
+-- Review: a version remembers the import it was published from, so the
+-- review can list its versions and publish the next one.
+ALTER TABLE guide_versions ADD COLUMN IF NOT EXISTS import_id TEXT REFERENCES imports(id) ON DELETE SET NULL;
