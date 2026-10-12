@@ -132,7 +132,7 @@ function buildServer({ baseUrl }) {
     {
       title: 'Get a guide summary',
       description:
-        'The short version of one hub’s requirements: what the guide covers, which segments and elements are mandatory, how many rules cause a rejection, and which scenarios the hub expects a partner to handle. Start here before fetching structure. ' +
+        'The short version of one hub’s requirements: what the guide covers, which segments and elements are mandatory, the enforced rules, and which scenarios the hub expects a partner to handle. Start here before fetching structure. ' +
         BOUNDARY,
       inputSchema: {
         guide: z.string().optional().describe('Exact reference such as "crestfield/856-004010"'),

@@ -1,4 +1,5 @@
 import { esc, inlineProse, layout, citeTag } from './html.mjs';
+import { codeBlock } from '../highlight.mjs';
 import {
   DIRECTIONS,
   outline,
@@ -295,9 +296,10 @@ ${sidebar(spec, areas)}
     <div class="agentbox">
       <h3>Agent access</h3>
       <p>This guide is served as JSON, Markdown and MCP from the version rendered here.</p>
-      <p class="rc-note">Markdown is returned to any client that requests it: <code>curl -H "Accept: text/markdown" ${esc(baseUrl + guidePath)}</code></p>
+      <p class="rc-note" style="margin-bottom:8px">Markdown is returned to any client that requests it:</p>
+      ${codeBlock(`curl -H "Accept: text/markdown" ${baseUrl}${guidePath}`, 'bash')}
       <p style="margin:14px 0 6px"><b>MCP configuration, all hubs:</b></p>
-      <pre id="mcp-config"><code>${esc(mcpConfig)}</code></pre>
+      ${codeBlock(mcpConfig, 'json', { id: 'mcp-config' })}
       <p class="rc-note" style="margin:0">Endpoints provide integration requirements. File validation and hub certification are not supported.</p>
     </div>
   </section>

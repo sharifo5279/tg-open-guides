@@ -16,6 +16,7 @@ import { renderGuidePage } from './render/guide.mjs';
 import { renderHome, renderHub, hubToMarkdown, renderForAgents, renderBacklog, renderNotFound } from './render/pages.mjs';
 import { handleMcpRequest } from './mcp.mjs';
 import { mountBuilder } from './builder.mjs';
+import { initHighlight } from './highlight.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -293,5 +294,7 @@ try {
 } catch (err) {
   console.error('[boot] migration failed, continuing on seed guides:', err.message);
 }
+
+await initHighlight();
 
 app.listen(PORT, () => console.log(`[boot] listening on ${PORT}`));

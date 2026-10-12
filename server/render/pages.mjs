@@ -1,4 +1,5 @@
 import { esc, inlineProse, layout } from './html.mjs';
+import { codeBlock } from '../highlight.mjs';
 import { DIRECTIONS } from '../spec.mjs';
 import { EPICS, PERSONAS, OUT_OF_SCOPE } from '../backlog.mjs';
 
@@ -234,9 +235,10 @@ ${rules.length ? `<section class="section"><div class="shell">
   <div class="agentbox">
     <h3>Connect an agent</h3>
     <p>Every guide is served as JSON, Markdown and MCP from the version this page renders.</p>
-    <p class="rc-note">Markdown is returned to any client that requests it: <code>curl -H "Accept: text/markdown" ${esc(baseUrl)}/h/${esc(hub.slug)}</code></p>
+    <p class="rc-note" style="margin-bottom:8px">Markdown is returned to any client that requests it:</p>
+    ${codeBlock(`curl -H "Accept: text/markdown" ${baseUrl}/h/${hub.slug}`, 'bash')}
     <p style="margin:14px 0 6px"><b>MCP configuration, all hubs:</b></p>
-    <pre id="mcp-config"><code>${esc(mcpConfig)}</code></pre>
+    ${codeBlock(mcpConfig, 'json', { id: 'mcp-config' })}
     <div class="copyrow">
       <a class="btn btn-outline" href="/h/${esc(hub.slug)}.md">View Markdown</a>
       <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
@@ -347,12 +349,12 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
   <div>
     <h3>HTTP fetch</h3>
     <p>Guides and hubs return Markdown to any client that requests it:</p>
-    <pre><code>curl -H "Accept: text/markdown" ${esc(baseUrl)}${esc(examplePath)}</code></pre>
+    ${codeBlock(`curl -H "Accept: text/markdown" ${baseUrl}${examplePath}`, 'bash')}
     <p>Or append the format: <code>${esc(examplePath)}.md</code> and <code>${esc(examplePath)}.json</code>. A whole hub is at <code>/h/&lt;hub&gt;.md</code>.</p>
 
     <h3 style="margin-top:22px">MCP server</h3>
     <p>Tools return a segment or rule set rather than a full document:</p>
-    <pre id="mcp-config"><code>${esc(mcpConfig)}</code></pre>
+    ${codeBlock(mcpConfig, 'json', { id: 'mcp-config' })}
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy config</button>
 
     <h3 style="margin-top:22px">Integration provider</h3>
@@ -362,11 +364,10 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
     <h3>Tools</h3>
     <dl class="kv">
       <dt>search_guides</dt><dd>Find a hub's guide by hub, transaction set or standard.</dd>
-      <dt>get_guide_summary</dt><dd>Small payload: what is required, what rejects, which scenarios matter. Start here.</dd>
-      <dt>get_rules</dt><dd>The hub's enforced rules, optionally only the rejecting ones.</dd>
+      <dt>get_guide_summary</dt><dd>Small payload: what is required, the rules, the scenarios. Start here.</dd>
+      <dt>get_rules</dt><dd>The hub's enforced rules, in its own words.</dd>
       <dt>get_segment</dt><dd>One segment with its elements and code values.</dd>
       <dt>get_code_list</dt><dd>Accepted values for one element.</dd>
-      <dt>get_sample</dt><dd>A structural sample for one scenario.</dd>
       <dt>get_guide_markdown</dt><dd>The whole guide, when you want it all in context.</dd>
     </dl>
     <h3 style="margin-top:18px">Limitations</h3>
@@ -380,7 +381,7 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
     <li><b>Hub attestation:</b> authorized representative and approval date recorded.</li>
     <li><b>Source citation:</b> each segment, element and rule cites its source document page.</li>
     <li><b>Version history:</b> published versions remain accessible and unchanged.</li>
-    <li><b>Enforcement scope:</b> each rule states whether the hub rejects, holds or advises.</li>
+    <li><b>Hub wording:</b> each rule is carried in the hub's own words, including any consequence it states.</li>
   </ul>
 </div></section>
 
