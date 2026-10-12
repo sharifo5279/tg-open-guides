@@ -298,7 +298,7 @@ table.tbl .codes b { color: var(--ink); font-weight: 600; }
 /* Tabs */
 .tabbar { position: sticky; top: 61px; z-index: 15; background: var(--white); border-bottom: 1px solid var(--line); }
 .tabbar-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab { display: inline-flex; align-items: center; gap: 6px; padding: 11px 12px 9px; font-size: 14px; font-weight: 500; color: var(--slate); border-bottom: 2px solid transparent; white-space: nowrap; }
 .tab:hover { color: var(--ink); text-decoration: none; }
@@ -364,7 +364,8 @@ td.cite-c { white-space: nowrap; text-align: right; }
 .st-note { display: block; font-size: 12px; color: var(--slate); margin-top: 1px; max-width: 90ch; font-weight: 400; }
 .el-unused { opacity: .55; }
 .codes { display: inline; }
-.cd { display: inline; white-space: nowrap; }
+.cd { display: inline; }
+.cd > code { white-space: nowrap; }
 .cd::after { content: " \00b7 "; color: #aab2bf; white-space: normal; }
 .cd:last-child::after { content: ""; }
 .cite { margin-left: 6px; }
@@ -392,8 +393,7 @@ td.cite-c { white-space: nowrap; text-align: right; }
 html:not(.js) .st-tog .chev { display: none; }
 html:not(.js) .st-det[hidden] { display: table-row; }
 .tbl-st > tbody > tr.st-det > td { padding: 0 0 10px; background: #FAFBFC; }
-.st-det-in { margin: 0 8px 0 40px; border: 1px solid var(--line); border-radius: var(--r-s); background: var(--white); overflow-x: auto; }
-.st-det-in .tbl-el { min-width: 640px; }
+.st-det-in { margin: 0 8px 0 40px; border: 1px solid var(--line); border-radius: var(--r-s); background: var(--white); }
 .st-det-in .tbl-el th { border-bottom-width: 1px; background: var(--cloud); }
 .st-det-in .tbl-el tr:last-child td { border-bottom: 0; }
 .tbl-el { table-layout: fixed; }
@@ -466,6 +466,18 @@ body:not(.on-structure) .rail, html:not(.js) .rail { display: none; }
   .tbl-st > thead > tr > th:nth-child(5), .tbl-st > thead > tr > th:nth-child(6), .tbl-st > tbody > tr > td.num, .tbl-st > thead > tr > th:nth-child(7), .tbl-st > tbody > tr > td.cite-c { display: none; }
   .tbl-st > tbody > tr > td, .tbl-st > thead > tr > th { padding: 6px 6px; }
   .st-det-in { margin-left: 6px; margin-right: 6px; }
+  /* Element rows wrap into two lines: identity, then notes. Type and min/max
+     are small enough to sit on the first line. */
+  .tbl-el, .tbl-el tbody, .tbl-el tr { display: block; }
+  .tbl-el thead { display: none; }
+  .tbl-el tr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto auto; gap: 2px 6px; align-items: baseline; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  .tbl-el tr:last-child { border-bottom: 0; }
+  .tbl-el td { display: block; padding: 0; border: 0; width: auto; }
+  .tbl-el td:nth-child(5)::after { content: "/"; color: #aab2bf; margin-left: 2px; }
+  .tbl-el td:nth-child(6) { margin-left: -4px; }
+  .nav-me { white-space: nowrap; }
+  .tbl-el td.notes { grid-column: 1 / -1; font-size: 12.5px; }
+  .tbl-el td.notes:empty { display: none; }
   .guidehead h1 { font-size: 22px; }
   .h1-sub { font-size: 17px; }
 }
@@ -492,6 +504,11 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 /* Very small phones (320px, an SE). The brand lock-up plus three nav items do
    not fit, so the mark shrinks and the nav scrolls rather than pushing the
    whole page sideways. */
+@media (max-width: 480px) {
+  .topnav { flex: 1 1 auto; min-width: 0; justify-content: flex-end; overflow-x: auto; scrollbar-width: none; gap: 12px; font-size: 13px; }
+  .topnav::-webkit-scrollbar { display: none; }
+  .topbar-in { min-width: 0; }
+}
 @media (max-width: 380px) {
   .topbar-in { gap: 8px; }
   .ot-logo { width: 88px; }
