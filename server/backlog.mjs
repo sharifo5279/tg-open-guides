@@ -200,6 +200,14 @@ export const EPICS = [
     ]
   },
   {
+    id: 'E14',
+    name: 'Claude connector',
+    why: 'Testing and demonstrating agent access from Claude.',
+    items: [
+      { id: 'E14-1', title: 'MCP connector for Claude', detail: 'Connect Claude to the Open Guides MCP endpoint for testing and demos.', personas: ['agent', 'platform-admin'], size: 'S', state: 'Not started' }
+    ]
+  },
+  {
     id: 'E13',
     name: 'Later horizon',
     why: 'Sequenced after the items above. Recorded so the direction is not lost.',
