@@ -34,7 +34,9 @@ export const EPICS = [
       { id: 'E1-5', title: 'Roles and permissions', detail: 'Owner, admin, editor and reader per hub. Only owners attest and publish.', personas: ['hub-admin', 'hub-editor'], size: 'M', state: 'Partial' },
       { id: 'E1-6', title: 'Invite users to a hub', detail: 'Invite by email, assign a role, revoke access.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
       { id: 'E1-7', title: 'Professional services author role', detail: 'Authors across the hubs assigned to an engagement. Cannot attest or publish.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E1-8', title: 'Full entitlement', detail: 'Every account has every capability. No plans, no billing, no commercial metering.', personas: ['platform-admin'], size: 'S', state: 'Decided' }
+      { id: 'E1-9', title: 'Platform administrators', detail: 'Held by an environment list, reconciled on sign-in. Required to create a hub.', personas: ['platform-admin'], size: 'S', state: 'Done' },
+      { id: 'E1-10', title: 'Self-service hub sign-up', detail: 'A partner creates its own hub without an administrator. Gated until the product is public.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E1-8', title: 'Full entitlement', detail: 'No plans, billing or commercial metering. Capability differs by role, not by plan.', personas: ['platform-admin'], size: 'S', state: 'Decided' }
     ]
   },
   {
@@ -56,7 +58,7 @@ export const EPICS = [
     name: 'Hub onboarding',
     why: 'A hub owner must be able to go from sign-up to a published guide without support.',
     items: [
-      { id: 'E3-1', title: 'Create a hub', detail: 'Name, legal name, industry, description, partner term. The creator becomes its owner.', personas: ['hub-owner'], size: 'M', state: 'Done' },
+      { id: 'E3-1', title: 'Create a hub', detail: 'A platform administrator creates the hub and names its owner by email.', personas: ['platform-admin', 'hub-owner'], size: 'M', state: 'Done' },
       { id: 'E3-2', title: 'Hub profile editor', detail: 'Envelope identifiers, delimiters, X12 version, acknowledgment and interface windows.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
       { id: 'E3-3', title: 'Hub-wide rules editor', detail: 'Rules that apply across every document, in the hub’s own words.', personas: ['hub-owner'], size: 'M', state: 'Done' },
       { id: 'E3-4', title: 'Contacts', detail: 'Named contacts by what they resolve.', personas: ['hub-owner'], size: 'S', state: 'Done' },

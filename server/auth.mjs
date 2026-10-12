@@ -14,11 +14,12 @@ import {
   findOrCreateAccount,
   membershipIn,
   membershipsFor,
-  atLeast
+  atLeast,
+  reconcilePlatformAdmin
 } from './accounts.mjs';
 import { dbAvailable } from './store.mjs';
 import { requestContext } from './context.mjs';
-import { renderSignIn } from './render/account.mjs';
+import { renderSignIn, renderNoAccess } from './render/account.mjs';
 
 const GOOGLE_AUTH = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token';
@@ -91,6 +92,14 @@ export function attachAccount() {
     res.locals.account = req.account;
     requestContext.run({ account: req.account }, next);
   };
+}
+
+/* Creating a hub is an administrative action: the platform creates the hub and
+   names its owner. */
+export function requirePlatformAdmin(req, res, next) {
+  if (!req.account) return requireAccount(req, res, next);
+  if (req.account.is_platform_admin) return next();
+  return res.status(403).type('html').send(renderNoAccess());
 }
 
 export function requireAccount(req, res, next) {
@@ -217,7 +226,7 @@ export function mountAuth(app, { baseUrlOf }) {
 }
 
 async function signIn(req, res, profile) {
-  const account = await findOrCreateAccount(profile);
+  const account = await reconcilePlatformAdmin(await findOrCreateAccount(profile));
   const { token } = await createSession(account.id, req.get('user-agent') || '');
   res.cookie(COOKIE, token, cookieOptions(req));
   return account;

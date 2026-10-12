@@ -45,6 +45,19 @@ export function renderSignIn({ next = '/account', google = false, dev = false, e
   return layout({ title: 'Sign in | Trading Grid Open Guides', body });
 }
 
+export function renderNoAccess() {
+  const body = `
+<div class="phead"><div class="shell-narrow">
+  <h1>Not permitted</h1>
+  <p class="lede">Creating a hub requires a platform administrator.</p>
+</div></div>
+<section class="section"><div class="shell-narrow">
+  <p class="notice">Ask a platform administrator to create the hub and name you as its owner.</p>
+  <div class="copyrow"><a class="btn btn-outline" href="/account">Back to account</a></div>
+</div></section>`;
+  return layout({ title: 'Not permitted | Trading Grid Open Guides', body });
+}
+
 export function renderAccount({ account, memberships = [] }) {
   const body = `
 <div class="phead"><div class="shell-narrow">
@@ -65,7 +78,9 @@ export function renderAccount({ account, memberships = [] }) {
          <span class="el-note">${esc(m.role)}${m.engagement_ends_at ? `, until ${esc(String(m.engagement_ends_at).slice(0, 10))}` : ''}</span>
        </a></li>`).join('')}</ul>`
     : '<p class="notice">This account belongs to no hub yet.</p>'}
-  <div class="copyrow" style="margin-top:18px"><a class="btn" href="/hubs/new">Create a hub</a></div>
+  ${account.is_platform_admin
+    ? '<div class="copyrow" style="margin-top:18px"><a class="btn" href="/hubs/new">Create a hub</a></div>'
+    : '<p class="rc-note" style="margin-top:14px">A platform administrator creates a hub and names its owner.</p>'}
 </div></section>
 
 <section class="section"><div class="shell-narrow">

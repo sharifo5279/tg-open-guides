@@ -134,3 +134,24 @@ export async function addMembership({ accountId, hubId, role, invitedBy = null, 
     [id('mem'), accountId, hubId, role, invitedBy, engagementEndsAt]
   );
 }
+
+/* ---------------------------------------------------- platform administrators
+
+   The PLATFORM_ADMINS environment variable is the single source of truth, and
+   it is reconciled on every sign-in: an address added to it is promoted, an
+   address removed from it is demoted. There is no other way to hold the flag,
+   so a person removed from the list cannot keep it. */
+
+export function platformAdminList() {
+  return String(process.env.PLATFORM_ADMINS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export async function reconcilePlatformAdmin(account) {
+  const shouldBe = platformAdminList().includes(String(account.email).toLowerCase());
+  if (shouldBe === account.is_platform_admin) return account;
+  await query(`UPDATE accounts SET is_platform_admin = $2 WHERE id = $1`, [account.id, shouldBe]);
+  return { ...account, is_platform_admin: shouldBe };
+}

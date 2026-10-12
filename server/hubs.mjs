@@ -7,7 +7,7 @@
 import { randomBytes } from 'node:crypto';
 import { one, query } from './db.mjs';
 import { addMembership, membershipIn, atLeast } from './accounts.mjs';
-import { requirePlatformAdmin } from './auth.mjs';
+import { requireAccount, requirePlatformAdmin } from './auth.mjs';
 import { renderHubForm } from './render/hubform.mjs';
 
 const RESERVED = new Set([
@@ -49,6 +49,7 @@ export function mountHubs(app, { listHubs }) {
         industry: clean(req.body.industry, 80),
         partnerTerm: clean(req.body.partnerTerm, 40),
         about: clean(req.body.about, 600),
+        ownerEmail: String(req.body.ownerEmail || '').trim().toLowerCase() || null,
         slug: slugify(req.body.slug || req.body.name)
       };
 
@@ -67,6 +68,21 @@ export function mountHubs(app, { listHubs }) {
         );
       }
 
+      /* The owner must already have signed in once, because a membership points
+         at an account rather than an address. */
+      let owner = req.account;
+      if (values.ownerEmail && values.ownerEmail !== req.account.email) {
+        owner = await one(`SELECT * FROM accounts WHERE email = $1`, [values.ownerEmail]);
+        if (!owner) {
+          return res.status(400).type('html').send(
+            renderHubForm({
+              values,
+              error: `No account for ${values.ownerEmail}. Ask them to sign in once, then create the hub.`
+            })
+          );
+        }
+      }
+
       const hub = await one(
         `INSERT INTO hubs (id, slug, name, legal_name, industry, about, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -80,18 +96,18 @@ export function mountHubs(app, { listHubs }) {
           req.account.id
         ]
       );
-      await addMembership({ accountId: req.account.id, hubId: hub.id, role: 'owner' });
+      await addMembership({ accountId: owner.id, hubId: hub.id, role: 'owner' });
       res.redirect(`/h/${hub.slug}`);
     } catch (err) {
       next(err);
     }
   });
 
-  app.get('/h/:hub/settings', requirePlatformAdmin, withHubRole('admin'), (req, res) => {
+  app.get('/h/:hub/settings', requireAccount, withHubRole('admin'), (req, res) => {
     res.type('html').send(renderHubForm({ hub: toForm(req.hubRow) }));
   });
 
-  app.post('/h/:hub/settings', requirePlatformAdmin, withHubRole('admin'), async (req, res, next) => {
+  app.post('/h/:hub/settings', requireAccount, withHubRole('admin'), async (req, res, next) => {
     try {
       const name = clean(req.body.name);
       if (!name) {

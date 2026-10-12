@@ -67,7 +67,7 @@ export function renderHubForm({ hub = null, error = '', values = {} } = {}) {
   <h1>${editing ? 'Hub settings' : 'Create a hub'}</h1>
   <p class="lede">${editing
     ? 'What partners read on this hub page.'
-    : 'A hub publishes its own EDI requirements. You become its owner.'}</p>
+    : 'A hub publishes its own EDI requirements. Name the person who will own it.'}</p>
 </div></div>
 
 <section class="section"><div class="shell-narrow">
@@ -87,6 +87,13 @@ export function renderHubForm({ hub = null, error = '', values = {} } = {}) {
       : field('URL name', 'slug', v.slug || '', {
           hint: 'Lower case letters, numbers and hyphens. Left blank, it follows the hub name.',
           placeholder: 'northwind-grocery'
+        })}
+    ${editing
+      ? ''
+      : field('Owner email', 'ownerEmail', v.ownerEmail || '', {
+          type: 'email',
+          hint: 'The account that will attest and publish. Left blank, you own it. They must have signed in at least once.',
+          placeholder: 'owner@company.com'
         })}
     ${field('Partner term', 'partnerTerm', v.partnerTerm || '', {
       hint: 'What this hub calls the organisations it trades with: supplier, vendor, carrier.',
