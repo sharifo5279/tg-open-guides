@@ -122,7 +122,7 @@ async function dbHubs() {
   if (!(await dbAvailable())) return [];
   try {
     const rows = await many(
-      `SELECT slug, name, legal_name, industry, about FROM hubs ORDER BY name`
+      `SELECT slug, name, legal_name, industry, about, contacts, common_rules FROM hubs ORDER BY name`
     );
     return rows.map((h) => ({
       slug: h.slug,
@@ -131,8 +131,8 @@ async function dbHubs() {
       industry: h.industry,
       about: h.about,
       stdVersion: null,
-      commonRules: [],
-      contacts: [],
+      commonRules: h.common_rules || [],
+      contacts: h.contacts || [],
       setRoles: {},
       fromDb: true
     }));

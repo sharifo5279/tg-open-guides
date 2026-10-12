@@ -99,14 +99,30 @@ export function mountHubs(app, { listHubs }) {
           renderHubForm({ hub: toForm(req.hubRow), error: 'Enter a hub name.', values: req.body })
         );
       }
+      const contacts = parseContacts(req.body);
+      const rules = parseRules(req.body);
+      const listError = contacts.error || rules.error;
+      if (listError) {
+        return res.status(400).type('html').send(
+          renderHubForm({
+            hub: toForm(req.hubRow),
+            error: listError,
+            values: { ...req.body, contacts: contacts.rows, commonRules: rules.rows }
+          })
+        );
+      }
       await query(
-        `UPDATE hubs SET name = $2, legal_name = $3, industry = $4, about = $5 WHERE id = $1`,
+        `UPDATE hubs SET name = $2, legal_name = $3, industry = $4, about = $5,
+                         contacts = $6::jsonb, common_rules = $7::jsonb
+          WHERE id = $1`,
         [
           req.hubRow.id,
           name,
           clean(req.body.legalName),
           clean(req.body.industry, 80),
-          clean(req.body.about, 600)
+          clean(req.body.about, 600),
+          JSON.stringify(contacts.rows),
+          JSON.stringify(rules.rows)
         ]
       );
       res.redirect(`/h/${req.hubRow.slug}`);
@@ -123,8 +139,65 @@ function toForm(row) {
     legalName: row.legal_name,
     industry: row.industry,
     about: row.about,
-    partnerTerm: row.partner_term || ''
+    partnerTerm: row.partner_term || '',
+    contacts: row.contacts || [],
+    commonRules: row.common_rules || []
   };
+}
+
+const MAX_CONTACTS = 10;
+const MAX_RULES = 30;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* Repeated form fields arrive as a string for one row and an array for more.
+   Every row submits every field, so the arrays stay aligned by index. */
+function listOf(value) {
+  if (value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+/* A row with neither a name nor an email is an empty slot and is dropped. */
+function parseContacts(body) {
+  const roles = listOf(body.contactRole);
+  const names = listOf(body.contactName);
+  const emails = listOf(body.contactEmail);
+  const notes = listOf(body.contactNote);
+  const rows = [];
+  for (let i = 0; i < names.length; i += 1) {
+    const row = {
+      role: clean(roles[i], 80),
+      name: clean(names[i], 120),
+      email: clean(emails[i], 160),
+      note: clean(notes[i], 300)
+    };
+    if (!row.name && !row.email) continue;
+    rows.push(row);
+  }
+  const bad = rows.find((r) => r.email && !EMAIL.test(r.email));
+  if (bad) return { rows, error: `Contact email ${bad.email} is not a valid address.` };
+  if (rows.length > MAX_CONTACTS) return { rows, error: `A hub can list up to ${MAX_CONTACTS} contacts.` };
+  return { rows, error: null };
+}
+
+/* Rules are numbered in the order the hub lists them. A row without a
+   statement is an empty slot and is dropped. */
+function parseRules(body) {
+  const statements = listOf(body.ruleStatement);
+  const applies = listOf(body.ruleAppliesTo);
+  const reasons = listOf(body.ruleRationale);
+  const rows = [];
+  for (let i = 0; i < statements.length; i += 1) {
+    const statement = clean(statements[i], 600);
+    if (!statement) continue;
+    rows.push({
+      id: `H-${String(rows.length + 1).padStart(2, '0')}`,
+      statement,
+      appliesTo: clean(applies[i], 80),
+      rationale: clean(reasons[i], 600)
+    });
+  }
+  if (rows.length > MAX_RULES) return { rows, error: `A hub can list up to ${MAX_RULES} rules.` };
+  return { rows, error: null };
 }
 
 /* Loads the hub by slug, then checks the membership against that row's id. The

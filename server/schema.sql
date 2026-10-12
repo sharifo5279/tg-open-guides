@@ -142,3 +142,8 @@ ALTER TABLE hubs ADD COLUMN IF NOT EXISTS created_by TEXT REFERENCES accounts(id
 UPDATE guides SET visibility = 'open'     WHERE visibility = 'public';
 UPDATE guides SET visibility = 'approval' WHERE visibility = 'community';
 ALTER TABLE guides ALTER COLUMN visibility SET DEFAULT 'open';
+
+-- A hub's contacts and hub-wide rules, in the hub's own words. Stored as
+-- ordered lists on the hub because they are edited and read as a whole.
+ALTER TABLE hubs ADD COLUMN IF NOT EXISTS contacts     JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE hubs ADD COLUMN IF NOT EXISTS common_rules JSONB NOT NULL DEFAULT '[]'::jsonb;

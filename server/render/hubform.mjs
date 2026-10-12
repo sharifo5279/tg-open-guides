@@ -23,6 +23,40 @@ function field(label, name, value = '', { type = 'text', required = false, hint 
   </label>`;
 }
 
+function rowInput(label, name, value = '', { type = 'text', placeholder = '' } = {}) {
+  return `<label class="ff">
+    <span class="ff-l">${esc(label)}</span>
+    <input type="${esc(type)}" name="${esc(name)}" value="${esc(value || '')}" placeholder="${esc(placeholder)}">
+  </label>`;
+}
+
+/* Existing rows plus two empty ones. A row left blank is removed on save. */
+function withBlanks(rows, blank) {
+  return [...(rows || []), blank, blank];
+}
+
+function contactRows(contacts) {
+  return withBlanks(contacts, {}).map((c) => `<div class="ffrow"><div class="ffgrid">
+    ${rowInput('Resolves', 'contactRole', c.role, { placeholder: 'EDI operations' })}
+    ${rowInput('Name', 'contactName', c.name, { placeholder: 'EDI Support' })}
+    ${rowInput('Email', 'contactEmail', c.email, { type: 'email', placeholder: 'edi@example.com' })}
+    ${rowInput('Note', 'contactNote', c.note, { placeholder: 'Hours, or which issues to send here' })}
+  </div></div>`).join('');
+}
+
+function ruleRows(rules) {
+  return withBlanks(rules, {}).map((r) => `<div class="ffrow">
+    <label class="ff">
+      <span class="ff-l">Rule${r.id ? ` <i>${esc(r.id)}</i>` : ''}</span>
+      <textarea name="ruleStatement" rows="2" placeholder="ISA15 must be T until production cutover is confirmed in writing.">${esc(r.statement || '')}</textarea>
+    </label>
+    <div class="ffgrid">
+      ${rowInput('Applies to', 'ruleAppliesTo', r.appliesTo, { placeholder: 'ISA15, or transmission' })}
+      ${rowInput('Reason', 'ruleRationale', r.rationale, { placeholder: 'Why the hub enforces it' })}
+    </div>
+  </div>`).join('');
+}
+
 export function renderHubForm({ hub = null, error = '', values = {} } = {}) {
   const editing = Boolean(hub);
   const v = { ...(hub || {}), ...values };
@@ -32,7 +66,7 @@ export function renderHubForm({ hub = null, error = '', values = {} } = {}) {
 <div class="phead"><div class="shell-narrow">
   <h1>${editing ? 'Hub settings' : 'Create a hub'}</h1>
   <p class="lede">${editing
-    ? 'What partners read at the top of this hub.'
+    ? 'What partners read on this hub page.'
     : 'A hub publishes its own EDI requirements. You become its owner.'}</p>
 </div></div>
 
@@ -62,6 +96,13 @@ export function renderHubForm({ hub = null, error = '', values = {} } = {}) {
       <span class="ff-l">About <i>optional</i></span>
       <textarea name="about" rows="3" placeholder="What this organisation does and who it trades with.">${esc(v.about || '')}</textarea>
     </label>
+    ${editing ? `
+    <h2 class="ff-sec">Contacts</h2>
+    <p class="ff-h ff-sec-h">Who partners contact, by the issue each one resolves. Clear a row to remove it.</p>
+    ${contactRows(v.contacts)}
+    <h2 class="ff-sec">Hub-wide rules</h2>
+    <p class="ff-h ff-sec-h">Requirements that apply to every document. Numbered in the order listed. Clear a rule to remove it.</p>
+    ${ruleRows(v.commonRules)}` : ''}
     <div class="copyrow">
       <button class="btn" type="submit">${editing ? 'Save settings' : 'Create hub'}</button>
       ${editing ? `<a class="btn btn-quiet" href="/h/${esc(hub.slug)}">Back to hub</a>` : '<a class="btn btn-quiet" href="/account">Cancel</a>'}
