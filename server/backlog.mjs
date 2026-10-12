@@ -34,8 +34,9 @@ export const EPICS = [
       { id: 'E1-5', title: 'Roles and permissions', detail: 'Owner, admin, editor and reader per hub. Only owners attest and publish.', personas: ['hub-admin', 'hub-editor'], size: 'M', state: 'Partial' },
       { id: 'E1-6', title: 'Invite users to a hub', detail: 'Invite by email, assign a role, revoke access.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
       { id: 'E1-7', title: 'Professional services author role', detail: 'Authors across the hubs assigned to an engagement. Cannot attest or publish.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E1-9', title: 'Platform administrators', detail: 'Held by an environment list, reconciled on sign-in. Required to create a hub.', personas: ['platform-admin'], size: 'S', state: 'Done' },
-      { id: 'E1-10', title: 'Self-service hub sign-up', detail: 'A partner creates its own hub without an administrator. Gated until the product is public.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E1-9', title: 'Platform administrators', detail: 'An environment list names who may sign in and who administers. Unset means nobody.', personas: ['platform-admin'], size: 'S', state: 'Done' },
+      { id: 'E1-10', title: 'Open sign-in', detail: 'Anyone may hold an account. Today the environment list is the only way in, so a hub owner must be on it.', personas: ['hub-owner', 'partner-member'], size: 'S', state: 'Not started' },
+      { id: 'E1-11', title: 'Self-service hub sign-up', detail: 'A partner creates its own hub without an administrator. Gated until the product is public.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
       { id: 'E1-8', title: 'Full entitlement', detail: 'No plans, billing or commercial metering. Capability differs by role, not by plan.', personas: ['platform-admin'], size: 'S', state: 'Decided' }
     ]
   },

@@ -137,13 +137,18 @@ export async function addMembership({ accountId, hubId, role, invitedBy = null, 
 
 /* ---------------------------------------------------- platform administrators
 
-   The PLATFORM_ADMINS environment variable is the single source of truth, and
-   it is reconciled on every sign-in: an address added to it is promoted, an
-   address removed from it is demoted. There is no other way to hold the flag,
-   so a person removed from the list cannot keep it. */
+   The environment names who may sign in, and everyone named is a platform
+   administrator. PLATFORM_ADMINS holds a comma separated list;
+   PLATFORM_ADMIN_EMAIL holds a single address and is accepted as well. Both
+   unset means nobody can sign in, so a missing setting fails closed.
+
+   Authority is derived from this list on every request rather than read from
+   the account row, so no account can hold the flag by having once been in it.
+   The row is kept in step on sign-in for the record. */
 
 export function platformAdminList() {
-  return String(process.env.PLATFORM_ADMINS || '')
+  return [process.env.PLATFORM_ADMIN_EMAIL || '', process.env.PLATFORM_ADMINS || '']
+    .join(',')
     .split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);

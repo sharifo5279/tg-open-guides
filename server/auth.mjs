@@ -15,7 +15,8 @@ import {
   membershipIn,
   membershipsFor,
   atLeast,
-  reconcilePlatformAdmin
+  reconcilePlatformAdmin,
+  platformAdminList
 } from './accounts.mjs';
 import { dbAvailable } from './store.mjs';
 import { requestContext } from './context.mjs';
@@ -31,16 +32,10 @@ export function googleConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 }
 
-/* The platform is single-operator. PLATFORM_ADMIN_EMAIL names the one account
-   that may sign in; it is the platform administrator. Unset means nobody can
-   sign in, so a missing setting fails closed. */
-function adminEmail() {
-  return String(process.env.PLATFORM_ADMIN_EMAIL || '').trim().toLowerCase();
-}
-
+/* Who may sign in, and who is an administrator: the same list today. See
+   platformAdminList in accounts.mjs. Unset means nobody, so it fails closed. */
 export function isPlatformAdmin(email) {
-  const allowed = adminEmail();
-  return Boolean(allowed) && String(email || '').trim().toLowerCase() === allowed;
+  return platformAdminList().includes(String(email || '').trim().toLowerCase());
 }
 
 export function devSignInEnabled() {
@@ -106,12 +101,6 @@ export function requireAccount(req, res, next) {
   if (req.account) return next();
   const next_ = encodeURIComponent(req.originalUrl);
   return res.redirect(`/signin?next=${next_}`);
-}
-
-export function requirePlatformAdmin(req, res, next) {
-  if (!req.account) return requireAccount(req, res, next);
-  if (req.account.is_platform_admin) return next();
-  return res.status(403).send('Not permitted');
 }
 
 /* Role check for one hub. The hub is named by the caller, never read from the
