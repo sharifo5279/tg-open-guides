@@ -22,6 +22,7 @@ import { initHighlight } from './highlight.mjs';
 import { mountAuth, attachAccount, requireAccount } from './auth.mjs';
 import { membershipsFor, destroyExpiredSessions } from './accounts.mjs';
 import { renderAccount } from './render/account.mjs';
+import { mountHubs, roleInHub } from './hubs.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -120,7 +121,9 @@ app.get('/h/:hub', async (req, res, next) => {
       });
     }
 
-    res.type('html').send(renderHub({ hub, guides, baseUrl: base }));
+    res.type('html').send(
+      renderHub({ hub, guides, baseUrl: base, role: await roleInHub(req.account, slug) })
+    );
   } catch (err) {
     next(err);
   }
@@ -297,6 +300,7 @@ app.get('/g/:hub/:guide/v/:version', async (req, res, next) => {
 /* ---------------------------------------------------------------- accounts */
 
 mountAuth(app, { baseUrlOf });
+mountHubs(app, { listHubs });
 
 app.get('/account', requireAccount, async (req, res, next) => {
   try {

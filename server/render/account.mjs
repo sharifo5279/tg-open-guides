@@ -64,6 +64,7 @@ export function renderAccount({ account, memberships = [] }) {
          <span class="el-note">${esc(m.role)}${m.engagement_ends_at ? `, until ${esc(String(m.engagement_ends_at).slice(0, 10))}` : ''}</span>
        </a></li>`).join('')}</ul>`
     : '<p class="notice">This account belongs to no hub yet.</p>'}
+  <div class="copyrow" style="margin-top:18px"><a class="btn" href="/hubs/new">Create a hub</a></div>
 </div></section>
 
 <section class="section"><div class="shell-narrow">

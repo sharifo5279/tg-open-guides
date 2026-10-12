@@ -94,6 +94,21 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
 }
 .signin-dev input:focus { outline: 2px solid var(--primary); outline-offset: -1px; border-color: var(--primary); }
 @media (max-width: 560px) { .signin-dev .formrow { grid-template-columns: 1fr; } }
+
+/* Hub form */
+.hubform { max-width: 560px; }
+.ff { display: block; margin-bottom: 16px; }
+.ff-l { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
+.ff-l i { font-style: normal; font-weight: 400; color: var(--slate); }
+.ff-h { display: block; font-size: 12px; color: var(--slate); margin-top: 5px; }
+.hubform input, .hubform select, .hubform textarea {
+  display: block; width: 100%; font: 400 14px/1.45 var(--sans); color: var(--ink);
+  padding: 8px 11px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+}
+.hubform textarea { resize: vertical; }
+.hubform input:focus, .hubform select:focus, .hubform textarea:focus {
+  outline: 2px solid var(--primary); outline-offset: -1px; border-color: var(--primary);
+}
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .brand:hover { text-decoration: none; }
 .ot-logo { display: block; flex: none; }

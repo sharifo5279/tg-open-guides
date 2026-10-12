@@ -116,7 +116,41 @@ async function loadSeeds() {
  * guide happens to load first. Two guides from the same hub could disagree
  * about a receiver ID, and the hub page would silently pick one.
  */
+/* Hubs created in the application, which the seed manifest knows nothing
+   about. Cached only for the seeds, since a hub can be created at any time. */
+async function dbHubs() {
+  if (!(await dbAvailable())) return [];
+  try {
+    const rows = await many(
+      `SELECT slug, name, legal_name, industry, about FROM hubs ORDER BY name`
+    );
+    return rows.map((h) => ({
+      slug: h.slug,
+      name: h.name,
+      legalName: h.legal_name,
+      industry: h.industry,
+      about: h.about,
+      stdVersion: null,
+      commonRules: [],
+      contacts: [],
+      setRoles: {},
+      fromDb: true
+    }));
+  } catch (err) {
+    console.error('[store] hub query failed:', err.message);
+    return [];
+  }
+}
+
 export async function listHubs() {
+  const live = await dbHubs();
+  const seeded = await seedHubs();
+  const slugs = new Set(live.map((h) => h.slug));
+  return [...live, ...seeded.filter((h) => !slugs.has(h.slug))]
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+async function seedHubs() {
   if (hubCache) return hubCache;
   try {
     const raw = await readFile(path.join(seedDir, 'generated', '_hubs.json'), 'utf8');
@@ -152,6 +186,7 @@ export async function getHub(slug) {
 }
 
 export async function listGuides({ includeUnlisted = false } = {}) {
+  let live = [];
   if (await dbAvailable()) {
     const rows = await many(
       `SELECT g.*, h.slug AS hub_slug, h.name AS hub_name,
@@ -168,16 +203,18 @@ export async function listGuides({ includeUnlisted = false } = {}) {
         ORDER BY h.name, g.transaction_set`,
       [includeUnlisted]
     );
-    if (rows.length) return rows;
+    live = rows;
   }
-  const seeds = await loadSeeds();
-  return seeds
-    .map((s) => ({
-      ...s.guide,
-      cur_version: s.version.version,
-      published_at: s.version.published_at,
-      attested_by: s.version.attested_by
-    }))
+  const seeds = (await loadSeeds()).map((s) => ({
+    ...s.guide,
+    cur_version: s.version.version,
+    published_at: s.version.published_at,
+    attested_by: s.version.attested_by
+  }));
+  /* Seeds are frozen sample data. A real guide published under the same hub and
+     slug replaces its sample. */
+  const taken = new Set(live.map((g) => `${g.hub_slug}/${g.slug}`));
+  return [...live, ...seeds.filter((g) => !taken.has(`${g.hub_slug}/${g.slug}`))]
     .sort((a, b) => a.hub_name.localeCompare(b.hub_name) || a.transaction_set.localeCompare(b.transaction_set));
 }
 

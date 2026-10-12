@@ -105,7 +105,7 @@ function docRow(g, role = null) {
 </li>`;
 }
 
-export function renderHub({ hub, guides, baseUrl = '' }) {
+export function renderHub({ hub, guides, baseUrl = '', role = null }) {
   const term = hub.partnerTerm || 'partner';
   const attestedCount = guides.filter((g) => g.attested_by).length;
   const latest = guides
@@ -131,6 +131,10 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
 
   const d = hub.delimiters || {};
   const env = hub.envelope || {};
+  const hasFacts = Boolean(
+    hub.stdVersion || env.qualifier || env.receiverId || env.appReceiverCode ||
+    hub.ackWindow || hub.maintenanceWindow || d.segment
+  );
   const mcpConfig = JSON.stringify(
     { mcpServers: { 'tg-open-guides': { type: 'http', url: `${baseUrl}/mcp` } } },
     null,
@@ -148,7 +152,7 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
   ${hub.legalName ? `<p class="h-legal">${esc(hub.legalName)}</p>` : ''}
   <ul class="specline">
     ${hub.industry ? `<li>${esc(hub.industry)}</li>` : ''}
-    <li>X12 <b>${esc(hub.stdVersion)}</b></li>
+    ${hub.stdVersion ? `<li>X12 <b>${esc(hub.stdVersion)}</b></li>` : ''}
     ${hub.effectiveFrom ? `<li>Effective <b>${esc(hub.effectiveFrom)}</b></li>` : ''}
     <li><b>${guides.length}</b> documents</li>
   </ul>
@@ -157,6 +161,10 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
     <span class="att-label">${esc(attestedCount)} of ${esc(guides.length)} guides carry an attested version${latest ? `, most recently ${esc(String(latest).slice(0, 10))}` : ''}.</span>
     <span class="att-meta">${hub.attestor ? `Signed by ${esc(hub.attestor.name)}, ${esc(hub.attestor.role)}. ` : ''}A hub does not attest as a hub: a named owner signs each version.</span>
   </div>
+  ${role ? `<div class="copyrow" style="margin-top:16px">
+    <a class="btn btn-outline" href="/builder">Publish a guide</a>
+    ${role === 'owner' || role === 'admin' ? `<a class="btn btn-quiet" href="/h/${esc(hub.slug)}/settings">Edit hub settings</a>` : ''}
+  </div>` : ''}
   <p class="lede" style="font-size:15px;margin-top:14px">EDI requirements for ${multiRole
     ? `${esc(hub.name)} ${roles.map((r) => (ROLE_LABELS[r] || r) + 's').join(' and ')}`
     : `${esc(hub.name)} ${esc((ROLE_LABELS[term] || term) + 's')}`}.</p>
@@ -164,7 +172,8 @@ export function renderHub({ hub, guides, baseUrl = '' }) {
 
 <section class="section"><div class="shell">
   <h2>Every document</h2>
-  <p class="section-sub">Grouped by direction of exchange.${multiRole ? ` Each document states which ${esc(hub.name)} partner it applies to.` : ''}</p>
+  ${guides.length ? '' : `<p class="notice">No guide published yet.${role ? ' Publish one from the Guide Builder.' : ''}</p>`}
+  ${guides.length ? `<p class="section-sub">Grouped by direction of exchange.${multiRole ? ` Each document states which ${esc(hub.name)} partner it applies to.` : ''}</p>` : ''}
   ${outbound.length ? `<div class="dgroup">
     <div class="dgroup-h"><h3>Outbound to ${esc(hub.name)}</h3><span class="dg-n">${outbound.length}</span></div>
     <ul class="dlist">${outbound.map((g) => docRow(g, multiRole ? capitalise(ROLE_LABELS[hub.setRoles?.[g.transaction_set]] || '') : null)).join('')}</ul>
@@ -188,7 +197,7 @@ ${rules.length ? `<section class="section"><div class="shell">
   </ul>
 </div></section>` : ''}
 
-<section class="section tight"><div class="shell"><div class="tint">
+${hasFacts ? `<section class="section tight"><div class="shell"><div class="tint">
   <h3>Setup facts</h3>
   <p class="rc-note" style="margin-bottom:14px">Required for initial configuration.</p>
   <div class="factgrid">
@@ -210,12 +219,13 @@ ${rules.length ? `<section class="section"><div class="shell">
     ${env.senderNote ? `<div class="fact fact-wide"><p class="f-lab">Your sender ID</p><p class="f-val">${esc(env.senderNote)}</p></div>` : ''}
     ${env.usageNote ? `<div class="fact fact-wide"><p class="f-lab">Test to production</p><p class="f-val">${esc(env.usageNote)}</p></div>` : ''}
   </div>
-</div></div></section>
+</div></div></section>` : ''}
 
 <section class="section"><div class="shell"><div class="twocol">
   <div>
     <h2>Contacts</h2>
     <p class="section-sub">Requirement questions are resolved by ${esc(hub.name)}.</p>
+    ${(hub.contacts || []).length ? '' : `<p class="notice">No contact listed yet.${role ? ' Add one in hub settings.' : ''}</p>`}
     <ul class="contactgrid">
       ${(hub.contacts || []).map((c) => `<li class="contact">
         <p class="c-role">${esc(c.role || '')}</p>
