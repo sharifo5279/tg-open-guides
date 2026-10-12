@@ -439,7 +439,7 @@ export function renderBacklog({ baseUrl = '' } = {}) {
 ${EPICS.map((e) => `<section class="section"><div class="shell">
   <div class="dgroup-h"><h3>${esc(e.id)}. ${esc(e.name)}</h3><span class="dg-n">${e.items.length}</span></div>
   <p class="section-sub">${esc(e.why)}</p>
-  <div class="tbl-wrap"><table class="tbl tbl-stack">
+  <div class="tbl-wrap"><table class="tbl tbl-stack tbl-bl">
     <thead><tr><th>ID</th><th>Item</th><th>Detail</th><th>Personas</th><th>Size</th><th>State</th></tr></thead>
     <tbody>${e.items.map((i) => `<tr>
       <td class="mono" data-l="ID">${esc(i.id)}</td>

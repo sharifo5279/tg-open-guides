@@ -255,7 +255,8 @@ export function renderGuidePage({
   <b>${esc(g.standard)} ${esc(g.transactionSet)} ${esc(g.version)}</b>
 </div></div>
 
-<div class="guidehead"><div class="wide">
+<div class="guidehead"><div class="wide ghead">
+  <div class="ghead-main">
   <h1>${esc(g.title)}</h1>
   <ul class="specline">
     <li><b>${esc(g.hub?.name || '')}</b></li>
@@ -266,7 +267,8 @@ export function renderGuidePage({
   </ul>
   ${g.summary ? `<p class="lede">${inlineProse(g.summary)}</p>` : ''}
   ${attested}
-  <div class="copyrow">
+  </div>
+  <div class="copyrow ghead-aside">
     <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
     <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
