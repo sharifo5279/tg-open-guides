@@ -20,6 +20,7 @@ import { validateSpec, specStats, DIRECTIONS, USAGE } from './spec.mjs';
 import { modelAvailable, modelName } from './model.mjs';
 import { query, one, many } from './db.mjs';
 import { dbAvailable, newId } from './store.mjs';
+import { requirePlatformAdmin } from './auth.mjs';
 
 const form = express.urlencoded({ extended: false });
 
@@ -395,6 +396,8 @@ function message({ title, lede, links = [] }) {
 /* ------------------------------------------------------------------- routes */
 
 export function mountBuilder(app, { baseUrlOf }) {
+  /* The builder runs the authoring agent on the platform model key. */
+  app.use('/builder', requirePlatformAdmin);
   app.get('/builder', async (req, res, next) => {
     try {
       const dbUp = await dbAvailable();

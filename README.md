@@ -47,6 +47,12 @@ npm run seed
 npm start
 ```
 
+Sign-in is restricted to one account, the platform administrator. The Guide Builder requires it:
+
+```bash
+export PLATFORM_ADMIN_EMAIL=you@example.com   # unset: nobody can sign in
+```
+
 Optional, for the Guide Builder's PDF import:
 
 ```bash
@@ -67,7 +73,7 @@ It is cruder, and it still produces a draft with page citations.
 | `/g/:hub/:guide.md` | the guide as Markdown, for agent context |
 | `/llms.txt` | catalog for agents |
 | `/mcp` | MCP endpoint (streamable HTTP) |
-| `/builder` | Guide Builder |
+| `/builder` | Guide Builder (platform administrator only) |
 | `/hub/:hub/readership` | which versions and surfaces are being read |
 
 ## Licensing note

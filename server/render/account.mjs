@@ -9,7 +9,8 @@ const ERRORS = {
   google_failed: 'Google sign-in did not complete. Try again.',
   google_not_configured: 'Google sign-in is not configured on this environment.',
   unverified_email: 'Google has not verified this address.',
-  bad_email: 'Enter a valid email address.'
+  bad_email: 'Enter a valid email address.',
+  not_permitted: 'This account does not have access.'
 };
 
 export function renderSignIn({ next = '/account', google = false, dev = false, error = '', dbReady = true } = {}) {
