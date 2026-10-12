@@ -146,7 +146,7 @@ export const EPICS = [
       { id: 'E9-1', title: 'Open JSON, Markdown and MCP', detail: 'Served from the published version.', personas: ['agent'], size: 'M', state: 'Done' },
       { id: 'E9-2', title: 'API keys for restricted guides', detail: 'A partner member issues a key to read guides held behind approval.', personas: ['partner-member', 'agent'], size: 'M', state: 'Not started' },
       { id: 'E9-3', title: 'MCP authentication', detail: 'Carry the key through the MCP transport and scope results to it.', personas: ['agent'], size: 'M', state: 'Not started' },
-      { id: 'E9-4', title: 'Rate limiting', detail: 'Per-key and per-address limits on all read surfaces.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
+      { id: 'E9-4', title: 'Rate limiting', detail: 'Per-key and per-address limits on all read surfaces.', personas: ['platform-admin'], size: 'S', state: 'Partial' }
     ]
   },
   {

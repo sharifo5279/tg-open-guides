@@ -23,11 +23,14 @@ import { mountAuth, attachAccount, requireAccount } from './auth.mjs';
 import { membershipsFor, destroyExpiredSessions } from './accounts.mjs';
 import { renderAccount } from './render/account.mjs';
 import { mountHubs, roleInHub } from './hubs.mjs';
+import { rateLimit } from './ratelimit.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', true);
+// Before attachAccount, so a limited request costs no session lookup.
+app.use(rateLimit());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(attachAccount());
