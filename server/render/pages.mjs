@@ -1,7 +1,7 @@
 import { esc, inlineProse, layout } from './html.mjs';
 import { codeBlock } from '../highlight.mjs';
 import { DIRECTIONS } from '../spec.mjs';
-import { EPICS, PERSONAS, OUT_OF_SCOPE } from '../backlog.mjs';
+import { EPICS, PERSONAS, OUT_OF_SCOPE, SCOPE } from '../backlog.mjs';
 
 /**
  * Home and the hub front door.
@@ -469,7 +469,10 @@ ${EPICS.map((e) => `<section class="section"><div class="shell">
 </div></section>`).join('')}
 
 <section class="section"><div class="shell">
-  <h2>Out of scope</h2>
+  <h2>Scope</h2>
+  <p class="section-sub">${esc(SCOPE.statement)}</p>
+  <ul class="inline-list">${SCOPE.tests.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+  <h2 style="margin-top:22px">Out of scope</h2>
   <p class="section-sub">Deliberately excluded. Revisit only with a stated reason.</p>
   <ul class="inline-list">${OUT_OF_SCOPE.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
 </div></section>`;

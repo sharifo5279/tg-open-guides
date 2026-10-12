@@ -137,13 +137,13 @@ export const EPICS = [
   {
     id: 'E8',
     name: 'Partner network',
-    why: 'The growth path is a partner reading a guide, then publishing their own. Nothing supports that today.',
+    why: 'Supplier portal territory under the scope tests. Held at Later; revisit only with a stated reason.',
     items: [
-      { id: 'E8-1', title: 'Invite partners', detail: 'A hub invites its trading partners by email to its guides.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E8-2', title: 'Partner membership', detail: 'An invited partner gets an account linked to the hub, without seeing other partners.', personas: ['partner-member'], size: 'M', state: 'Not started' },
-      { id: 'E8-3', title: 'Partner becomes a hub', detail: 'A partner creates its own hub from the same account and publishes to its own suppliers.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E8-4', title: 'Acknowledge receipt', detail: 'A partner records that it has read a version, giving the hub evidence of distribution.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
-      { id: 'E8-5', title: 'Partner directory', detail: 'A hub sees which partners have accounts and which versions they are on.', personas: ['hub-owner'], size: 'M', state: 'Not started' }
+      { id: 'E8-1', title: 'Invite partners', detail: 'A hub invites its trading partners by email to its guides.', personas: ['hub-owner'], size: 'M', state: 'Later' },
+      { id: 'E8-2', title: 'Partner membership', detail: 'An invited partner gets an account linked to the hub, without seeing other partners.', personas: ['partner-member'], size: 'M', state: 'Later' },
+      { id: 'E8-3', title: 'Partner becomes a hub', detail: 'A partner creates its own hub from the same account and publishes to its own suppliers.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Later' },
+      { id: 'E8-4', title: 'Acknowledge receipt', detail: 'A partner records that it has read a version, giving the hub evidence of distribution.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Later' },
+      { id: 'E8-5', title: 'Partner directory', detail: 'A hub sees which partners have accounts and which versions they are on.', personas: ['hub-owner'], size: 'M', state: 'Later' }
     ]
   },
   {
@@ -166,7 +166,7 @@ export const EPICS = [
       { id: 'E10-2', title: 'Sender domain authentication', detail: 'SPF, DKIM and DMARC on the sending domain so invitations are not filtered.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E10-3', title: 'Registration confirmation', detail: 'Confirm the address and name the account it created.', personas: ['hub-owner', 'partner-member'], size: 'S', state: 'Not started' },
       { id: 'E10-4', title: 'Hub user invitation', detail: 'Invitation to join a hub with a role, on an expiring link.', personas: ['hub-admin'], size: 'S', state: 'Not started' },
-      { id: 'E10-5', title: 'Partner invitation', detail: 'Invitation from a hub to a trading partner, naming the guides.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E10-5', title: 'Partner invitation', detail: 'Invitation from a hub to a trading partner, naming the guides.', personas: ['hub-owner'], size: 'S', state: 'Later' },
       { id: 'E10-6', title: 'Access request and decision', detail: 'Request to the approver, decision to the requester.', personas: ['hub-owner', 'partner-reader'], size: 'S', state: 'Not started' },
       { id: 'E10-7', title: 'Attestation request and reminder', detail: 'To the owner, with one reminder before the request expires.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
       { id: 'E10-8', title: 'Version change notice', detail: 'To partner members following a guide that has published a new version.', personas: ['partner-member'], size: 'S', state: 'Not started' },
@@ -220,6 +220,16 @@ export const EPICS = [
   }
 ];
 
+/* What the product publishes, and the test for anything new. */
+export const SCOPE = {
+  statement: 'EDI implementation guides and the business rules that go with them, as stated and attested by the hub.',
+  tests: [
+    'Changes rarely. Content that would need a new attested version more than a few times a year is out.',
+    'Same for every partner. Anything specific to one partner or one relationship is out.',
+    'A statement, not a state. Requirements and rules are in; status, progress and history are out.'
+  ]
+};
+
 export const OUT_OF_SCOPE = [
   'Trading Grid entitlements and sign-on.',
   'Full theme control. Hub identity is a logo, one accent colour and a display name.',
@@ -227,5 +237,7 @@ export const OUT_OF_SCOPE = [
   'File validation, partner certification and mapping.',
   'Connectivity provisioning: AS2, SFTP, certificates.',
   'A platform-defined business process model. Process is declared by each hub as scenarios.',
-  'An OpenText-maintained X12 standards library. Guide content comes from the hub, by document or by interview.'
+  'An OpenText-maintained X12 standards library. Guide content comes from the hub, by document or by interview.',
+  'Frequently changing reference data: routing codes, ship-to and facility lists, carrier tables.',
+  'Supplier portal functions: partner accounts, onboarding status, acknowledgements, partner profiles.'
 ];
