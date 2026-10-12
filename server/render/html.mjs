@@ -75,7 +75,7 @@ ${head}
 </head>
 <body class="${attr(bodyClass)}">
 <header class="topbar">
-  <div class="shell topbar-in">
+  <div class="wide topbar-in">
     <a class="brand" href="/">
       ${OT_MARK}
       <span class="brand-name">Trading Grid Open Guides</span>
@@ -89,7 +89,7 @@ ${head}
 </header>
 <main>${body}</main>
 <footer class="foot">
-  <div class="shell">
+  <div class="wide">
     <p class="foot-links"><a href="/backlog">Product manager's backlog</a></p>
     <p class="foot-note">Incubation prototype. Hubs attest their own requirements; OpenText publishes and does not verify them. All hubs and guide content here are fictional.</p>
   </div>
