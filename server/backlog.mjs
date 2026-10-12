@@ -183,7 +183,7 @@ export const EPICS = [
       { id: 'E11-2', title: 'Platform admin console', detail: 'List accounts and hubs, suspend an account, handle abuse reports.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E11-3', title: 'Engagement assignment', detail: 'Assign a professional services author to a hub for a period, recorded in the audit log.', personas: ['platform-admin', 'ps-author'], size: 'M', state: 'Not started' },
       { id: 'E11-4', title: 'Audit log', detail: 'Who changed, attested, published, approved or withdrew what, and when.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E11-5', title: 'Error reporting and uptime', detail: 'Server error capture and an external health check.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
+      { id: 'E11-5', title: 'Error reporting and uptime', detail: 'Server errors are logged with their stack. The Render service has no health check path set although /healthz exists; set it in the service settings. External uptime monitoring is not started.', personas: ['platform-admin'], size: 'S', state: 'Partial' },
       { id: 'E11-6', title: 'Account deletion and export', detail: 'Delete an account and export its hubs and guides.', personas: ['hub-admin'], size: 'M', state: 'Not started' }
     ]
   },
@@ -205,7 +205,7 @@ export const EPICS = [
     name: 'Claude connector',
     why: 'Testing and demonstrating agent access from Claude.',
     items: [
-      { id: 'E14-1', title: 'MCP connector for Claude', detail: 'Connect Claude to the Open Guides MCP endpoint for testing and demos.', personas: ['agent', 'platform-admin'], size: 'S', state: 'Not started' }
+      { id: 'E14-1', title: 'MCP connector for Claude', detail: 'The endpoint answers a standard MCP client (six tools listed and called over streamable HTTP). For agents shows the Claude Code command and the Claude.ai custom-connector URL. Not yet exercised from a Claude client.', personas: ['agent', 'platform-admin'], size: 'S', state: 'Built, untested' }
     ]
   },
   {

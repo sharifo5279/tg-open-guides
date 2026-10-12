@@ -367,6 +367,11 @@ export function renderForAgents({ baseUrl = '', guides = [] }) {
     ${codeBlock(mcpConfig, 'json', { id: 'mcp-config' })}
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy config</button>
 
+    <h3 style="margin-top:22px">Connect Claude</h3>
+    <p>Claude Code, one command:</p>
+    ${codeBlock(`claude mcp add --transport http tg-open-guides ${baseUrl}/mcp`, 'bash')}
+    <p>Claude.ai: add a custom connector with the server URL <code>${esc(baseUrl)}/mcp</code>. No authentication is required for open guides.</p>
+
     <h3 style="margin-top:22px">Integration provider</h3>
     <p>Providers use the same endpoints. No OpenText account is required.</p>
   </div>
