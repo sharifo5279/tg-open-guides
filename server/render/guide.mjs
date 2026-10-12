@@ -215,6 +215,13 @@ function diffLabel(f) {
   return `<span class="mono">${esc(ref)}</span> ${esc(String(name).slice(0, 90))}`;
 }
 
+function withdrawForm(v) {
+  if (v.status === 'withdrawn') {
+    return `<form method="post" action="/builder/withdraw/${esc(v.id)}" class="inline-form"><input type="hidden" name="action" value="reinstate"><button class="btn-link" type="submit">Reinstate</button></form>`;
+  }
+  return `<form method="post" action="/builder/withdraw/${esc(v.id)}" class="inline-form" data-confirm="Withdraw version ${esc(v.version)}? It stays readable at its own address."><button class="btn-link warn" type="submit">Withdraw</button></form>`;
+}
+
 function diffBlock(diff, prevV, curV) {
   const n = diff.added.length + diff.removed.length + diff.changed.length;
   if (!n) return `<p class="section-sub">No requirement changes from version ${esc(prevV)}.</p>`;
@@ -241,6 +248,7 @@ export function renderGuidePage({
   guidePath = '',
 }) {
   const g = spec.guide || {};
+  const admin = Boolean(currentAccount()?.is_platform_admin);
   const stats = specStats(spec);
   const areas = outline(spec);
   const rules = spec.rules || [];
@@ -254,6 +262,8 @@ export function renderGuidePage({
     2
   );
 
+  const withdrawn = version?.status === 'withdrawn'
+    ? `<li class="att-no"><b>Withdrawn.</b> This version is no longer current. Use the latest published version.</li>` : '';
   const attested = version?.attested_by
     ? `<li class="att-ok"><b>Attested</b> by ${esc(version.attested_by)}${version.attested_role ? `, ${esc(version.attested_role)}` : ''}, ${esc(new Date(version.attested_at).toISOString().slice(0, 10))}</li>`
     : `<li class="att-no"><b>Not attested.</b> Compiled from ${esc(version?.source_name || 'a source guide')}, not signed by ${esc(g.hub?.name)}. Do not build against it.</li>`;
@@ -284,6 +294,7 @@ export function renderGuidePage({
       ${g.effectiveFrom ? `<li>Effective ${esc(g.effectiveFrom)}</li>` : ''}
       <li>Guide v${esc(version?.version ?? '-')}</li>
       ${attested}
+      ${withdrawn}
     </ul>
     ${g.summary ? `<p class="lede">${inlineProse(g.summary)}</p>` : ''}
   </div>
@@ -291,7 +302,7 @@ export function renderGuidePage({
     <a class="btn btn-outline" href="${esc(mdUrl)}">Markdown</a>
     <a class="btn btn-outline" href="${esc(jsonUrl)}">JSON</a>
     <button class="btn btn-quiet" type="button" data-copy-pre="mcp-config">Copy MCP config</button>
-    ${currentAccount()?.is_platform_admin && version?.import_id ? `<a class="btn btn-quiet" href="/builder/i/${esc(version.import_id)}">Edit in Guide Builder</a>` : ''}
+    ${admin && version?.import_id ? `<a class="btn btn-quiet" href="/builder/i/${esc(version.import_id)}">Edit in Guide Builder</a>` : ''}
   </div>
 </div></div>
 
@@ -362,11 +373,13 @@ ${sidebar(areas)}
         <p class="section-sub">Published versions remain accessible and unchanged.</p>
         <ul class="verlist">
           ${versions.length ? versions.map((v) => `<li>
-<span class="ver ${v.version === version?.version ? 'v-cur' : ''}">v${esc(v.version)}</span>
-<span>${v.published_at ? esc(new Date(v.published_at).toISOString().slice(0, 10)) : 'draft'}</span>
+<span class="ver ${v.version === version?.version ? 'v-cur' : ''}"><a href="${esc(guidePath)}/v/${esc(v.version)}">v${esc(v.version)}</a></span>
+<span>${v.status === 'withdrawn' ? 'withdrawn' : v.published_at ? esc(new Date(v.published_at).toISOString().slice(0, 10)) : 'draft'}</span>
 <span class="rc-note">${esc(v.changelog || '')}</span>
+${admin && v.id && v.status !== 'draft' ? withdrawForm(v) : ''}
 </li>`).join('\n') : '<li><span class="rc-note">This is the first version.</span></li>'}
         </ul>
+        ${admin && version?.id && !version.import_id ? `<form method="post" action="/builder/revise/${esc(version.id)}" class="inline-form" style="margin-top:10px"><button class="btn btn-outline" type="submit">Revise in Guide Builder</button></form>` : ''}
       </div>
       <div class="tint">
         <h3>Source</h3>
@@ -388,6 +401,10 @@ ${rail(areas)}
 
 <script>
 document.documentElement.classList.add('js');
+document.addEventListener('submit', function (e) {
+  var f = e.target.closest('form[data-confirm]');
+  if (f && !confirm(f.getAttribute('data-confirm'))) e.preventDefault();
+});
 
 document.addEventListener('click', function (e) {
   var btn = e.target.closest('[data-copy],[data-copy-pre]');

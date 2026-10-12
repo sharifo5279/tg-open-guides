@@ -252,7 +252,7 @@ export async function getVersion(guideId, versionNumber = null) {
 export async function listVersions(guideId) {
   if (await dbAvailable() && !String(guideId).startsWith('seed_')) {
     return many(
-      `SELECT version, status, changelog, published_at, attested_by, attested_at
+      `SELECT id, version, status, changelog, published_at, attested_by, attested_at, import_id
          FROM guide_versions WHERE guide_id = $1 ORDER BY version DESC`,
       [guideId]
     );

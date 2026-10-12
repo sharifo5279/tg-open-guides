@@ -100,7 +100,7 @@ export const EPICS = [
       { id: 'E5-13', title: 'Triaged review', detail: 'Superseded by E5-19: every finding is a row with a state; open findings are the review queue.', personas: ['hub-editor'], size: 'M', state: 'Done' },
       { id: 'E5-14', title: 'Excel and Word sources', detail: 'Many hubs keep requirements in a spreadsheet rather than a PDF.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E5-15', title: 'Manual correction', detail: 'Edit any field of any finding from the review screen; code values as one line per code.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Done' },
-      { id: 'E5-16', title: 'Revise a published guide', detail: 'Open a published version as a new draft and diff it against the previous one.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-16', title: 'Revise a published guide', detail: 'Revise in Guide Builder opens a published version as a new draft; publishing creates the next version and the Versions tab shows the diff.', personas: ['hub-editor'], size: 'M', state: 'Done' },
       { id: 'E5-17', title: 'Scenarios editor', detail: 'The hub declares its own processes. Process lives here, not in a platform sequence.', personas: ['hub-owner'], size: 'M', state: 'Not started' },
       { id: 'E5-18', title: 'Background compilation', detail: 'Upload returns at once. The compile runs on the server with a live log, survives closing the page and restarts after a server restart.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Done' },
       { id: 'E5-19', title: 'Review before publishing', detail: 'Every finding has a stable ID (F-001) and a state: open, confirmed, edited or dropped. Inline edit, filters, find, confirm all open. Drops are reversible until publication. The draft is saved on each change and reachable from the builder; a published import can be edited and published as the next version.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Done' },
@@ -115,7 +115,7 @@ export const EPICS = [
       { id: 'E6-1', title: 'Attestation by a signed-in owner', detail: 'Replace the open link with an authenticated action recording the account.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
       { id: 'E6-2', title: 'Attestation request', detail: 'An editor or professional services author sends a version to the owner for signature.', personas: ['hub-editor', 'ps-author', 'hub-owner'], size: 'M', state: 'Not started' },
       { id: 'E6-3', title: 'Version diff', detail: 'The Versions tab lists findings added, removed and changed since the previous version, by stable finding ID.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Done' },
-      { id: 'E6-4', title: 'Withdraw a version', detail: 'Mark a published version as withdrawn without deleting it.', personas: ['hub-owner'], size: 'S', state: 'Not started' },
+      { id: 'E6-4', title: 'Withdraw a version', detail: 'An administrator withdraws a published version from the Versions tab; the previous version becomes current, the withdrawn one stays readable and can be reinstated.', personas: ['hub-owner'], size: 'S', state: 'Done' },
       { id: 'E6-5', title: 'Attestation record export', detail: 'A downloadable record of who signed what and when.', personas: ['hub-owner'], size: 'S', state: 'Not started' }
     ]
   },

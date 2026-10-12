@@ -511,6 +511,47 @@ export function mountBuilder(app, { baseUrlOf }) {
     }
   });
 
+  /* Revise: open a published version as a new draft in the builder. The draft
+     is an import whose spec is the version's, so the review, publish and diff
+     path is the same as for a compiled PDF. */
+  app.post('/builder/revise/:versionId', form, async (req, res, next) => {
+    try {
+      const version = await one(`SELECT * FROM guide_versions WHERE id = $1`, [req.params.versionId]);
+      if (!version) return res.status(404).type('html').send(message({ title: 'Version not found', lede: 'No version with that id.', links: [{ href: '/builder', label: 'Builder' }] }));
+      const guide = await one(`SELECT g.*, h.name AS hub_name FROM guides g JOIN hubs h ON h.id = g.hub_id WHERE g.id = $1`, [version.guide_id]);
+      const importId = newId('imp');
+      const spec = prepareForReview(version.spec).spec;
+      await query(
+        `INSERT INTO imports (id, hub_id, source_name, status, pages, spec, compiled_by)
+         VALUES ($1,$2,$3,'ready',$4,$5,$6)`,
+        [importId, guide.hub_id, `${guide.hub_name} ${guide.transaction_set} v${version.version}`, version.source_pages, JSON.stringify(spec), version.compiled_by]
+      );
+      await appendLog(importId, `Opened from published version ${version.version} for revision.`);
+      res.redirect(`/builder/i/${importId}`);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  /* Withdraw: a published version stops being served as current. It stays
+     readable at its own address and can be reinstated. */
+  app.post('/builder/withdraw/:versionId', form, async (req, res, next) => {
+    try {
+      const version = await one(`SELECT * FROM guide_versions WHERE id = $1`, [req.params.versionId]);
+      if (!version) return res.status(404).type('html').send(message({ title: 'Version not found', lede: 'No version with that id.', links: [{ href: '/builder', label: 'Builder' }] }));
+      const guide = await one(`SELECT g.slug, h.slug AS hub_slug FROM guides g JOIN hubs h ON h.id = g.hub_id WHERE g.id = $1`, [version.guide_id]);
+      const reinstate = req.body.action === 'reinstate';
+      if (reinstate) {
+        await query(`UPDATE guide_versions SET status = 'published' WHERE id = $1 AND status = 'withdrawn'`, [version.id]);
+      } else {
+        await query(`UPDATE guide_versions SET status = 'withdrawn' WHERE id = $1 AND status = 'published'`, [version.id]);
+      }
+      res.redirect(`/g/${guide.hub_slug}/${guide.slug}/v/${version.version}#about`);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   /* Attestation publishes a version, so it requires the platform administrator. */
   app.get('/attest/:versionId', async (req, res, next) => {
     try {

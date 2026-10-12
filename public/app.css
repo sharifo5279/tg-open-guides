@@ -430,6 +430,8 @@ body:not(.on-structure) .rail, html:not(.js) .rail { display: none; }
 
 .agentbox pre { margin: 8px 0 10px; }
 .tbl-diff { margin-bottom: 22px; }
+.inline-form { display: inline; }
+.btn-link.warn { color: var(--danger); }
 .dk { font-size: 12px; font-weight: 600; white-space: nowrap; }
 .dk-add { color: var(--success); }
 .dk-rm { color: var(--danger); }
