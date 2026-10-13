@@ -88,11 +88,11 @@ export const EPICS = [
     items: [
       { id: 'E5-1', title: 'Built-in authoring agent', detail: 'One agent with two entry paths, producing the same guide contract either way.', personas: ['hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
       { id: 'E5-2', title: 'Author from a source document', detail: 'The compiler reads the PDF in overlapping windows and cites every finding to a page; uncited findings open for review.', personas: ['hub-editor', 'ps-author'], size: 'L', state: 'Done' },
-      { id: 'E5-3', title: 'Author by interview', detail: 'No source document. The agent asks the hub what it requires and drafts from the answers.', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E5-3', title: 'Author by interview', detail: 'No source document. The agent asks the hub what it requires and drafts from the answers. See E19.', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
       { id: 'E5-4', title: 'Interview workflows', detail: 'A question set per transaction set, asking only what the hub has to decide.', personas: ['hub-editor'], size: 'L', state: 'Not started' },
       { id: 'E5-5', title: 'Standard knowledge at authoring time', detail: 'The agent brings segment and element knowledge to the interview. No standards library is stored or maintained.', personas: ['platform-admin'], size: 'M', state: 'Decided' },
-      { id: 'E5-6', title: 'Resume an interview', detail: 'An interview spans sessions. Answers are saved as given and remain editable.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E5-7', title: 'Answer provenance', detail: 'An interview-authored guide cites the person and date behind each statement, as a document path cites a page.', personas: ['hub-owner', 'partner-reader'], size: 'M', state: 'Not started' },
+      { id: 'E5-6', title: 'Resume an interview', detail: 'An interview spans sessions. Answers are saved as given and remain editable. See E19.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E5-7', title: 'Answer provenance', detail: 'An interview-authored guide cites the person and date behind each statement, as a document path cites a page. See E19.', personas: ['hub-owner', 'partner-reader'], size: 'M', state: 'Not started' },
       { id: 'E5-8', title: 'Platform-supplied model keys', detail: 'Keys are held by the application and never exposed to a hub.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E5-9', title: 'Agent limits', detail: 'One import compiles up to 150 pages. A page cap is not a spend cap: per-hub run, token and cost ceilings are not started, so an engagement can run unbounded against the platform key.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Partial' },
       { id: 'E5-10', title: 'Agent audit trail', detail: 'Each import records who started it, the model, the prompt version and a timed log of every chunk. Per-chunk prompts, raw output and per-finding authorship are not kept.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Partial' },
@@ -281,6 +281,23 @@ export const EPICS = [
     ]
   },
   {
+    id: 'E19',
+    name: 'Build from scratch with Trading Grid Aviator',
+    why: 'Some hubs have no written guide. Trading Grid Aviator builds one by asking the right questions in order, and the result lands in Open Guides ready for review and attestation. Design: https://claude.ai/artifact/8fA31FXAjyJrcx5ixUvrqi (boards C1 to C8; option C, Interview.dc.html, is the chosen start).',
+    items: [
+      { id: 'E19-1', title: 'Choose how to start', detail: 'Aviator opens with three starts: attach documents, build from scratch, revise a published guide. Choosing scratch states that progress saves after every answer and a document can be attached at any point, which switches the remaining steps to the document path and merges.', design: 'C1-Start.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E19-2', title: 'Guide basics', detail: 'Aviator asks hub, transaction set, standard and version, who sends the document, and the title partners see. Each question offers one-click answers and accepts free text.', design: 'C2-Basics.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E19-3', title: 'Envelope and delimiters', detail: 'One structured card for the hub\'s own identifiers (ISA qualifier and ID, GS02, production and test), separators and ISA15 usage. States that partner identifiers are not part of the guide.', design: 'C3-Envelope.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'S', state: 'Not started' },
+      { id: 'E19-4', title: 'Structure by area', detail: 'Aviator lists the standard segments for the chosen set and version, area by area, from model knowledge at authoring time. The hub marks each Mandatory, Used or Not used and can add a segment. The standard column is reference only and is never stored or published (E5-5).', design: 'C4-Structure.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E19-5', title: 'Elements and codes', detail: 'For each segment the hub keeps, Aviator walks its elements: accepted codes (common codes offered, any code searchable), lengths and a note for partners. A side table shows the segment as saved.', design: 'C5-Elements.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'L', state: 'Not started' },
+      { id: 'E19-6', title: 'Business rules and contacts', detail: 'The hub states rules in its own words; Aviator records the wording verbatim, asks one scoping follow-up (which order types, which segment) and assigns the next rule ID. Then asks for EDI contacts.', design: 'C6-Rules.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E19-7', title: 'Interview citations', detail: 'A finding authored by interview cites "Interview, answer N" instead of a page, and stores the question, the answer text, who answered and when. The review shows it in the Source column. Covers E5-7.', design: 'C7-Review.dc.html', personas: ['hub-owner', 'hub-editor', 'partner-reader'], size: 'M', state: 'Not started' },
+      { id: 'E19-8', title: 'Draft panel and resume', detail: 'A live draft and seven-step progress sit beside the conversation on every step. The interview is saved per answer and resumes from the builder in a later session. Covers E5-6.', design: 'C2-Basics.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E19-9', title: 'Review handoff', detail: 'At the end Aviator opens the review (E5-19) and summarises what is open: questions skipped, answers marked unsure, and answers that contradict each other.', design: 'C7-Review.dc.html', personas: ['hub-owner', 'hub-editor', 'ps-author'], size: 'S', state: 'Not started' },
+      { id: 'E19-10', title: 'Attest and publish', detail: 'The guide preview carries "Authored by interview with Trading Grid Aviator". The author attests in place or sends to a hub signatory; sending depends on E6-2. Once attested the guide is live in Open Guides and served over MCP.', design: 'C8-Published.dc.html', personas: ['hub-owner', 'ps-author'], size: 'M', state: 'Not started' }
+    ]
+  },
+  {
     id: 'E13',
     name: 'Later horizon',
     why: 'Sequenced after the items above. Recorded so the direction is not lost.',
@@ -291,6 +308,9 @@ export const EPICS = [
     ]
   }
 ];
+
+/* Design canvas for the new guide start and the Aviator interview flow. */
+export const DESIGN_URL = 'https://claude.ai/artifact/8fA31FXAjyJrcx5ixUvrqi';
 
 /* What the product publishes, and the test for anything new. */
 export const SCOPE = {

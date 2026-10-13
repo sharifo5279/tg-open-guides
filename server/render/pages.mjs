@@ -1,7 +1,7 @@
 import { esc, inlineProse, layout } from './html.mjs';
 import { codeBlock } from '../highlight.mjs';
 import { DIRECTIONS } from '../spec.mjs';
-import { EPICS, PERSONAS, OUT_OF_SCOPE, SCOPE } from '../backlog.mjs';
+import { EPICS, PERSONAS, OUT_OF_SCOPE, SCOPE, DESIGN_URL } from '../backlog.mjs';
 
 /**
  * Home and the hub front door.
@@ -465,7 +465,7 @@ export function renderBacklog({ baseUrl = '' } = {}) {
       <tbody>${e.items.map((i) => `<tr>
         <td class="mono" data-l="ID">${esc(i.id)}</td>
         <td data-l="Item"><b>${esc(i.title)}</b></td>
-        <td data-l="Detail">${esc(i.detail)}</td>
+        <td data-l="Detail">${esc(i.detail)}${i.design ? ` <a href="${esc(DESIGN_URL)}" title="Design board ${esc(i.design)}">Design: ${esc(i.design.replace(/\.dc\.html$/, ''))}</a>` : ''}</td>
         <td data-l="Personas"><span class="el-note">${esc(i.personas.map((x) => names[x]).join(', '))}</span></td>
         <td class="mono" data-l="Size">${esc(i.size)}</td>
         <td data-l="State">${state(i.state)}</td>
