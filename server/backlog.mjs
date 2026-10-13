@@ -237,6 +237,19 @@ export const EPICS = [
     ]
   },
   {
+    id: 'E17',
+    name: 'Product home and sign-up',
+    why: 'The home page reads as a prototype catalogue and does not convert. It has to present Open Guides as a standalone SaaS product and take every known persona from landing to its first task.',
+    items: [
+      { id: 'E17-1', title: 'Product home page', detail: 'Rebuild the home page as the front door of a standalone SaaS product: what it is, how it works in three steps, sample guides as proof, and one primary call to action. The hub list moves to its own directory page.', personas: ['hub-owner', 'hub-admin', 'hub-editor', 'ps-author', 'partner-reader', 'partner-member', 'agent', 'platform-admin'], size: 'L', state: 'Not started' },
+      { id: 'E17-2', title: 'A path for every persona', detail: 'The home page routes each known persona to its first task: hub owner and admin to sign up and create a hub; hub editor and professional services author to the Guide Builder; partner reader to find a hub and read a guide; partner member to request access; agent developers to the MCP and API setup; platform administrator to sign in.', personas: ['hub-owner', 'hub-admin', 'hub-editor', 'ps-author', 'partner-reader', 'partner-member', 'agent', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E17-3', title: 'Positioning and copy', detail: 'Rewrite home, sign-in and empty-state copy to the product writing standard: outcome-led headings, one-sentence descriptions, specific action buttons, no internal or prototype language.', personas: ['hub-owner', 'hub-admin', 'hub-editor', 'ps-author', 'partner-reader', 'partner-member', 'agent', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E17-4', title: 'Sign-up flow', detail: 'A visitor signs up with Google, names the hub, and lands in the Guide Builder with a first import prompt. Partners sign in to read or request access without creating a hub. Depends on E1-10 Open sign-in and E1-11 Self-service hub sign-up, both held while access is limited to the platform administrator.', personas: ['hub-owner', 'hub-admin', 'partner-reader', 'partner-member'], size: 'L', state: 'Not started' },
+      { id: 'E17-5', title: 'Standalone presentation', detail: 'Remove internal links and prototype notices from public pages (the backlog link, the fictional-content footer), and add the pages a standalone product needs: availability statement, terms (E12-2), privacy (E12-3) and contact.', personas: ['hub-owner', 'hub-admin', 'hub-editor', 'ps-author', 'partner-reader', 'partner-member', 'agent', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E17-6', title: 'Conversion measurement', detail: 'Count visits, sign-up starts, completed sign-ups and first imports by persona path, so the home page can be judged on conversion. Aggregate counts only; no third-party tracking.', personas: ['platform-admin'], size: 'S', state: 'Not started' }
+    ]
+  },
+  {
     id: 'E13',
     name: 'Later horizon',
     why: 'Sequenced after the items above. Recorded so the direction is not lost.',
