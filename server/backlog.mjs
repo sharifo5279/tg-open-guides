@@ -209,6 +209,34 @@ export const EPICS = [
     ]
   },
   {
+    id: 'E15',
+    name: 'Multi-document imports',
+    why: 'Hub requirements are spread across a guide, rules decks and spreadsheets. One draft has to be built from all of them, with every finding traceable to the file it came from.',
+    items: [
+      { id: 'E15-1', title: 'Several files in one import', detail: 'One import accepts up to 10 files for one hub, one transaction set and one direction, and compiles them into a single draft. Typical set: the implementation guide PDF, a business rules deck and a spreadsheet of hub notes.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' },
+      { id: 'E15-2', title: 'Source register', detail: 'Each file in an import is a source with an ID (S1, S2), file name, type, page or block count and its citation unit. The register is shown on the review and stored on the import and on every version published from it.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E15-3', title: 'Source-qualified citations', detail: 'A citation names its source and location: "rules-deck.pptx p.4", "routing.xlsx block 2", "guide.pdf p.12". Single-file imports and versions already published keep their page-only citations and render unchanged.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E15-4', title: 'Per-source compile and merge', detail: 'The compiler runs per source in the background, with each source logged separately, and merges into one draft with the same segment, element and rule keys used to merge chunks today. A failed source is a gap; the others still compile.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' },
+      { id: 'E15-5', title: 'Conflicts between sources', detail: 'When two sources state different values for the same finding (usage, length, max use, accepted values, a rule), the draft keeps both as one Open finding marked as a conflict, citing each source. The reviewer chooses; nothing is merged silently.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E15-6', title: 'Add a source to a draft', detail: 'Upload another file into an import under review. It compiles and merges into the existing draft; findings already confirmed, edited or dropped keep their state, and new findings arrive Open.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E15-7', title: 'Remove a source', detail: 'Remove a source from a draft. Findings cited only to that source are dropped, reversibly until publication; findings also cited elsewhere keep their remaining citations.', personas: ['ps-author', 'hub-editor'], size: 'S', state: 'Not started' },
+      { id: 'E15-8', title: 'PowerPoint sources', detail: 'Import .pptx. One slide is one citable page; slide text, tables and speaker notes are extracted in reading order.', personas: ['ps-author', 'hub-editor'], size: 'S', state: 'Not started' }
+    ]
+  },
+  {
+    id: 'E16',
+    name: 'Multi-set documents',
+    why: 'Many hubs publish one document for 850, 855, 856 and 810. Today it is imported once per set. One import should produce a guide per set.',
+    items: [
+      { id: 'E16-1', title: 'Transaction set detection', detail: 'On extraction, detect which transaction sets a document covers and the page ranges for each, from headings, ST01 values and segment tables. Show the result before compiling, for the author to confirm or correct.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E16-2', title: 'Choose sets to build', detail: 'The author selects which detected sets to build. Each selected set becomes its own draft with its own review, sharing the source file; unselected sets are not compiled.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E16-3', title: 'Page routing per set', detail: 'Each set\'s compile reads only its own page range plus pages marked shared (front matter, envelope, delimiters, contacts, general rules), so a 120-page four-set guide does not cost four full reads.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E16-4', title: 'Shared content across sets', detail: 'Envelope, delimiters and contacts found on shared pages go into every guide built from the document. Decision needed: whether general business rules on shared pages are copied into each guide or published once as hub-wide rules (E3-7).', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E16-5', title: 'Grouped review and publish', detail: 'The builder groups drafts that came from one document and shows review progress for each. Each set is reviewed, published and attested as its own guide; one set can publish while others are still in review.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
+      { id: 'E16-6', title: 'Re-import a revised document', detail: 'Importing a new edition of a multi-set document matches each set to its existing guide and produces the next version of each, with the version diff, instead of new guides.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' }
+    ]
+  },
+  {
     id: 'E13',
     name: 'Later horizon',
     why: 'Sequenced after the items above. Recorded so the direction is not lost.',
