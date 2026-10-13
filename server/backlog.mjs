@@ -33,7 +33,7 @@ export const EPICS = [
       { id: 'E1-4', title: 'Account record', detail: 'An account owns one or more hubs. Separates the person from the organisation.', personas: ['hub-admin'], size: 'M', state: 'Done' },
       { id: 'E1-5', title: 'Roles and permissions', detail: 'Owner, admin, editor and reader per hub. Only owners attest and publish.', personas: ['hub-admin', 'hub-editor'], size: 'M', state: 'Partial' },
       { id: 'E1-6', title: 'Invite users to a hub', detail: 'Invite by email, assign a role, revoke access.', personas: ['hub-admin'], size: 'M', state: 'Not started' },
-      { id: 'E1-7', title: 'Professional services author role', detail: 'Authors across the hubs assigned to an engagement. Cannot attest or publish.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E1-7', title: 'Professional services author role', detail: 'Authors across the hubs assigned to an engagement. Cannot attest or publish. Blocked today because the builder admits only the platform administrator.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E1-9', title: 'Platform administrators', detail: 'An environment list names who may sign in and who administers. Unset means nobody.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E1-10', title: 'Open sign-in', detail: 'Anyone may hold an account. Today the environment list is the only way in, so a hub owner must be on it.', personas: ['hub-owner', 'partner-member'], size: 'S', state: 'Not started' },
       { id: 'E1-11', title: 'Self-service hub sign-up', detail: 'A partner creates its own hub without an administrator. Gated until the product is public.', personas: ['partner-member', 'hub-owner'], size: 'M', state: 'Not started' },
@@ -65,6 +65,7 @@ export const EPICS = [
       { id: 'E3-4', title: 'Contacts', detail: 'Named contacts by what they resolve.', personas: ['hub-owner'], size: 'S', state: 'Done' },
       { id: 'E3-5', title: 'Hub slug and availability', detail: 'Reserve a URL slug, check collisions, allow a rename with a redirect.', personas: ['hub-owner'], size: 'S', state: 'Partial' },
       { id: 'E3-6', title: 'Claim an existing hub', detail: 'Verify control of the organisation before transferring a hub created by someone else.', personas: ['hub-owner', 'platform-admin'], size: 'L', state: 'Not started' },
+      { id: 'E3-8', title: 'Publishing must not create a hub', detail: 'Publishing inserts a hub when the slug is unknown, with no creator and no owner, which bypasses administrator-gated creation and leaves a hub nobody can administer.', personas: ['platform-admin', 'hub-owner'], size: 'S', state: 'Not started' },
       { id: 'E3-7', title: 'Flexible hub-wide rules', detail: 'Add, remove and reorder any number of hub-wide rules in hub settings, without the fixed empty rows.', personas: ['hub-owner'], size: 'S', state: 'Not started' }
     ]
   },
@@ -93,8 +94,8 @@ export const EPICS = [
       { id: 'E5-6', title: 'Resume an interview', detail: 'An interview spans sessions. Answers are saved as given and remain editable.', personas: ['hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E5-7', title: 'Answer provenance', detail: 'An interview-authored guide cites the person and date behind each statement, as a document path cites a page.', personas: ['hub-owner', 'partner-reader'], size: 'M', state: 'Not started' },
       { id: 'E5-8', title: 'Platform-supplied model keys', detail: 'Keys are held by the application and never exposed to a hub.', personas: ['platform-admin'], size: 'S', state: 'Done' },
-      { id: 'E5-9', title: 'Agent limits', detail: 'One import compiles up to 150 pages, with a stated message above that. Per-hub run and token caps are not started.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Partial' },
-      { id: 'E5-10', title: 'Agent audit trail', detail: 'Each import records who started it, the model, the prompt version and a timed log of every chunk. Per-chunk prompts and raw output are not kept.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Partial' },
+      { id: 'E5-9', title: 'Agent limits', detail: 'One import compiles up to 150 pages. A page cap is not a spend cap: per-hub run, token and cost ceilings are not started, so an engagement can run unbounded against the platform key.', personas: ['platform-admin', 'hub-admin'], size: 'M', state: 'Partial' },
+      { id: 'E5-10', title: 'Agent audit trail', detail: 'Each import records who started it, the model, the prompt version and a timed log of every chunk. Per-chunk prompts, raw output and per-finding authorship are not kept.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Partial' },
       { id: 'E5-11', title: 'Agent questions on a source document', detail: 'Where the document is silent or contradictory, the agent asks instead of asserting. Today gaps and conflicts appear as compiler gaps and notes. Decision needed before building: what an answer becomes (a rule, a hub note, or a change to the finding it concerns).', personas: ['hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E5-12', title: 'PDF extraction', detail: 'Per-page text extraction feeding the document path.', personas: ['hub-editor'], size: 'L', state: 'Done' },
       { id: 'E5-13', title: 'Triaged review', detail: 'Superseded by E5-19: every finding is a row with a state; open findings are the review queue.', personas: ['hub-editor'], size: 'M', state: 'Done' },
@@ -104,6 +105,14 @@ export const EPICS = [
       { id: 'E5-17', title: 'Scenarios editor', detail: 'Rules and scenarios can be added, edited and dropped in the review. A hub-facing editor outside the builder is not started.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
       { id: 'E5-18', title: 'Background compilation', detail: 'Upload returns at once. The compile runs on the server with a live log, survives closing the page and restarts after a server restart.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Done' },
       { id: 'E5-19', title: 'Review before publishing', detail: 'Every finding has a stable ID (F-001) and a state: open, confirmed, edited or dropped. Inline edit, filters, find, confirm all open. Drops are reversible until publication. The draft is saved on each change and reachable from the builder; a published import can be edited and published as the next version.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Done' },
+      { id: 'E5-21', title: 'Open the builder to editors and authors', detail: 'Only the platform administrator can open the builder, so neither the hub editor nor the professional services author can do the work the product assigns them.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-22', title: 'An import belongs to a hub', detail: 'The hub is recorded at upload rather than at publication, so permission can be checked while the work happens and a list can be scoped to one hub.', personas: ['ps-author', 'platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E5-23', title: 'Concurrent review safety', detail: 'Review edits rewrite the whole draft, so two reviewers on one import silently overwrite each other. Edits need a version check and a stale-edit message.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-24', title: 'Source text beside the finding', detail: 'Show the cited page next to the item so a reviewer can confirm it without opening the original. The page text is already stored on the import.', personas: ['hub-editor', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-25', title: 'Send a finding to the hub', detail: 'Route the items the source does not answer to the hub owner and record the answer against the finding.', personas: ['hub-editor', 'hub-owner', 'ps-author'], size: 'M', state: 'Not started' },
+      { id: 'E5-26', title: 'Per-finding authorship', detail: 'Each finding carries who last changed it and when, so a reviewer can see what a colleague decided.', personas: ['hub-editor', 'ps-author'], size: 'S', state: 'Not started' },
+      { id: 'E5-27', title: 'Model failover', detail: 'A provider error fails the import. The second configured provider should take the chunk, with the substitution logged.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
+      { id: 'E5-28', title: 'Find an import', detail: 'The builder lists the twelve most recent imports with no search, filter or paging.', personas: ['ps-author', 'platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E5-20', title: 'Edit from the published guide', detail: 'An authorized editor opens a published guide and edits it in place. Saving creates a new version for attestation. For now an administrator sees Edit in Guide Builder on the guide, which opens the import review.', personas: ['hub-owner', 'hub-editor'], size: 'M', state: 'Not started' }
     ]
   },
@@ -112,8 +121,8 @@ export const EPICS = [
     name: 'Attestation and publishing',
     why: 'Attestation is the product’s central claim and currently has no identity behind it.',
     items: [
-      { id: 'E6-1', title: 'Attestation by a signed-in owner', detail: 'Replace the open link with an authenticated action recording the account.', personas: ['hub-owner'], size: 'M', state: 'Partial' },
-      { id: 'E6-2', title: 'Attestation request', detail: 'An editor or professional services author sends a version to the owner for signature.', personas: ['hub-editor', 'ps-author', 'hub-owner'], size: 'M', state: 'Not started' },
+      { id: 'E6-1', title: 'Attestation by a signed-in owner', detail: 'The signatory signs with their own account, and the record binds that account to the content hash of what they signed. Today the platform administrator types the name and role as free text, so nobody at the hub has seen the document.', personas: ['hub-owner'], size: 'L', state: 'Partial' },
+      { id: 'E6-2', title: 'Attestation request', detail: 'An author marks a draft ready and sends it to a named signatory, who sees what changed since the last version before signing. There is no ready state today: a draft is either open or published.', personas: ['hub-editor', 'ps-author', 'hub-owner'], size: 'M', state: 'Not started' },
       { id: 'E6-3', title: 'Version diff', detail: 'The Versions tab lists findings added, removed and changed since the previous version, by stable finding ID.', personas: ['hub-owner', 'partner-member'], size: 'M', state: 'Done' },
       { id: 'E6-4', title: 'Withdraw a version', detail: 'An administrator withdraws a published version from the Versions tab; the previous version becomes current, the withdrawn one stays readable and can be reinstated.', personas: ['hub-owner'], size: 'S', state: 'Done' },
       { id: 'E6-5', title: 'Attestation record export', detail: 'Each attested version serves attestation.json: signatory, role, date, version, and a SHA-256 of the signed content. Linked from the Versions tab.', personas: ['hub-owner'], size: 'S', state: 'Done' }
@@ -179,11 +188,12 @@ export const EPICS = [
     name: 'Administration and operations',
     why: 'Running a multi-tenant service needs tenant isolation, support access and an audit trail.',
     items: [
-      { id: 'E11-1', title: 'Tenant isolation', detail: 'Every query scoped by hub. Tested, not assumed.', personas: ['platform-admin'], size: 'L', state: 'Not started' },
+      { id: 'E11-1', title: 'Tenant isolation', detail: 'Every query scoped by hub, tested rather than assumed. The builder is the open case: it lists every import across every hub.', personas: ['platform-admin'], size: 'L', state: 'Not started' },
       { id: 'E11-2', title: 'Platform admin console', detail: 'List accounts and hubs, suspend an account, handle abuse reports.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E11-3', title: 'Engagement assignment', detail: 'Assign a professional services author to a hub for a period, recorded in the audit log.', personas: ['platform-admin', 'ps-author'], size: 'M', state: 'Not started' },
       { id: 'E11-4', title: 'Audit log', detail: 'Who changed, attested, published, approved or withdrew what, and when.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E11-5', title: 'Error reporting and uptime', detail: 'Server errors are logged with their stack. The health check path is still unset on the service although /healthz answers. External uptime monitoring is not started.', personas: ['platform-admin'], size: 'S', state: 'Partial' },
+      { id: 'E11-7', title: 'Import retention', detail: 'Every import keeps its full page text indefinitely and nothing can be deleted, which fills a 1GB database with abandoned drafts.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
       { id: 'E11-6', title: 'Account deletion and export', detail: 'Delete an account and export its hubs and guides.', personas: ['hub-admin'], size: 'M', state: 'Not started' }
     ]
   },
@@ -233,7 +243,7 @@ export const EPICS = [
       { id: 'E16-3', title: 'Page routing per set', detail: 'Each set\'s compile reads only its own page range plus pages marked shared (front matter, envelope, delimiters, contacts, general rules), so a 120-page four-set guide does not cost four full reads.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E16-4', title: 'Shared content across sets', detail: 'Envelope, delimiters and contacts found on shared pages go into every guide built from the document. Decision needed: whether general business rules on shared pages are copied into each guide or published once as hub-wide rules (E3-7).', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
       { id: 'E16-5', title: 'Grouped review and publish', detail: 'The builder groups drafts that came from one document and shows review progress for each. Each set is reviewed, published and attested as its own guide; one set can publish while others are still in review.', personas: ['ps-author', 'hub-editor'], size: 'M', state: 'Not started' },
-      { id: 'E16-6', title: 'Re-import a revised document', detail: 'Importing a new edition of a multi-set document matches each set to its existing guide and produces the next version of each, with the version diff, instead of new guides.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' }
+      { id: 'E16-6', title: 'Re-import a revised document', detail: 'A new edition matches each set to its existing guide and produces the next version with a diff, carrying the previous review decisions rather than starting the review again.', personas: ['ps-author', 'hub-editor'], size: 'L', state: 'Not started' }
     ]
   },
   {
