@@ -51,7 +51,7 @@ export const EPICS = [
       { id: 'E2-4', title: 'Model provider configuration', detail: 'One adapter, keys held by the application. Required for the authoring agent.', personas: ['platform-admin'], size: 'S', state: 'Done' },
       { id: 'E2-5', title: 'Backups and restore test', detail: 'Scheduled backups with a documented restore. The database is on the Render basic plan; confirm its backup schedule in the Render dashboard and record the restore steps.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E2-6', title: 'Environments', detail: 'Separate staging and production services, created from render.yaml rather than by hand.', personas: ['platform-admin'], size: 'S', state: 'Not started' },
-      { id: 'E2-7', title: 'Deploy on push', detail: 'Render has auto deploy on, but GitHub delivers nothing: every deploy so far was started through the API. Reconnect the repository in the service settings to reinstall the webhook.', personas: ['platform-admin'], size: 'S', state: 'Blocked' }
+      { id: 'E2-7', title: 'Deploy on push', detail: 'A push to main deploys. The GitHub webhook was reinstalled by reconnecting the repository.', personas: ['platform-admin'], size: 'S', state: 'Done' }
     ]
   },
   {
@@ -183,7 +183,7 @@ export const EPICS = [
       { id: 'E11-2', title: 'Platform admin console', detail: 'List accounts and hubs, suspend an account, handle abuse reports.', personas: ['platform-admin'], size: 'M', state: 'Not started' },
       { id: 'E11-3', title: 'Engagement assignment', detail: 'Assign a professional services author to a hub for a period, recorded in the audit log.', personas: ['platform-admin', 'ps-author'], size: 'M', state: 'Not started' },
       { id: 'E11-4', title: 'Audit log', detail: 'Who changed, attested, published, approved or withdrew what, and when.', personas: ['hub-admin', 'platform-admin'], size: 'M', state: 'Not started' },
-      { id: 'E11-5', title: 'Error reporting and uptime', detail: 'Server errors are logged with their stack. The service ignores render.yaml, so its health check path is unset although the file declares /healthz. External uptime monitoring is not started.', personas: ['platform-admin'], size: 'S', state: 'Partial' },
+      { id: 'E11-5', title: 'Error reporting and uptime', detail: 'Server errors are logged with their stack. The health check path is still unset on the service although /healthz answers. External uptime monitoring is not started.', personas: ['platform-admin'], size: 'S', state: 'Partial' },
       { id: 'E11-6', title: 'Account deletion and export', detail: 'Delete an account and export its hubs and guides.', personas: ['hub-admin'], size: 'M', state: 'Not started' }
     ]
   },
