@@ -440,33 +440,49 @@ export function renderBacklog({ baseUrl = '' } = {}) {
 </div></div>
 
 <section class="section"><div class="shell">
-  <h2>Personas</h2>
-  <p class="section-sub">Capability differs by permission. Every account is fully entitled.</p>
-  <div class="tbl-wrap"><table class="tbl tbl-stack">
-    <thead><tr><th>Persona</th><th>Who</th><th>Needs</th></tr></thead>
-    <tbody>${PERSONAS.map((p) => `<tr>
-      <td data-l="Persona"><b>${esc(p.name)}</b></td>
-      <td data-l="Who">${esc(p.who)}</td>
-      <td data-l="Needs">${esc(p.needs)}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>
-</div></section>
+  <div class="bl-tools"><button type="button" class="btn-link" data-bl="open">Expand all</button><button type="button" class="btn-link" data-bl="close">Collapse all</button></div>
 
-${EPICS.map((e) => `<section class="section"><div class="shell">
-  <div class="dgroup-h"><h3>${esc(e.id)}. ${esc(e.name)}</h3><span class="dg-n">${e.items.length}</span></div>
-  <p class="section-sub">${esc(e.why)}</p>
-  <div class="tbl-wrap"><table class="tbl tbl-stack tbl-bl">
-    <thead><tr><th>ID</th><th>Item</th><th>Detail</th><th>Personas</th><th>Size</th><th>State</th></tr></thead>
-    <tbody>${e.items.map((i) => `<tr>
-      <td class="mono" data-l="ID">${esc(i.id)}</td>
-      <td data-l="Item"><b>${esc(i.title)}</b></td>
-      <td data-l="Detail">${esc(i.detail)}</td>
-      <td data-l="Personas"><span class="el-note">${esc(i.personas.map((x) => names[x]).join(', '))}</span></td>
-      <td class="mono" data-l="Size">${esc(i.size)}</td>
-      <td data-l="State">${state(i.state)}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>
-</div></section>`).join('')}
+  <details class="bl-epic">
+    <summary><span class="bl-h">Personas</span><span class="bl-n">${PERSONAS.length}</span></summary>
+    <p class="section-sub">Capability differs by permission. Every account is fully entitled.</p>
+    <div class="tbl-wrap"><table class="tbl tbl-stack">
+      <thead><tr><th>Persona</th><th>Who</th><th>Needs</th></tr></thead>
+      <tbody>${PERSONAS.map((p) => `<tr>
+        <td data-l="Persona"><b>${esc(p.name)}</b></td>
+        <td data-l="Who">${esc(p.who)}</td>
+        <td data-l="Needs">${esc(p.needs)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </details>
+
+  ${EPICS.map((e) => {
+    const done = e.items.filter((i) => i.state === 'Done').length;
+    return `<details class="bl-epic" id="${esc(e.id)}">
+    <summary><span class="bl-h">${esc(e.id)}. ${esc(e.name)}</span><span class="bl-n">${done} of ${e.items.length} done</span></summary>
+    <p class="section-sub">${esc(e.why)}</p>
+    <div class="tbl-wrap"><table class="tbl tbl-stack tbl-bl">
+      <thead><tr><th>ID</th><th>Item</th><th>Detail</th><th>Personas</th><th>Size</th><th>State</th></tr></thead>
+      <tbody>${e.items.map((i) => `<tr>
+        <td class="mono" data-l="ID">${esc(i.id)}</td>
+        <td data-l="Item"><b>${esc(i.title)}</b></td>
+        <td data-l="Detail">${esc(i.detail)}</td>
+        <td data-l="Personas"><span class="el-note">${esc(i.personas.map((x) => names[x]).join(', '))}</span></td>
+        <td class="mono" data-l="Size">${esc(i.size)}</td>
+        <td data-l="State">${state(i.state)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </details>`;
+  }).join('\n')}
+</div></section>
+<script>
+document.querySelectorAll('[data-bl]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var open = b.getAttribute('data-bl') === 'open';
+    document.querySelectorAll('details.bl-epic').forEach(function (d) { d.open = open; });
+  });
+});
+if (location.hash) { var d = document.getElementById(location.hash.slice(1)); if (d && d.tagName === 'DETAILS') d.open = true; }
+</script>
 
 <section class="section"><div class="shell">
   <h2>Scope</h2>

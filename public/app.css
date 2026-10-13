@@ -710,6 +710,17 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 }
 
 /* Backlog */
+.bl-tools { display: flex; justify-content: flex-end; gap: 16px; margin-bottom: 6px; }
+.bl-epic { border-bottom: 1px solid var(--line); }
+.bl-epic > summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 11px 2px; cursor: pointer; list-style: none; }
+.bl-epic > summary::-webkit-details-marker { display: none; }
+.bl-epic > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid var(--slate); border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform .12s; flex: none; align-self: center; }
+.bl-epic[open] > summary::before { transform: rotate(90deg); }
+.bl-h { flex: 1 1 auto; font-size: 15px; font-weight: 600; color: var(--ink); }
+.bl-n { font-size: 12px; color: var(--slate); white-space: nowrap; }
+.bl-epic > summary:hover .bl-h { color: var(--primary); }
+.bl-epic[open] { padding-bottom: 14px; }
+.bl-epic .section-sub { margin: 0 0 8px; }
 .foot-links { font-size: 13px; margin: 0 0 8px; }
 .bl-state { font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--slate); }
 .bl-state.s-done { color: var(--success); }
